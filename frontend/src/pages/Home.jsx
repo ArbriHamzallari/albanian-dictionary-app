@@ -15,12 +15,18 @@ const Home = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [wordResponse, popularResponse] = await Promise.all([
+        const [wordResponse, popularResponse] = await Promise.allSettled([
           api.get('/words/word-of-the-day'),
           api.get('/words/popular'),
         ]);
-        setWordOfDay(wordResponse.data.word);
-        setPopularWords(popularResponse.data.words || []);
+        if (wordResponse.status === 'fulfilled') {
+          setWordOfDay(wordResponse.value.data.word);
+        }
+        if (popularResponse.status === 'fulfilled') {
+          setPopularWords(popularResponse.value.data.words || []);
+        } else if (popularResponse.status === 'rejected') {
+          setError('Nuk mund të ngarkohen fjalët. Kontrolloni që backend dhe baza e të dhënave të jenë aktiv.');
+        }
       } catch (err) {
         setError('Nuk mund të ngarkohen të dhënat tani.');
       } finally {
@@ -52,6 +58,9 @@ const Home = () => {
           <h3 className="text-lg font-semibold text-primary">FJALA E DITËS</h3>
           {loading && <LoadingSpinner />}
           {!loading && <ErrorMessage message={error} />}
+          {!loading && !wordOfDay && !error && (
+            <p className="mt-4 text-gray-500">Fjala e ditës nuk është vendosur ende. Ekzekutoni seed dhe rifreskoni.</p>
+          )}
           {!loading && wordOfDay && (
             <div className="mt-4 grid md:grid-cols-2 gap-6 items-center">
               <div>

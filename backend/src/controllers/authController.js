@@ -21,6 +21,10 @@ const login = async (req, res, next) => {
       return res.status(401).json({ message: 'Email ose fjalëkalim i pasaktë.' });
     }
 
+    if (!process.env.JWT_SECRET) {
+      return res.status(503).json({ message: 'Serveri nuk është konfiguruar. Kontaktoni administratorin.' });
+    }
+
     const token = jwt.sign(
       { id: user.id, role: user.role, full_name: user.full_name },
       process.env.JWT_SECRET,

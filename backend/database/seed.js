@@ -1,3 +1,4 @@
+require('dotenv').config();
 const bcrypt = require('bcrypt');
 const pool = require('../src/utils/db');
 
@@ -213,15 +214,34 @@ const seed = async () => {
       }
     }
 
+    const firstWordId = await client.query('SELECT id FROM words ORDER BY id ASC LIMIT 1');
+    if (firstWordId.rows.length) {
+      await client.query(
+        `INSERT INTO word_of_the_day (word_id, display_date)
+         VALUES ($1, CURRENT_DATE)
+         ON CONFLICT (display_date) DO UPDATE SET word_id = EXCLUDED.word_id`,
+        [firstWordId.rows[0].id]
+      );
+    }
+
     await client.query('COMMIT');
-    console.log('Seed completed.');
+
+    const countResult = await client.query('SELECT COUNT(*) AS count FROM words');
+    const wordCount = countResult.rows[0]?.count ?? 0;
+    const wotdResult = await client.query('SELECT COUNT(*) AS count FROM word_of_the_day WHERE display_date = CURRENT_DATE');
+    const wotdSet = (wotdResult.rows[0]?.count ?? 0) > 0;
+
+    console.log(`Seed completed: ${wordCount} words in database, word of the day ${wotdSet ? 'set' : 'not set'}.`);
   } catch (error) {
-    await client.query('ROLLBACK');
-    console.error('Seed failed:', error);
+    await client.query('ROLLBACK').catch(() => {});
+    console.error('Seed failed:', error.message);
+    throw error;
   } finally {
     client.release();
     await pool.end();
   }
 };
 
-seed();
+seed()
+  .then(() => process.exit(0))
+  .catch(() => process.exit(1));

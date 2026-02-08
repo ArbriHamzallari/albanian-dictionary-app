@@ -18,7 +18,13 @@ const AdminLogin = () => {
       localStorage.setItem('auth_token', response.data.token);
       navigate('/admin/dashboard');
     } catch (err) {
-      setError('Email ose fjalëkalim i pasaktë.');
+      if (err.response?.status === 401) {
+        setError('Email ose fjalëkalim i pasaktë.');
+      } else if (err.code === 'ERR_NETWORK' || !err.response) {
+        setError('Nuk mund të lidhet me serverin. Kontrolloni që backend të jetë duke u ekzekutuar (npm run dev në backend).');
+      } else {
+        setError(err.response?.data?.message || 'Ndodhi një gabim. Provoni përsëri.');
+      }
     }
   };
 

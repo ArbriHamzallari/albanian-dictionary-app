@@ -1,16 +1,16 @@
+const dotenv = require('dotenv');
+dotenv.config();
+
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
-const dotenv = require('dotenv');
 
 const wordsRoutes = require('./src/routes/words');
 const suggestionsRoutes = require('./src/routes/suggestions');
 const authRoutes = require('./src/routes/auth');
 const adminRoutes = require('./src/routes/admin');
-
-dotenv.config();
 
 const app = express();
 
@@ -44,10 +44,31 @@ app.use('/api/admin', adminRoutes);
 
 app.use((err, req, res, next) => {
   console.error(err);
-  res.status(500).json({ message: 'Ndodhi një gabim i brendshëm. Ju lutem provoni më vonë.' });
+  const isDev = process.env.NODE_ENV !== 'production';
+  const message = isDev && err.message
+    ? err.message
+    : 'Ndodhi një gabim i brendshëm. Ju lutem provoni më vonë.';
+  res.status(500).json({ message });
 });
 
 const port = process.env.PORT || 5000;
-app.listen(port, () => {
+
+if (!process.env.DATABASE_URL) {
+  console.warn('Warning: DATABASE_URL is not set. Create backend/.env from .env.example and set DATABASE_URL. Database requests will fail.');
+}
+if (!process.env.JWT_SECRET) {
+  console.warn('Warning: JWT_SECRET is not set. Set JWT_SECRET in backend/.env for admin login to work.');
+}
+
+const server = app.listen(port, () => {
   console.log(`Server running on port ${port}`);
+});
+
+server.on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.error(`Port ${port} is already in use. Stop the process using that port or set a different PORT in .env.`);
+  } else {
+    console.error('Server error:', err.message);
+  }
+  process.exit(1);
 });
