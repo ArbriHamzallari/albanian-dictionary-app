@@ -100,7 +100,8 @@ Render’s free tier spins down after ~15 minutes of no traffic. To reduce cold 
    - **Build command:** `npm run build`.
    - **Publish directory:** `dist`.
    - **Environment variables** → **Add variable** (or **Add from .env** if you use a non-committed file):
-     - `VITE_API_URL` = `https://your-api.onrender.com/api` (the URL from Step 2, with `/api`).
+     - `VITE_API_URL` = `https://your-api.onrender.com/api` (the URL from Step 2, **must end with `/api`**).
+     - If you omit `/api`, the frontend will request `/words/...` instead of `/api/words/...` and get 404; words will not load.
 
 4. Save and deploy. Netlify will build and publish the site.
 5. Copy the site URL (e.g. `https://your-site-name.netlify.app`).
@@ -140,6 +141,7 @@ Render’s free tier spins down after ~15 minutes of no traffic. To reduce cold 
 
 | Issue | What to check |
 |-------|----------------|
+| Words / word of the day don’t load; 404 on `/words/...` | **VITE_API_URL** on Netlify must **end with `/api`** (e.g. `https://xxx.onrender.com/api`). Without it, requests go to `/words/...` instead of `/api/words/...`. Set it in Netlify → Environment variables, then **trigger a new deploy**. |
 | Frontend loads but API calls fail | CORS: ensure **FRONTEND_URL** on Render is exactly your Netlify URL (https, no trailing slash). Check browser Network tab for CORS errors. |
 | 404 on API routes | **VITE_API_URL** on Netlify must be the full API base (e.g. `https://xxx.onrender.com/api`). Rebuild after changing env vars. |
 | “Server not configured” or login fails | **JWT_SECRET** must be set in Render. Redeploy after adding it. |
