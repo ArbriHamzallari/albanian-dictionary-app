@@ -24,9 +24,18 @@ const app = express();
 const isProduction = process.env.NODE_ENV === 'production';
 const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
 const frontendUrlAlt = process.env.FRONTEND_URL_ALT || 'http://localhost:5174';
-const corsOrigins = [frontendUrl, frontendUrlAlt].filter(Boolean);
+const normalizeOrigin = (origin) => origin.replace(/\/+$/, '');
+const corsOrigins = [frontendUrl, frontendUrlAlt]
+  .filter(Boolean)
+  .map((origin) => normalizeOrigin(origin));
 if (process.env.FRONTEND_URL_EXTRA) {
-  corsOrigins.push(...process.env.FRONTEND_URL_EXTRA.split(',').map((s) => s.trim()));
+  corsOrigins.push(
+    ...process.env.FRONTEND_URL_EXTRA
+      .split(',')
+      .map((s) => s.trim())
+      .filter(Boolean)
+      .map((origin) => normalizeOrigin(origin))
+  );
 }
 
 app.use(helmet());
