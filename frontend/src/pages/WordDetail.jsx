@@ -1,8 +1,17 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 import LoadingSpinner from '../components/LoadingSpinner.jsx';
 import ErrorMessage from '../components/ErrorMessage.jsx';
 import api from '../utils/api.js';
+
+const categoryColors = {
+  'Folje': 'badge-green',
+  'Emër': 'badge-blue',
+  'Mbiemër': 'badge-purple',
+  'Ndajfolje': 'badge-orange',
+};
 
 const WordDetail = () => {
   const { id } = useParams();
@@ -15,77 +24,101 @@ const WordDetail = () => {
       try {
         const response = await api.get(`/words/${id}`);
         setWord(response.data.word);
-      } catch (err) {
+      } catch {
         setError('Fjala nuk u gjet.');
       } finally {
         setLoading(false);
       }
     };
-
     fetchWord();
   }, [id]);
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-10">
-      <Link to="/" className="text-accent text-sm">
-        ← Kthehu
+    <div className="max-w-4xl mx-auto px-6 py-10">
+      <Link to="/" className="inline-flex items-center gap-1 text-fjalingo-green text-sm font-bold hover:gap-2 transition-all mb-6">
+        <ArrowLeft className="w-4 h-4" /> Kthehu
       </Link>
 
       {loading && <LoadingSpinner />}
       {!loading && <ErrorMessage message={error} />}
 
       {!loading && word && (
-        <div className="mt-6 space-y-6">
-          <div>
-            <h2 className="text-3xl font-bold text-dark">{word.correct_albanian}</h2>
-            <p className="text-gray-500">({word.borrowed_word} - fjalë e huazuar)</p>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="space-y-6"
+        >
+          {/* Header */}
+          <div className="card border-fjalingo-green/30">
+            <div className="flex items-center gap-3 flex-wrap mb-3">
+              <span className="text-xl font-bold text-muted dark:text-dark-muted line-through decoration-1">
+                {word.borrowed_word}
+              </span>
+              <ArrowRight className="w-5 h-5 text-fjalingo-green" />
+              <span className="text-3xl font-black text-fjalingo-green">
+                {word.correct_albanian}
+              </span>
+            </div>
+            {word.category && (
+              <span className={`badge ${categoryColors[word.category] || 'badge-blue'}`}>
+                {word.category}
+              </span>
+            )}
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm p-6">
-            <h3 className="text-sm font-semibold text-primary">KATEGORIA</h3>
-            <p className="text-lg mt-2">{word.category || 'Pa kategori'}</p>
-          </div>
-
-          <div className="bg-white rounded-xl shadow-sm p-6">
-            <h3 className="text-sm font-semibold text-primary">PËRKUFIZIMI</h3>
-            <ul className="mt-3 space-y-2">
-              {word.definitions.map((definition) => (
-                <li key={definition.id} className="text-gray-700">
-                  {definition.definition_text}
+          {/* Definitions */}
+          <div className="card">
+            <h3 className="text-sm font-black text-fjalingo-blue tracking-wide mb-4">📖 PËRKUFIZIMI</h3>
+            <ul className="space-y-3">
+              {word.definitions.map((def, i) => (
+                <li key={def.id} className="flex gap-3">
+                  <span className="w-6 h-6 rounded-lg bg-fjalingo-blue/10 flex items-center justify-center text-xs font-black text-fjalingo-blue flex-shrink-0 mt-0.5">
+                    {i + 1}
+                  </span>
+                  <div>
+                    <p className="text-body dark:text-dark-text font-semibold">{def.definition_text}</p>
+                    {def.example_sentence && (
+                      <p className="text-sm text-muted dark:text-dark-muted italic mt-1">
+                        "{def.example_sentence}"
+                      </p>
+                    )}
+                  </div>
                 </li>
               ))}
             </ul>
           </div>
 
+          {/* Conjugations */}
           {word.conjugations.length > 0 && (
-            <div className="bg-white rounded-xl shadow-sm p-6">
-              <h3 className="text-sm font-semibold text-primary">ZGJEDHIMI I FJALËS</h3>
-              <div className="mt-4 grid md:grid-cols-2 gap-4">
-                {word.conjugations.map((conjugation) => (
-                  <div key={conjugation.id} className="border border-gray-200 rounded-lg p-4">
-                    <p className="text-sm font-semibold text-gray-600">{conjugation.conjugation_type}</p>
-                    <p className="text-gray-700 mt-1">{conjugation.conjugation_text}</p>
+            <div className="card">
+              <h3 className="text-sm font-black text-fjalingo-purple tracking-wide mb-4">🔤 ZGJEDHIMI I FJALËS</h3>
+              <div className="grid md:grid-cols-2 gap-4">
+                {word.conjugations.map((conj) => (
+                  <div key={conj.id} className="card py-4 px-4 border-fjalingo-purple/20">
+                    <p className="text-xs font-black text-fjalingo-purple mb-2">{conj.conjugation_type}</p>
+                    <p className="text-sm font-semibold text-body dark:text-dark-text">{conj.conjugation_text}</p>
                   </div>
                 ))}
               </div>
             </div>
           )}
 
-          {word.definitions.some((definition) => definition.example_sentence) && (
-            <div className="bg-white rounded-xl shadow-sm p-6">
-              <h3 className="text-sm font-semibold text-primary">SHEMBUJ</h3>
-              <ul className="mt-3 space-y-2">
+          {/* Examples */}
+          {word.definitions.some((def) => def.example_sentence) && (
+            <div className="card">
+              <h3 className="text-sm font-black text-fjalingo-yellow tracking-wide mb-4">💡 SHEMBUJ</h3>
+              <ul className="space-y-2">
                 {word.definitions
-                  .filter((definition) => definition.example_sentence)
-                  .map((definition) => (
-                    <li key={`example-${definition.id}`} className="text-gray-700">
-                      - {definition.example_sentence}
+                  .filter((def) => def.example_sentence)
+                  .map((def) => (
+                    <li key={`ex-${def.id}`} className="text-sm text-body dark:text-dark-text font-semibold">
+                      — {def.example_sentence}
                     </li>
                   ))}
               </ul>
             </div>
           )}
-        </div>
+        </motion.div>
       )}
     </div>
   );

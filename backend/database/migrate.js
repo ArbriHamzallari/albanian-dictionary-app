@@ -12,10 +12,41 @@ const pool = require('../src/utils/db');
 const migrationsDir = path.join(__dirname, 'migrations');
 
 function splitStatements(sql) {
-  return sql
-    .split(/;\s*\n/)
-    .map((s) => s.trim())
-    .filter((s) => s.length > 0);
+  // Split on semicolons followed by a newline, but skip semicolons
+  // inside dollar-quoted blocks (e.g. DO $$ ... $$;)
+  const statements = [];
+  let current = '';
+  let inDollarQuote = false;
+  const lines = sql.split('\n');
+
+  for (const line of lines) {
+    // Track $$ toggling (simplified: only bare $$ pairs)
+    const dollarMatches = line.match(/\$\$/g);
+    if (dollarMatches) {
+      for (const _ of dollarMatches) {
+        inDollarQuote = !inDollarQuote;
+      }
+    }
+
+    current += line + '\n';
+
+    // If we're outside a dollar-quoted block and the line ends with ;
+    if (!inDollarQuote && line.trimEnd().endsWith(';')) {
+      const trimmed = current.trim();
+      if (trimmed.length > 0) {
+        statements.push(trimmed);
+      }
+      current = '';
+    }
+  }
+
+  // Catch any trailing statement without a final ;
+  const remaining = current.trim();
+  if (remaining.length > 0) {
+    statements.push(remaining);
+  }
+
+  return statements;
 }
 
 const runMigrations = async () => {

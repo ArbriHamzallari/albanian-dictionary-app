@@ -18,6 +18,21 @@ const config = {
 
 const pool = new Pool(config);
 
+const originalQuery = pool.query.bind(pool);
+pool.query = (text, params, cb) => {
+  const queryText = typeof text === 'string' ? text : text?.text;
+  const shouldLog = typeof queryText === 'string'
+    && /uuid|user_id|rank|profile|auth\/me/i.test(queryText);
+
+  if (shouldLog) {
+    console.error('SQL:', queryText);
+    console.error('PARAMS:', params);
+    console.error('PARAM TYPES:', Array.isArray(params) ? params.map((v) => typeof v) : null);
+  }
+
+  return originalQuery(text, params, cb);
+};
+
 pool.on('error', (err) => {
   console.error('Unexpected error on idle client', err);
 });

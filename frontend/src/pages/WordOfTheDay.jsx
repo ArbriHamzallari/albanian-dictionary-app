@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
+import { Star } from 'lucide-react';
 import LoadingSpinner from '../components/LoadingSpinner.jsx';
 import ErrorMessage from '../components/ErrorMessage.jsx';
-import api from '../utils/api.js';
 import WordCard from '../components/WordCard.jsx';
+import api from '../utils/api.js';
 
 const WordOfTheDay = () => {
   const [word, setWord] = useState(null);
@@ -14,46 +16,73 @@ const WordOfTheDay = () => {
       try {
         const response = await api.get('/words/word-of-the-day');
         setWord(response.data.word);
-      } catch (err) {
+      } catch {
         setError('Fjala e ditës nuk është gjetur.');
       } finally {
         setLoading(false);
       }
     };
-
     fetchWord();
   }, []);
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-10">
-      <h2 className="text-2xl font-bold text-dark mb-6">FJALA E DITËS</h2>
+    <div className="max-w-4xl mx-auto px-6 py-10">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="text-center mb-8"
+      >
+        <Star className="w-10 h-10 mx-auto mb-3 text-fjalingo-yellow fill-fjalingo-yellow" />
+        <h2 className="text-3xl font-black text-heading dark:text-dark-text">
+          FJALA E DITËS
+        </h2>
+      </motion.div>
+
       {loading && <LoadingSpinner />}
       {!loading && <ErrorMessage message={error} />}
+
       {!loading && word && (
-        <div className="grid gap-6">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="space-y-6"
+        >
           <WordCard word={word} />
-          <div className="bg-white rounded-xl shadow-sm p-6">
-            <h3 className="text-sm font-semibold text-primary">Përkufizimi i plotë</h3>
-            <ul className="mt-3 space-y-2">
-              {word.definitions.map((definition) => (
-                <li key={definition.id}>{definition.definition_text}</li>
+
+          <div className="card">
+            <h3 className="text-sm font-black text-fjalingo-blue tracking-wide mb-4">📖 PËRKUFIZIMI I PLOTË</h3>
+            <ul className="space-y-3">
+              {word.definitions.map((def, i) => (
+                <li key={def.id} className="flex gap-3">
+                  <span className="w-6 h-6 rounded-lg bg-fjalingo-blue/10 flex items-center justify-center text-xs font-black text-fjalingo-blue flex-shrink-0">
+                    {i + 1}
+                  </span>
+                  <div>
+                    <p className="text-body dark:text-dark-text font-semibold">{def.definition_text}</p>
+                    {def.example_sentence && (
+                      <p className="text-sm text-muted dark:text-dark-muted italic mt-1">"{def.example_sentence}"</p>
+                    )}
+                  </div>
+                </li>
               ))}
             </ul>
-            {word.conjugations.length > 0 && (
-              <div className="mt-4">
-                <h4 className="text-sm font-semibold text-gray-600">Zgjedhimet</h4>
-                <div className="grid md:grid-cols-2 gap-3 mt-2">
-                  {word.conjugations.map((conjugation) => (
-                    <div key={conjugation.id} className="border border-gray-200 rounded-lg p-3">
-                      <p className="text-xs font-semibold text-gray-500">{conjugation.conjugation_type}</p>
-                      <p className="text-sm text-gray-700">{conjugation.conjugation_text}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
-        </div>
+
+          {word.conjugations.length > 0 && (
+            <div className="card">
+              <h3 className="text-sm font-black text-fjalingo-purple tracking-wide mb-4">🔤 ZGJEDHIMET</h3>
+              <div className="grid md:grid-cols-2 gap-4">
+                {word.conjugations.map((conj) => (
+                  <div key={conj.id} className="card py-4 px-4 border-fjalingo-purple/20">
+                    <p className="text-xs font-black text-fjalingo-purple mb-2">{conj.conjugation_type}</p>
+                    <p className="text-sm font-semibold text-body dark:text-dark-text">{conj.conjugation_text}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </motion.div>
       )}
     </div>
   );

@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../utils/api.js';
+import { motion } from 'framer-motion';
+import { Lock } from 'lucide-react';
+import { useAuth } from '../context/AuthContext.jsx';
 import ErrorMessage from '../components/ErrorMessage.jsx';
 
 const AdminLogin = () => {
@@ -8,20 +10,24 @@ const AdminLogin = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const { login } = useAuth();
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     setError('');
 
     try {
-      const response = await api.post('/auth/login', { email, password });
-      localStorage.setItem('auth_token', response.data.token);
+      const data = await login(email, password);
+      if (data.role !== 'admin') {
+        setError('Kjo faqe është vetëm për administratorët.');
+        return;
+      }
       navigate('/admin/dashboard');
     } catch (err) {
       if (err.response?.status === 401) {
         setError('Email ose fjalëkalim i pasaktë.');
       } else if (err.code === 'ERR_NETWORK' || !err.response) {
-        setError('Nuk mund të lidhet me serverin. Kontrolloni që backend të jetë duke u ekzekutuar (npm run dev në backend).');
+        setError('Nuk mund të lidhet me serverin. Kontrolloni që backend të jetë duke u ekzekutuar.');
       } else {
         setError(err.response?.data?.message || 'Ndodhi një gabim. Provoni përsëri.');
       }
@@ -29,34 +35,55 @@ const AdminLogin = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto px-4 py-10">
-      <h2 className="text-2xl font-bold text-dark mb-4">Hyrje Admin</h2>
-      <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm p-6 space-y-4">
+    <div className="max-w-md mx-auto px-6 py-16">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="text-center mb-8"
+      >
+        <div className="w-16 h-16 rounded-2xl bg-fjalingo-green/15 flex items-center justify-center mx-auto mb-4">
+          <Lock className="w-8 h-8 text-fjalingo-green" />
+        </div>
+        <h2 className="text-2xl font-black text-heading dark:text-dark-text">Hyrje Admin</h2>
+        <p className="text-sm text-muted dark:text-dark-muted font-semibold mt-1">Fjalingo Admin Panel</p>
+      </motion.div>
+
+      <motion.form
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+        onSubmit={handleSubmit}
+        className="card space-y-5"
+      >
         <div>
-          <label className="block text-sm font-medium text-gray-700">Email</label>
+          <label className="block text-xs font-bold text-muted dark:text-dark-muted mb-1">Email</label>
           <input
             type="email"
             value={email}
-            onChange={(event) => setEmail(event.target.value)}
+            onChange={(e) => setEmail(e.target.value)}
             required
-            className="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2"
+            className="input-field"
+            placeholder="email@example.com"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700">Fjalëkalimi</label>
+          <label className="block text-xs font-bold text-muted dark:text-dark-muted mb-1">Fjalëkalimi</label>
           <input
             type="password"
             value={password}
-            onChange={(event) => setPassword(event.target.value)}
+            onChange={(e) => setPassword(e.target.value)}
             required
-            className="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2"
+            className="input-field"
+            placeholder="••••••••"
           />
         </div>
+
         <ErrorMessage message={error} />
-        <button type="submit" className="bg-primary text-white w-full py-2 rounded-lg font-semibold">
+
+        <button type="submit" className="btn-primary w-full">
           Hyr
         </button>
-      </form>
+      </motion.form>
     </div>
   );
 };

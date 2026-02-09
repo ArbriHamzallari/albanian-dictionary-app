@@ -1,6 +1,14 @@
-require('dotenv').config();
+require('dotenv').config({ path: require('path').join(__dirname, '..', '.env') });
 const bcrypt = require('bcrypt');
 const pool = require('../src/utils/db');
+
+const isProduction = process.env.NODE_ENV === 'production';
+const adminEmail = process.env.ADMIN_EMAIL || (isProduction ? null : 'admin@fjalingo.al');
+const adminPassword = process.env.ADMIN_PASSWORD || (isProduction ? null : 'Fjalor123!');
+if (isProduction && (!adminEmail || !adminPassword)) {
+  console.error('In production set ADMIN_EMAIL and ADMIN_PASSWORD in backend/.env. Do not use default credentials.');
+  process.exit(1);
+}
 
 const words = [
   {
@@ -173,14 +181,23 @@ const seed = async () => {
   try {
     await client.query('BEGIN');
 
-    const passwordHash = await bcrypt.hash('Fjalor123!', 10);
+    const passwordHash = await bcrypt.hash(adminPassword, 10);
+    const adminUsername = (adminEmail || '').split('@')[0] || 'admin';
     const adminResult = await client.query(
-      `INSERT INTO users (email, password_hash, full_name, role)
-       VALUES ($1, $2, $3, 'admin')
+      `INSERT INTO users (email, password_hash, full_name, role, username, username_normalized, avatar_filename)
+       VALUES ($1, $2, $3, 'admin', $4, $5, 'default.png')
        ON CONFLICT (email) DO UPDATE SET password_hash = EXCLUDED.password_hash
        RETURNING *`,
-      ['admin@shkolla7marsi.edu.al', passwordHash, 'Administratori']
+      [adminEmail, passwordHash, 'Administratori', adminUsername, adminUsername.toLowerCase()]
     );
+
+    // Ensure admin has a uuid (backfill if migration ran after initial seed)
+    if (!adminResult.rows[0].uuid) {
+      await client.query(
+        `UPDATE users SET uuid = gen_random_uuid() WHERE id = $1 AND uuid IS NULL`,
+        [adminResult.rows[0].id]
+      );
+    }
 
     for (const word of words) {
       const wordResult = await client.query(
