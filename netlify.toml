@@ -1,0 +1,11 @@
+# Netlify build for Fjalingo frontend (monorepo with backend in ./backend)
+[build]
+  base    = "frontend"
+  command = "npm run build"
+  publish = "dist"
+
+# SPA: serve index.html for client-side routes
+[[redirects]]
+  from = "/*"
+  to   = "/index.html"
+  status = 200

@@ -1,7 +1,140 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* ── Base ── */
 body {
-  @apply bg-light text-dark font-sans;
+  @apply bg-white dark:bg-dark-bg text-body dark:text-dark-text font-sans antialiased;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* ── Typography ── */
+.font-display {
+  font-family: 'Nunito', system-ui, sans-serif;
+  font-weight: 900;
+}
+
+/* ── Buttons ── */
+.btn-primary {
+  @apply bg-fjalingo-green text-white font-bold py-3 px-8 rounded-xl
+         shadow-button transition-all duration-100 ease-out
+         hover:bg-fjalingo-green-dark hover:-translate-y-0.5 hover:shadow-button-hover
+         active:translate-y-0.5 active:shadow-none;
+}
+
+.btn-secondary {
+  @apply bg-fjalingo-blue text-white font-bold py-3 px-8 rounded-xl
+         shadow-button transition-all duration-100 ease-out
+         hover:brightness-110 hover:-translate-y-0.5 hover:shadow-button-hover
+         active:translate-y-0.5 active:shadow-none;
+}
+
+.btn-outline {
+  @apply bg-white dark:bg-dark-card text-heading dark:text-dark-text font-bold py-3 px-8 rounded-xl
+         border-2 border-border dark:border-dark-border transition-all duration-100 ease-out
+         hover:-translate-y-0.5 hover:shadow-card
+         active:translate-y-0.5;
+}
+
+/* ── Cards ── */
+.card {
+  @apply bg-white dark:bg-dark-card border-2 border-border dark:border-dark-border
+         rounded-2xl p-6 shadow-card transition-all duration-300 ease-out;
+}
+
+.card-hover:hover {
+  @apply -translate-y-1 shadow-card-hover;
+}
+
+/* ── Inputs ── */
+.input-field {
+  @apply w-full border-2 border-border dark:border-dark-border bg-white dark:bg-dark-card
+         rounded-xl px-4 py-3 text-heading dark:text-dark-text
+         placeholder:text-muted dark:placeholder:text-dark-muted
+         focus:outline-none focus:border-fjalingo-blue focus:ring-2 focus:ring-fjalingo-blue/20
+         transition-all duration-200;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 600;
+}
+
+/* ── Badges ── */
+.badge {
+  @apply inline-flex items-center px-3 py-1 rounded-pill text-xs font-bold;
+}
+
+.badge-green {
+  @apply bg-fjalingo-green/15 text-fjalingo-green;
+}
+
+.badge-blue {
+  @apply bg-fjalingo-blue/15 text-fjalingo-blue;
+}
+
+.badge-purple {
+  @apply bg-fjalingo-purple/15 text-fjalingo-purple;
+}
+
+.badge-yellow {
+  @apply bg-fjalingo-yellow/15 text-fjalingo-yellow dark:text-fjalingo-yellow;
+}
+
+.badge-red {
+  @apply bg-fjalingo-red/15 text-fjalingo-red;
+}
+
+.badge-orange {
+  @apply bg-fjalingo-orange/15 text-fjalingo-orange;
+}
+
+/* ── Progress Bar ── */
+.progress-bar {
+  @apply h-4 rounded-pill bg-border dark:bg-dark-border overflow-hidden;
+}
+
+.progress-bar-fill {
+  @apply h-full rounded-pill transition-all duration-700 ease-out;
+  background: linear-gradient(90deg, #58CC02, #FFC800);
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-border dark:bg-dark-border rounded-pill;
+}
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-muted;
+}
+
+/* ── Selection ── */
+::selection {
+  @apply bg-fjalingo-green/20 text-heading;
+}
+
+/* ── Animated background blobs ── */
+@keyframes blobFloat1 {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(40px, 20px) scale(1.05); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+@keyframes blobFloat2 {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-30px, 30px) scale(1.04); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+@keyframes blobFloat3 {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(20px, -25px) scale(1.03); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+@keyframes blobFloat4 {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-20px, -15px) scale(1.04); }
+  100% { transform: translate(0, 0) scale(1); }
 }

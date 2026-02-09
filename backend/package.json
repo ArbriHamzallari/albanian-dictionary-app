@@ -1,14 +1,15 @@
 {
-  "name": "shkolla-7-marsi-backend",
+  "name": "fjalingo-backend",
   "version": "1.0.0",
-  "description": "API for Shkolla 7 Marsi Albanian Dictionary",
+  "description": "API for Fjalingo - Albanian Dictionary",
   "main": "server.js",
   "type": "commonjs",
   "scripts": {
     "dev": "nodemon server.js",
     "start": "node server.js",
     "migrate": "node database/migrate.js",
-    "seed": "node database/seed.js"
+    "seed": "node database/seed.js",
+    "smoke-test": "node scripts/smoke-test.js"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",

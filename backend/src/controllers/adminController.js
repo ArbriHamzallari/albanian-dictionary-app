@@ -189,10 +189,51 @@ const getTopSearches = async (req, res, next) => {
   }
 };
 
+const getAllWords = async (req, res, next) => {
+  try {
+    const search = req.query.q || '';
+    let query;
+    let params;
+
+    if (search) {
+      query = `SELECT w.*, 
+               (SELECT json_agg(json_build_object('id', d.id, 'definition_text', d.definition_text, 'example_sentence', d.example_sentence, 'definition_order', d.definition_order))
+                FROM definitions d WHERE d.word_id = w.id) as definitions,
+               (SELECT json_agg(json_build_object('id', c.id, 'conjugation_type', c.conjugation_type, 'conjugation_text', c.conjugation_text))
+                FROM conjugations c WHERE c.word_id = w.id) as conjugations
+               FROM words w
+               WHERE w.borrowed_word ILIKE $1 OR w.correct_albanian ILIKE $1
+               ORDER BY w.borrowed_word ASC`;
+      params = [`%${search}%`];
+    } else {
+      query = `SELECT w.*,
+               (SELECT json_agg(json_build_object('id', d.id, 'definition_text', d.definition_text, 'example_sentence', d.example_sentence, 'definition_order', d.definition_order))
+                FROM definitions d WHERE d.word_id = w.id) as definitions,
+               (SELECT json_agg(json_build_object('id', c.id, 'conjugation_type', c.conjugation_type, 'conjugation_text', c.conjugation_text))
+                FROM conjugations c WHERE c.word_id = w.id) as conjugations
+               FROM words w
+               ORDER BY w.borrowed_word ASC`;
+      params = [];
+    }
+
+    const result = await pool.query(query, params);
+    const words = result.rows.map(w => ({
+      ...w,
+      definitions: w.definitions || [],
+      conjugations: w.conjugations || [],
+    }));
+
+    return res.json({ words, total: words.length });
+  } catch (error) {
+    return next(error);
+  }
+};
+
 module.exports = {
   createWord,
   updateWord,
   deleteWord,
   setWordOfDay,
   getTopSearches,
+  getAllWords,
 };

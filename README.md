@@ -1,27 +1,34 @@
-# Shkolla 7 Marsi - Fjalor Shqip
+# Fjalingo 🦅
 
-Platformë edukative për Shkollën 7 Marsi në Tiranë që ndihmon nxënësit dhe mësuesit të gjejnë fjalën e saktë shqipe për fjalët e huazuara. Projekti përfshin backend në Node.js/Express, frontend në React/Vite dhe bazë të dhënash PostgreSQL.
+Mëso shqipen autentike, argëtohu ndërkohë! Kthe fjalët e huazuara në shqipe të pastër.
 
-## Përshkrimi i Projektit
+Fjalingo është platformë e gamifikuar (stil Duolingo) për të gjetur fjalën e saktë shqipe për fjalët e huazuara. Projekti përfshin backend në Node.js/Express, frontend në React/Vite me Tailwind CSS dhe bazë të dhënash PostgreSQL.
 
-Fjalori synon të forcojë përdorimin e shqipes së pastër duke ofruar:
-- Kërkim të shpejtë për fjalë të huazuara dhe zëvendësime shqip.
-- Faqe të detajuara me përkufizime dhe zgjedhime për foljet.
-- Fjala e Ditës për mësim të përditshëm.
-- Formë për propozime të reja nga publiku.
-- Panel administrimi për menaxhim të fjalëve dhe propozimeve.
+## Veçoritë
+
+- Kërkim i shpejtë për fjalë të huazuara dhe zëvendësime shqip
+- Fjala e Ditës me sfidë ditore
+- Kuiz interaktiv me pikë dhe arritje
+- Profil përdoruesi me seria, nivele dhe pikë
+- Sistem arritjesh (achievements) i gamifikuar
+- Dark mode
+- Formë për propozime të reja nga publiku
+- Panel administrimi për menaxhim të fjalëve dhe propozimeve
+- Dizajn i frymëzuar nga Duolingo: lojëtar, miqësor, argëtues
 
 ## Parakushte
+
 - Node.js 18+
 - PostgreSQL 14+
 
 ## Instalimi
 
 ### 1) Konfigurimi i environment-it
+
 Krijoni skedarin `.env` në `backend/` bazuar në `.env.example`:
 
 ```
-DATABASE_URL=postgresql://postgres:admin@localhost:5432/shkolla_dictionary
+DATABASE_URL=postgresql://postgres:admin@localhost:5432/fjalingo_dictionary
 JWT_SECRET=vendosni-nje-secret-te-forte
 PORT=5000
 NODE_ENV=development
@@ -55,6 +62,8 @@ cd backend
 npm run migrate
 ```
 
+Kjo do ekzekutojë `001_init.sql` (tabela bazë) dhe `002_user_profiles.sql` (profile, seria, arritje).
+
 ### 4) Mbushja e të dhënave fillestare (seed)
 
 ```
@@ -76,12 +85,9 @@ cd frontend
 npm run dev
 ```
 
-## Kredencialet e Adminit (fillestare)
+## Admin (zhvillim lokal)
 
-- **Email:** `admin@shkolla7marsi.edu.al`
-- **Fjalëkalimi:** `Fjalor123!`
-
-Ndryshoni fjalëkalimin pas konfigurimit fillestar.
+Për zhvillim lokal, seed krijon një llogari admin me kredenciale të paracaktuara (shiko `backend/.env.example`). **Në production vendosni vetëm `ADMIN_EMAIL` dhe `ADMIN_PASSWORD` në backend/.env dhe mos përdorni kurrë kredenciale të paracaktuara.** Shiko [DEPLOYMENT.md](DEPLOYMENT.md) për hapat e deploy-it.
 
 ## Dokumentimi i API-së
 
@@ -89,32 +95,6 @@ Ndryshoni fjalëkalimin pas konfigurimit fillestar.
 
 #### `GET /api/words/search?q={query}`
 Kërkim i fjalëve sipas fjalës së huazuar ose fjalës shqipe.
-
-**Shembull përgjigje:**
-```
-{
-  "results": [
-    {
-      "id": 1,
-      "borrowed_word": "investigoj",
-      "correct_albanian": "hetoj",
-      "category": "Folje",
-      "definitions": [
-        {
-          "definition_text": "Të bësh hetime...",
-          "example_sentence": "Policia po heton rastin"
-        }
-      ],
-      "conjugations": [
-        {
-          "conjugation_type": "E tashmja",
-          "conjugation_text": "hetoj, heton..."
-        }
-      ]
-    }
-  ]
-}
-```
 
 #### `GET /api/words/:id`
 Kthen të dhënat e plota për një fjalë.
@@ -131,16 +111,28 @@ Kthen 10 fjalët më të kërkuara.
 #### `POST /api/suggestions`
 Dërgon një propozim për fjalë të re.
 
-**Body:**
-```
-{
-  "borrowed_word": "monitoroj",
-  "suggested_albanian": "mbikëqyr",
-  "suggested_definition": "Të vëzhgosh ose kontrollosh",
-  "submitter_name": "Ardit",
-  "submitter_email": "ardit@example.com"
-}
-```
+### Endpoints të profilit
+
+#### `POST /api/profile`
+Krijon ose merr profilin e përdoruesit (body: `{ userId }`).
+
+#### `GET /api/profile/:userId`
+Kthen profilin e përdoruesit me pikë, seria, arritje.
+
+#### `POST /api/profile/:userId/points`
+Jep pikë përdoruesit (body: `{ points }`).
+
+#### `GET /api/profile/:userId/streak`
+Kthen serinë e përdoruesit.
+
+#### `POST /api/profile/:userId/streak`
+Përditëson serinë e përdoruesit.
+
+#### `GET /api/profile/meta/achievements`
+Liston të gjitha arritjet e mundshme.
+
+#### `POST /api/profile/meta/achievements/unlock`
+Shkyç një arritje (body: `{ userId, achievementId }`).
 
 ### Endpoints të mbrojtura (Admin)
 
@@ -148,6 +140,9 @@ Dërgon një propozim për fjalë të re.
 
 #### `POST /api/auth/login`
 Autentifikim i adminit.
+
+#### `GET /api/admin/words`
+Liston të gjitha fjalët (admin).
 
 #### `POST /api/admin/words`
 Shton fjalë të re (admin).
@@ -164,26 +159,23 @@ Vendos fjalën e ditës.
 #### `GET /api/admin/analytics/top-searches`
 Kthen kërkimet më të shpeshta.
 
-#### `GET /api/suggestions`
-Liston të gjitha propozimet.
+## Teknologjitë
 
-#### `PUT /api/suggestions/:id/approve`
-Aprovon një propozim.
+- **Frontend:** React 18, Vite, Tailwind CSS, Framer Motion, Lucide React, Canvas Confetti
+- **Backend:** Node.js, Express, PostgreSQL, JWT, Bcrypt
+- **Font:** Nunito (Google Fonts)
+- **Dizajni:** Stil Duolingo - lojëtar, me ngjyra, i gamifikuar
 
-#### `PUT /api/suggestions/:id/reject`
-Refuzon një propozim.
+## Deploy
 
-## Udhëzime për Deploy
+Hapat e plotë për deploy falas (Netlify + backend + databazë) janë në **[DEPLOYMENT.md](DEPLOYMENT.md)**.
 
-### Backend (Render/Railway)
-- Vendosni variablat e mjedisit sipas `.env`.
-- Ekzekutoni `npm run migrate` dhe `npm run seed` pas deploy.
+---
 
-### Frontend (Vercel/Netlify)
-- Vendosni variablin `VITE_API_URL` me URL-në e backend-it.
-- Ndërtoni projektin me `npm run build`.
+## Social
 
-## Shënime dhe supozime
-- Kërkimi përdor `pg_trgm` për sugjerime më të mira (duhet të jetë aktiv në PostgreSQL).
-- Për fjalë të reja, admini duhet të menaxhojë kategoritë dhe zgjedhimet manualisht.
-- Nëse mungon fjala e ditës, faqja shfaq mesazh informues.
+- Instagram: https://www.instagram.com/codrix.al/
+- Website: https://codrixwebsite.vercel.app/
+- LinkedIn: https://www.linkedin.com/company/codrix-solutions/
+
+hello@fjalingo.al
