@@ -9,7 +9,9 @@ function resolveAvatarsDir() {
     if (fs.existsSync(dir)) return dir;
   }
 
-  // 2. Common relative locations (backend cwd or project root)
+  // 2. Common relative locations (backend cwd 
+  // 
+  // or project root)
   const candidates = [
     path.resolve(process.cwd(), 'frontend', 'public', 'avatars'),
     path.resolve(process.cwd(), '..', 'frontend', 'public', 'avatars'),
