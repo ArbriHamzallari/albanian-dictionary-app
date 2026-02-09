@@ -8,12 +8,14 @@ if (typeof connectionString !== 'string' || !connectionString.trim()) {
 }
 
 const parsed = new URL(connectionString.trim().replace(/^postgres(ql)?:\/\//i, 'http://'));
+const isLocal = parsed.hostname === 'localhost' || parsed.hostname === '127.0.0.1';
 const config = {
   host: parsed.hostname,
   port: parsed.port ? parseInt(parsed.port, 10) : 5432,
   database: (parsed.pathname || '/').slice(1) || undefined,
   user: parsed.username || undefined,
   password: parsed.password != null && parsed.password !== '' ? parsed.password : '',
+  ...(isLocal ? {} : { ssl: { rejectUnauthorized: false } }),
 };
 
 const pool = new Pool(config);
