@@ -22,25 +22,40 @@ const notificationsRoutes = require('./src/routes/notifications');
 const app = express();
 
 const isProduction = process.env.NODE_ENV === 'production';
-const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
-const frontendUrlAlt = process.env.FRONTEND_URL_ALT || 'http://localhost:5174';
 const normalizeOrigin = (origin) => origin.replace(/\/+$/, '');
-const corsOrigins = [frontendUrl, frontendUrlAlt]
-  .filter(Boolean)
-  .map((origin) => normalizeOrigin(origin));
-if (process.env.FRONTEND_URL_EXTRA) {
-  corsOrigins.push(
-    ...process.env.FRONTEND_URL_EXTRA
-      .split(',')
-      .map((s) => s.trim())
-      .filter(Boolean)
-      .map((origin) => normalizeOrigin(origin))
-  );
+
+function buildCorsOrigins() {
+  const origins = [];
+  if (isProduction) {
+    if (process.env.FRONTEND_URL?.trim()) {
+      origins.push(normalizeOrigin(process.env.FRONTEND_URL.trim()));
+    }
+    if (process.env.FRONTEND_URL_ALT?.trim()) {
+      origins.push(normalizeOrigin(process.env.FRONTEND_URL_ALT.trim()));
+    }
+  } else {
+    origins.push(
+      normalizeOrigin(process.env.FRONTEND_URL || 'http://localhost:5173'),
+      normalizeOrigin(process.env.FRONTEND_URL_ALT || 'http://localhost:5174'),
+    );
+  }
+  if (process.env.FRONTEND_URL_EXTRA) {
+    origins.push(
+      ...process.env.FRONTEND_URL_EXTRA
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean)
+        .map((origin) => normalizeOrigin(origin))
+    );
+  }
+  return [...new Set(origins.filter(Boolean))];
 }
+
+const corsOrigins = buildCorsOrigins();
 
 app.use(helmet());
 app.use(cors({
-  origin: corsOrigins.length ? corsOrigins : true,
+  origin: corsOrigins,
   credentials: true,
 }));
 app.use(express.json({ limit: '1mb' }));
@@ -92,6 +107,12 @@ const port = process.env.PORT || 5000;
 if (isProduction) {
   if (!process.env.DATABASE_URL || !process.env.JWT_SECRET) {
     console.error('Production requires DATABASE_URL and JWT_SECRET in backend/.env');
+    process.exit(1);
+  }
+  if (!corsOrigins.length) {
+    console.error(
+      'Production requires at least one CORS origin. Set FRONTEND_URL (and optionally FRONTEND_URL_ALT or FRONTEND_URL_EXTRA).'
+    );
     process.exit(1);
   }
 } else {
