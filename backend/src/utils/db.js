@@ -1,4 +1,14 @@
+const fs = require('fs');
 const { Pool } = require('pg');
+
+function buildSslConfig() {
+  const ssl = { rejectUnauthorized: true };
+  const caPath = process.env.PGSSLROOTCERT?.trim();
+  if (caPath) {
+    ssl.ca = fs.readFileSync(caPath, 'utf8');
+  }
+  return ssl;
+}
 
 const pgHost = process.env.PGHOST;
 const pgDatabase = process.env.PGDATABASE;
@@ -28,18 +38,22 @@ if (hasPgConfig) {
     database: typeof pgDatabase === 'string' && pgDatabase.trim() ? pgDatabase.trim() : undefined,
     user: typeof pgUser === 'string' && pgUser.trim() ? pgUser.trim() : undefined,
     password: pgPassword != null && pgPassword !== '' ? pgPassword : '',
-    ...(sslEnabled ? { ssl: { rejectUnauthorized: false } } : {}),
+    ...(sslEnabled ? { ssl: buildSslConfig() } : {}),
   };
 } else {
   const parsed = new URL(connectionString.trim().replace(/^postgres(ql)?:\/\//i, 'http://'));
   const isLocal = parsed.hostname === 'localhost' || parsed.hostname === '127.0.0.1';
+  const sslmode = parsed.searchParams.get('sslmode')?.toLowerCase();
+  const sslDisabled = sslmode === 'disable';
+  const sslRequired = sslmode === 'require' || sslmode === 'verify-ca' || sslmode === 'verify-full';
+  const useSsl = !sslDisabled && (!isLocal || sslRequired);
   config = {
     host: parsed.hostname,
     port: parsed.port ? parseInt(parsed.port, 10) : 5432,
     database: (parsed.pathname || '/').slice(1) || undefined,
     user: parsed.username || undefined,
     password: parsed.password != null && parsed.password !== '' ? parsed.password : '',
-    ...(isLocal ? {} : { ssl: { rejectUnauthorized: false } }),
+    ...(useSsl ? { ssl: buildSslConfig() } : {}),
   };
 }
 
