@@ -7,3 +7,5 @@ frontend/.env
 .DS_Store
 dist
 *.log
+*.dump
+local_backup.dump
