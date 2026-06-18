@@ -5,12 +5,6 @@ const {
   verifyPaddleWebhookSignature,
 } = require('../utils/paddle');
 
-const SUBSCRIPTION_EVENTS = new Set([
-  'subscription.created',
-  'subscription.updated',
-  'subscription.canceled',
-]);
-
 function checkoutSigningSecret() {
   return process.env.PADDLE_CHECKOUT_SECRET || process.env.JWT_SECRET;
 }
@@ -155,7 +149,7 @@ async function paddleWebhook(req, res, next) {
         return res.json({ received: true, deduplicated: true });
       }
 
-      if (SUBSCRIPTION_EVENTS.has(eventType)) {
+      if (eventType?.startsWith('subscription.')) {
         await upsertEntitlementFromSubscription(client, eventType, event.data, occurredAt);
       }
 
