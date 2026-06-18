@@ -1,5 +1,27 @@
 const pool = require('../utils/db');
 
+async function getUserSafetyProfile(userUuid) {
+  const result = await pool.query(
+    `SELECT uuid, username, avatar_filename, is_minor, profile_private
+     FROM users
+     WHERE uuid = $1::uuid AND role = 'user'`,
+    [userUuid]
+  );
+  return result.rows[0] || null;
+}
+
+async function usersHaveBlock(firstUserUuid, secondUserUuid) {
+  const result = await pool.query(
+    `SELECT 1
+     FROM user_blocks
+     WHERE (blocker_id = $1::uuid AND blocked_id = $2::uuid)
+        OR (blocker_id = $2::uuid AND blocked_id = $1::uuid)
+     LIMIT 1`,
+    [firstUserUuid, secondUserUuid]
+  );
+  return result.rows.length > 0;
+}
+
 const sendRequest = async (req, res, next) => {
   try {
     const requesterId = req.user.uuid;
@@ -9,8 +31,13 @@ const sendRequest = async (req, res, next) => {
       return res.status(400).json({ message: 'Emri i përdoruesit mungon.' });
     }
 
+    const requester = await getUserSafetyProfile(requesterId);
+    if (!requester) {
+      return res.status(404).json({ message: 'Përdoruesi nuk u gjet.' });
+    }
+
     const recipientResult = await pool.query(
-      `SELECT uuid, username, avatar_filename
+      `SELECT uuid, username, avatar_filename, is_minor, profile_private
        FROM users
        WHERE username_normalized = $1 AND role = 'user'`,
       [recipientUsername.trim().toLowerCase()]
@@ -23,6 +50,18 @@ const sendRequest = async (req, res, next) => {
     const recipient = recipientResult.rows[0];
     if (recipient.uuid === requesterId) {
       return res.status(400).json({ message: 'Nuk mund të dërgoni kërkesë vetes.' });
+    }
+
+    if (requester.is_minor !== recipient.is_minor) {
+      return res.status(403).json({ message: 'Miqësitë midis të rriturve dhe fëmijëve nuk lejohen.' });
+    }
+
+    if (recipient.profile_private && !requester.is_minor) {
+      return res.status(404).json({ message: 'Përdoruesi nuk u gjet.' });
+    }
+
+    if (await usersHaveBlock(requesterId, recipient.uuid)) {
+      return res.status(403).json({ message: 'Nuk mund të dërgoni kërkesë për këtë përdorues.' });
     }
 
     const existing = await pool.query(
@@ -81,10 +120,16 @@ const acceptRequest = async (req, res, next) => {
     }
 
     const result = await pool.query(
-      `UPDATE friend_requests
+      `UPDATE friend_requests fr
        SET status = 'accepted', responded_at = NOW()
-       WHERE id = $1 AND recipient_id = $2 AND status = 'pending'
-       RETURNING id, requester_id, recipient_id, status, responded_at`,
+       FROM users requester, users recipient
+       WHERE fr.id = $1
+         AND fr.recipient_id = $2
+         AND fr.status = 'pending'
+         AND requester.uuid = fr.requester_id
+         AND recipient.uuid = fr.recipient_id
+         AND requester.is_minor = recipient.is_minor
+       RETURNING fr.id, fr.requester_id, fr.recipient_id, fr.status, fr.responded_at`,
       [requestId, userUuid]
     );
 

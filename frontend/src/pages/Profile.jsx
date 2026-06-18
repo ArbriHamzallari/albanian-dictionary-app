@@ -15,6 +15,7 @@ const Profile = () => {
   const [username, setUsername] = useState('');
   const [bio, setBio] = useState('');
   const [favoriteWord, setFavoriteWord] = useState('');
+  const [leaderboardOptOut, setLeaderboardOptOut] = useState(false);
   const [avatars, setAvatars] = useState([]);
   const [selectedAvatar, setSelectedAvatar] = useState('');
   const [error, setError] = useState('');
@@ -35,6 +36,7 @@ const Profile = () => {
     setUsername(user.profile.username || '');
     setBio(user.profile.bio || '');
     setFavoriteWord(user.profile.favorite_word || '');
+    setLeaderboardOptOut(Boolean(user.profile.leaderboard_opt_out));
     setSelectedAvatar(user.profile.avatar_filename || 'default.png');
   }, [user]);
 
@@ -115,7 +117,12 @@ const Profile = () => {
     setError('');
     setSaving(true);
     try {
-      const res = await api.put('/profile', { username, bio, favorite_word: favoriteWord });
+      const res = await api.put('/profile', {
+        username,
+        bio,
+        favorite_word: favoriteWord,
+        leaderboard_opt_out: leaderboardOptOut,
+      });
       updateUserProfile(res.data?.profile);
       flash('Profili u përditësua!');
       loadUser();
@@ -218,6 +225,7 @@ const Profile = () => {
             className="input-field"
             minLength={3}
             maxLength={30}
+            pattern="[A-Za-z0-9_-]+"
           />
         </div>
         <div>
@@ -242,6 +250,15 @@ const Profile = () => {
             placeholder="p.sh. shqiponjë"
           />
         </div>
+        <label className="flex items-start gap-3 text-sm font-semibold text-muted dark:text-dark-muted">
+          <input
+            type="checkbox"
+            checked={leaderboardOptOut}
+            onChange={(e) => setLeaderboardOptOut(e.target.checked)}
+            className="mt-1"
+          />
+          Mos më shfaq në renditjen publike botërore.
+        </label>
 
         <button onClick={saveProfile} disabled={saving} className="btn-primary w-full inline-flex items-center justify-center gap-2">
           <Save className="w-4 h-4" />

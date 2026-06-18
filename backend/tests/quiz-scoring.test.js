@@ -43,13 +43,15 @@ after(async () => {
 });
 
 test('rejects legacy forged score payload', async () => {
-  const suffix = `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+  const suffix = Math.random().toString(36).slice(2, 10).replace(/\d/g, 'a');
   const register = await api('/api/auth/register', {
     method: 'POST',
     body: {
       username: `quiz_${suffix}`,
       email: `quiz_${suffix}@example.com`,
       password: 'testpass123',
+      age: 18,
+      country_code: 'US',
     },
   });
   assert.equal(register.status, 201);
@@ -69,13 +71,15 @@ test('rejects legacy forged score payload', async () => {
 });
 
 test('rejects answers that do not match the served quiz session', async () => {
-  const suffix = `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+  const suffix = Math.random().toString(36).slice(2, 10).replace(/\d/g, 'b');
   const register = await api('/api/auth/register', {
     method: 'POST',
     body: {
       username: `quiz2_${suffix}`,
       email: `quiz2_${suffix}@example.com`,
       password: 'testpass123',
+      age: 18,
+      country_code: 'US',
     },
   });
   assert.equal(register.status, 201);
@@ -106,13 +110,15 @@ test('rejects answers that do not match the served quiz session', async () => {
 });
 
 test('grades server-side and awards zero xp for all-wrong answers', async () => {
-  const suffix = `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+  const suffix = Math.random().toString(36).slice(2, 10).replace(/\d/g, 'c');
   const register = await api('/api/auth/register', {
     method: 'POST',
     body: {
       username: `quiz3_${suffix}`,
       email: `quiz3_${suffix}@example.com`,
       password: 'testpass123',
+      age: 18,
+      country_code: 'US',
     },
   });
   assert.equal(register.status, 201);

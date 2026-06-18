@@ -1,11 +1,22 @@
 const pool = require('../utils/db');
 const { suggestionSchema } = require('../utils/validation');
+const { validateUserTexts } = require('../utils/childSafety');
 
 const submitSuggestion = async (req, res, next) => {
   try {
     const { error, value } = suggestionSchema.validate(req.body);
     if (error) {
       return res.status(400).json({ message: 'Të dhënat e propozimit janë të pavlefshme.' });
+    }
+
+    const textSafety = validateUserTexts({
+      borrowed_word: value.borrowed_word,
+      suggested_albanian: value.suggested_albanian,
+      suggested_definition: value.suggested_definition,
+      submitter_name: value.submitter_name,
+    });
+    if (!textSafety.ok) {
+      return res.status(400).json({ message: 'Propozimi përmban tekst të palejuar ose të dhëna personale.' });
     }
 
     const result = await pool.query(

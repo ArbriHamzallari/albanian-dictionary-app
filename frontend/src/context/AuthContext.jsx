@@ -65,8 +65,15 @@ export function AuthProvider({ children }) {
     return { ...res.data, role: res.data.role || res.data.profile?.role || 'user' };
   };
 
-  const register = async (username, email, password) => {
-    const res = await api.post('/auth/register', { username, email, password });
+  const register = async ({ username, email, password, age, countryCode, parentalConsentGiven }) => {
+    const res = await api.post('/auth/register', {
+      username,
+      email,
+      password,
+      age: Number(age),
+      country_code: countryCode,
+      parental_consent_given: parentalConsentGiven,
+    });
     setToken(res.data.token);
     if (res.data.profile) {
       setUser({
@@ -101,12 +108,15 @@ export function AuthProvider({ children }) {
     });
   };
 
-  const guestUpgrade = async (username, email, password) => {
+  const guestUpgrade = async ({ username, email, password, age, countryCode, parentalConsentGiven }) => {
     const guestProgress = getGuestProgress();
     const res = await api.post('/auth/guest-upgrade', {
       username,
       email,
       password,
+      age: Number(age),
+      country_code: countryCode,
+      parental_consent_given: parentalConsentGiven,
       guestProgress,
     });
     clearGuestProgress();

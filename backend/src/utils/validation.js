@@ -48,15 +48,21 @@ const wordOfDaySchema = Joi.object({
 });
 
 const registerSchema = Joi.object({
-  username: Joi.string().trim().min(3).max(30).required(),
+  username: Joi.string().trim().pattern(/^[A-Za-z0-9_-]+$/).min(3).max(30).required(),
   email: Joi.string().email().max(255).required(),
   password: Joi.string().min(6).max(255).required(),
+  age: Joi.number().integer().min(1).max(120).required(),
+  country_code: Joi.string().trim().uppercase().length(2).required(),
+  parental_consent_given: Joi.boolean().default(false),
 });
 
 const guestUpgradeSchema = Joi.object({
-  username: Joi.string().trim().min(3).max(30).required(),
+  username: Joi.string().trim().pattern(/^[A-Za-z0-9_-]+$/).min(3).max(30).required(),
   email: Joi.string().email().max(255).required(),
   password: Joi.string().min(6).max(255).required(),
+  age: Joi.number().integer().min(1).max(120).required(),
+  country_code: Joi.string().trim().uppercase().length(2).required(),
+  parental_consent_given: Joi.boolean().default(false),
   guestProgress: Joi.object({
     xp: Joi.number().integer().min(0).max(500000).default(0),
     total_quizzes: Joi.number().integer().min(0).max(10000).default(0),
@@ -66,9 +72,10 @@ const guestUpgradeSchema = Joi.object({
 });
 
 const profileUpdateSchema = Joi.object({
-  username: Joi.string().trim().min(3).max(30).optional(),
+  username: Joi.string().trim().pattern(/^[A-Za-z0-9_-]+$/).min(3).max(30).optional(),
   bio: Joi.string().trim().max(500).allow('', null).optional(),
   favorite_word: Joi.string().trim().max(255).allow('', null).optional(),
+  leaderboard_opt_out: Joi.boolean().optional(),
 });
 
 const QUIZ_QUESTIONS_PER_SESSION = 10;

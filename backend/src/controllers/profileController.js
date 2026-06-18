@@ -2,6 +2,27 @@ const pool = require('../utils/db');
 const { profileUpdateSchema } = require('../utils/validation');
 const { isValidAvatar } = require('../utils/avatars');
 const { USER_RANK_SQL } = require('../utils/rankSql');
+const { validateUserTexts } = require('../utils/childSafety');
+
+async function canViewPrivateProfile(viewerUuid, profileUuid) {
+  if (!viewerUuid) {
+    return false;
+  }
+  if (viewerUuid === profileUuid) {
+    return true;
+  }
+
+  const result = await pool.query(
+    `SELECT 1
+     FROM friend_requests
+     WHERE status = 'accepted'
+       AND ((requester_id = $1::uuid AND recipient_id = $2::uuid)
+         OR (requester_id = $2::uuid AND recipient_id = $1::uuid))
+     LIMIT 1`,
+    [viewerUuid, profileUuid]
+  );
+  return result.rows.length > 0;
+}
 
 // ── PUT /profile ─────────────────────────────────────────────
 const updateProfile = async (req, res, next) => {
@@ -9,6 +30,15 @@ const updateProfile = async (req, res, next) => {
     const { error, value } = profileUpdateSchema.validate(req.body);
     if (error) {
       return res.status(400).json({ message: 'Të dhënat janë të pavlefshme.' });
+    }
+
+    const textSafety = validateUserTexts({
+      username: value.username,
+      bio: value.bio,
+      favorite_word: value.favorite_word,
+    });
+    if (!textSafety.ok) {
+      return res.status(400).json({ message: 'Profili përmban tekst të palejuar ose të dhëna personale.' });
     }
 
     const userUuid = req.user.uuid;
@@ -32,6 +62,11 @@ const updateProfile = async (req, res, next) => {
       params.push(value.favorite_word || null);
       idx += 1;
     }
+    if (value.leaderboard_opt_out !== undefined) {
+      sets.push(`leaderboard_opt_out = $${idx}`);
+      params.push(value.leaderboard_opt_out);
+      idx += 1;
+    }
 
     if (!sets.length) {
       return res.status(400).json({ message: 'Asnjë fushë për përditësim.' });
@@ -40,7 +75,7 @@ const updateProfile = async (req, res, next) => {
     sets.push(`updated_at = NOW()`);
     params.push(userUuid);
 
-    const query = `UPDATE users SET ${sets.join(', ')} WHERE uuid = $${idx} RETURNING uuid, username, username_normalized, email, full_name, avatar_filename, bio, favorite_word, role, created_at`;
+    const query = `UPDATE users SET ${sets.join(', ')} WHERE uuid = $${idx} RETURNING uuid, username, username_normalized, email, full_name, avatar_filename, bio, favorite_word, role, age, country_code, is_minor, profile_private, leaderboard_opt_out, leaderboard_segment, created_at`;
 
     try {
       const result = await pool.query(query, params);
@@ -100,6 +135,7 @@ const getPublicProfile = async (req, res, next) => {
          u.bio,
          u.favorite_word,
          u.created_at,
+         u.profile_private,
          s.xp,
          s.level,
          s.streak,
@@ -116,6 +152,10 @@ const getPublicProfile = async (req, res, next) => {
     }
 
     const user = userResult.rows[0];
+    if (user.profile_private && !(await canViewPrivateProfile(req.user?.uuid, user.uuid))) {
+      return res.status(404).json({ message: 'Profile not found' });
+    }
+
     const stats = user.xp !== null ? {
       xp: user.xp,
       level: user.level,
