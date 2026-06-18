@@ -29,10 +29,6 @@ const DUMMY_USERS = {
 };
 
 async function getRequestedSegment(req) {
-  if (req.query.segment === 'kids' || req.query.segment === 'adults') {
-    return req.query.segment;
-  }
-
   if (!req.user?.uuid) {
     return 'adults';
   }
