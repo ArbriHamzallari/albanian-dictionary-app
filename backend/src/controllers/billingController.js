@@ -75,7 +75,7 @@ async function checkoutConfig(req, res, next) {
   }
 }
 
-async function upsertEntitlementFromSubscription(eventType, subscription) {
+async function upsertEntitlementFromSubscription(client, eventType, subscription, occurredAt) {
   const customData = customDataFromSubscription(subscription);
   const userUuid = customData.user_uuid || customData.userUuid;
   const signature = customData.checkout_signature || customData.checkoutSignature;
@@ -90,7 +90,7 @@ async function upsertEntitlementFromSubscription(eventType, subscription) {
     : (subscription.status || 'unknown');
   const currentPeriodEnd = currentPeriodEndFromSubscription(subscription);
 
-  await pool.query(
+  await client.query(
     `INSERT INTO entitlements (
        user_id,
        tier,
@@ -100,20 +100,22 @@ async function upsertEntitlementFromSubscription(eventType, subscription) {
        current_period_end,
        updated_at
      )
-     VALUES ($1::uuid, 'premium', $2, $3, $4, $5::timestamptz, now())
+     VALUES ($1::uuid, 'premium', $2, $3, $4, $5::timestamptz, $6::timestamptz)
      ON CONFLICT (user_id) DO UPDATE SET
        tier = EXCLUDED.tier,
        status = EXCLUDED.status,
        paddle_subscription_id = EXCLUDED.paddle_subscription_id,
        paddle_customer_id = EXCLUDED.paddle_customer_id,
        current_period_end = EXCLUDED.current_period_end,
-       updated_at = now()`,
+       updated_at = EXCLUDED.updated_at
+     WHERE EXCLUDED.updated_at > entitlements.updated_at`,
     [
       userUuid,
       status,
       subscription.id || null,
       subscription.customer_id || subscription.customerId || null,
       currentPeriodEnd,
+      occurredAt,
     ]
   );
 }
@@ -129,12 +131,42 @@ async function paddleWebhook(req, res, next) {
     }
 
     const event = JSON.parse(req.body.toString('utf8'));
+    const eventId = event.event_id || event.eventId;
     const eventType = event.event_type || event.eventType;
-    if (SUBSCRIPTION_EVENTS.has(eventType)) {
-      await upsertEntitlementFromSubscription(eventType, event.data);
+    const occurredAt = event.occurred_at || event.occurredAt;
+    if (!eventId || !occurredAt) {
+      return res.status(400).json({ message: 'Invalid Paddle webhook event.', code: 'INVALID_EVENT' });
     }
 
-    return res.json({ received: true });
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+
+      const inserted = await client.query(
+        `INSERT INTO processed_webhook_events (event_id, event_type, occurred_at)
+         VALUES ($1, $2, $3::timestamptz)
+         ON CONFLICT (event_id) DO NOTHING
+         RETURNING event_id`,
+        [eventId, eventType || 'unknown', occurredAt]
+      );
+
+      if (!inserted.rows.length) {
+        await client.query('COMMIT');
+        return res.json({ received: true, deduplicated: true });
+      }
+
+      if (SUBSCRIPTION_EVENTS.has(eventType)) {
+        await upsertEntitlementFromSubscription(client, eventType, event.data, occurredAt);
+      }
+
+      await client.query('COMMIT');
+      return res.json({ received: true });
+    } catch (err) {
+      await client.query('ROLLBACK');
+      throw err;
+    } finally {
+      client.release();
+    }
   } catch (err) {
     return next(err);
   }
