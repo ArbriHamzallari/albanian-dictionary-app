@@ -4,6 +4,7 @@ const pool = require('../utils/db');
 const { loginSchema, registerSchema, guestUpgradeSchema } = require('../utils/validation');
 const { USER_RANK_SQL } = require('../utils/rankSql');
 const { getEntitlement, entitlementIsPremium } = require('../middleware/entitlements');
+const { touchLastSeen } = require('../utils/presence');
 const {
   getLeaderboardSegmentForAge,
   isMinorAge,
@@ -216,8 +217,11 @@ const login = async (req, res, next) => {
       return res.status(503).json({ message: 'Serveri nuk është konfiguruar. Kontaktoni administratorin.' });
     }
 
-    // Update last_login
-    await pool.query('UPDATE users SET last_login = NOW() WHERE id = $1', [user.id]);
+    // Update last_login and presence
+    await pool.query(
+      'UPDATE users SET last_login = NOW(), last_seen = NOW() WHERE id = $1',
+      [user.id]
+    );
 
     const token = signToken(user);
 
@@ -400,4 +404,14 @@ const guestUpgrade = async (req, res, next) => {
   }
 };
 
-module.exports = { register, login, me, guestUpgrade };
+// ── POST /heartbeat ──────────────────────────────────────────
+const heartbeat = async (req, res, next) => {
+  try {
+    await touchLastSeen(req.user.uuid);
+    return res.json({ ok: true });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+module.exports = { register, login, me, guestUpgrade, heartbeat };

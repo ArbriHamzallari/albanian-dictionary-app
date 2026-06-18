@@ -48,6 +48,20 @@ export function AuthProvider({ children }) {
     loadUser();
   }, [loadUser, token]);
 
+  // Presence heartbeat for logged-in users (throttled server-side)
+  useEffect(() => {
+    const t = localStorage.getItem(TOKEN_KEY);
+    if (!t || !user?.profile) return;
+
+    const ping = () => {
+      api.post('/auth/heartbeat', null, { headers: { Authorization: `Bearer ${t}` } }).catch(() => {});
+    };
+
+    ping();
+    const interval = setInterval(ping, 120_000);
+    return () => clearInterval(interval);
+  }, [token, user?.profile]);
+
   // ── Actions ────────────────────────────────────────────────
   const login = async (email, password) => {
     const res = await api.post('/auth/login', { email, password });

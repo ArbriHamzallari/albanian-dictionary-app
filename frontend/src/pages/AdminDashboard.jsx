@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Pencil, Trash2, Search, X, ChevronDown, ChevronUp, Users, UserPlus, Activity, CalendarDays, CalendarRange, BarChart3, Target, Gamepad2, Flame, Trophy } from 'lucide-react';
+import { Plus, Pencil, Trash2, Search, X, ChevronDown, ChevronUp, Users, UserPlus, Activity, CalendarDays, CalendarRange, BarChart3, Target, Gamepad2, Flame, Trophy, Crown, Euro, Radio } from 'lucide-react';
 import api from '../utils/api.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import ErrorMessage from '../components/ErrorMessage.jsx';
@@ -257,7 +257,7 @@ const AdminDashboard = () => {
         <h3 className="text-sm font-black text-fjalingo-blue mb-5">📊 STATISTIKAT E PLATFORMËS</h3>
         {metricsLoading ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-            {Array.from({ length: 10 }).map((_, i) => (
+            {Array.from({ length: 13 }).map((_, i) => (
               <div key={i} className="bg-card dark:bg-dark-card rounded-2xl p-4 animate-pulse">
                 <div className="h-3 w-16 bg-border dark:bg-dark-border rounded mb-3" />
                 <div className="h-7 w-12 bg-border dark:bg-dark-border rounded" />
@@ -269,6 +269,7 @@ const AdminDashboard = () => {
             <MetricCard icon={Users} label="Përdorues" value={metrics.totalUsers} color="blue" />
             <MetricCard icon={UserPlus} label="Të Rinj Sot" value={metrics.newUsersToday} color="green" />
             <MetricCard icon={Activity} label="DAU" value={metrics.activeUsersToday} color="purple" />
+            <MetricCard icon={Radio} label="Online Tani" value={metrics.usersOnlineNow} color="green" />
             <MetricCard icon={CalendarDays} label="WAU" value={metrics.activeUsers7d} color="orange" />
             <MetricCard icon={CalendarRange} label="MAU" value={metrics.activeUsers30d} color="blue" />
             <MetricCard icon={BarChart3} label="Mbajtja %" value={`${metrics.retentionRate}%`} color="green" />
@@ -276,6 +277,9 @@ const AdminDashboard = () => {
             <MetricCard icon={Gamepad2} label="Kuiz/Përdorues" value={metrics.avgQuizzesPerUser} color="orange" />
             <MetricCard icon={Flame} label="Seria Top" value={metrics.topStreak} color="red" suffix="🔥" />
             <MetricCard icon={Trophy} label="Kuize Totale" value={metrics.totalQuizzesPlayed} color="blue" />
+            <MetricCard icon={Crown} label="Premium Aktiv" value={metrics.activeSubscribers} color="purple" />
+            <MetricCard icon={Crown} label="Premium Total" value={metrics.premiumTotal} color="orange" />
+            <MetricCard icon={Euro} label="Të Ardhura/vit" value={`${metrics.estimatedAnnualRevenue} ${metrics.revenueCurrency || 'EUR'}`} color="green" />
           </div>
         ) : (
           <p className="text-sm text-muted dark:text-dark-muted">Nuk mund të ngarkohen metrikat.</p>
