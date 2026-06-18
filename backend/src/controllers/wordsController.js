@@ -54,13 +54,17 @@ const searchWords = async (req, res, next) => {
         )
       );
 
-      await client.query(
-        'INSERT INTO search_logs (search_term, found, ip_address, user_id) VALUES ($1, $2, $3, $4)',
-        [query, response.length > 0, req.ip, req.user?.uuid || null]
-      );
-
       if (!response.length) {
         return res.status(404).json({ message: 'Nuk u gjetën rezultate.' });
+      }
+
+      try {
+        await client.query(
+          'INSERT INTO search_logs (search_term, found, ip_address, user_id) VALUES ($1, true, $2, $3)',
+          [query, req.ip, req.user?.uuid || null]
+        );
+      } catch (logError) {
+        console.error('[search_logs_insert_failed]', logError);
       }
 
       return res.json({ results: response });
