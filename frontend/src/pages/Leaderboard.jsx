@@ -70,7 +70,7 @@ const Leaderboard = () => {
               transition={{ delay: i * 0.05 }}
               className={`card flex items-center gap-4 py-4 px-5 ${
                 isMe ? 'border-fjalingo-green/40 bg-fjalingo-green/5' : ''
-              } ${entry.isDummy ? 'opacity-70' : ''}`}
+              }`}
             >
               {/* Rank */}
               <div className="w-10 text-center flex-shrink-0">
@@ -86,17 +86,10 @@ const Leaderboard = () => {
 
               {/* Info */}
               <div className="flex-1 min-w-0">
-                {entry.isDummy ? (
-                  <p className={`font-bold text-heading dark:text-dark-text truncate ${isMe ? 'text-fjalingo-green' : ''}`}>
-                    {entry.username}
-                    {isMe && <span className="text-xs ml-1 text-fjalingo-green">(ti)</span>}
-                  </p>
-                ) : (
-                  <p className={`font-bold text-heading dark:text-dark-text truncate ${isMe ? 'text-fjalingo-green' : ''}`}>
-                    {entry.username}
-                    {isMe && <span className="text-xs ml-1 text-fjalingo-green">(ti)</span>}
-                  </p>
-                )}
+                <p className={`font-bold text-heading dark:text-dark-text truncate ${isMe ? 'text-fjalingo-green' : ''}`}>
+                  {entry.username}
+                  {isMe && <span className="text-xs ml-1 text-fjalingo-green">(ti)</span>}
+                </p>
                 <p className="text-xs font-semibold text-muted dark:text-dark-muted">
                   Niveli {entry.level}
                 </p>
