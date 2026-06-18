@@ -10,6 +10,10 @@ function buildSslConfig() {
   return ssl;
 }
 
+function decodeUrlComponent(value) {
+  return value ? decodeURIComponent(value) : undefined;
+}
+
 const pgHost = process.env.PGHOST;
 const pgDatabase = process.env.PGDATABASE;
 const pgUser = process.env.PGUSER;
@@ -51,8 +55,8 @@ if (hasPgConfig) {
     host: parsed.hostname,
     port: parsed.port ? parseInt(parsed.port, 10) : 5432,
     database: (parsed.pathname || '/').slice(1) || undefined,
-    user: parsed.username || undefined,
-    password: parsed.password != null && parsed.password !== '' ? parsed.password : '',
+    user: decodeUrlComponent(parsed.username),
+    password: parsed.password ? decodeUrlComponent(parsed.password) : '',
     ...(useSsl ? { ssl: buildSslConfig() } : {}),
   };
 }
