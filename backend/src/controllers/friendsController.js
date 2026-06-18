@@ -56,7 +56,7 @@ const sendRequest = async (req, res, next) => {
       return res.status(403).json({ message: 'Miqësitë midis të rriturve dhe fëmijëve nuk lejohen.' });
     }
 
-    if (recipient.profile_private && !requester.is_minor) {
+    if (recipient.profile_private) {
       return res.status(404).json({ message: 'Përdoruesi nuk u gjet.' });
     }
 
@@ -117,6 +117,21 @@ const acceptRequest = async (req, res, next) => {
 
     if (!requestId || typeof requestId !== 'string') {
       return res.status(400).json({ message: 'Kërkesa mungon.' });
+    }
+
+    const pendingResult = await pool.query(
+      `SELECT requester_id
+       FROM friend_requests
+       WHERE id = $1 AND recipient_id = $2 AND status = 'pending'`,
+      [requestId, userUuid]
+    );
+
+    if (!pendingResult.rows.length) {
+      return res.status(404).json({ message: 'Kërkesa nuk u gjet.' });
+    }
+
+    if (await usersHaveBlock(userUuid, pendingResult.rows[0].requester_id)) {
+      return res.status(403).json({ message: 'Nuk mund të pranoni këtë kërkesë.' });
     }
 
     const result = await pool.query(
@@ -204,6 +219,12 @@ const listRequests = async (req, res, next) => {
        FROM friend_requests fr
        JOIN users u ON u.uuid = fr.requester_id
        WHERE fr.recipient_id = $1 AND fr.status = 'pending'
+         AND NOT EXISTS (
+           SELECT 1
+           FROM user_blocks ub
+           WHERE (ub.blocker_id = $1 AND ub.blocked_id = u.uuid)
+              OR (ub.blocker_id = u.uuid AND ub.blocked_id = $1)
+         )
        ORDER BY fr.created_at DESC`,
       [userUuid]
     );
@@ -213,6 +234,12 @@ const listRequests = async (req, res, next) => {
        FROM friend_requests fr
        JOIN users u ON u.uuid = fr.recipient_id
        WHERE fr.requester_id = $1 AND fr.status = 'pending'
+         AND NOT EXISTS (
+           SELECT 1
+           FROM user_blocks ub
+           WHERE (ub.blocker_id = $1 AND ub.blocked_id = u.uuid)
+              OR (ub.blocker_id = u.uuid AND ub.blocked_id = $1)
+         )
        ORDER BY fr.created_at DESC`,
       [userUuid]
     );
@@ -240,6 +267,12 @@ const listFriends = async (req, res, next) => {
        LEFT JOIN user_stats s ON s.user_id = u.uuid
        WHERE (fr.requester_id = $1 OR fr.recipient_id = $1)
          AND fr.status = 'accepted'
+         AND NOT EXISTS (
+           SELECT 1
+           FROM user_blocks ub
+           WHERE (ub.blocker_id = $1 AND ub.blocked_id = u.uuid)
+              OR (ub.blocker_id = u.uuid AND ub.blocked_id = $1)
+         )
        ORDER BY u.username ASC`,
       [userUuid]
     );
