@@ -32,11 +32,28 @@ const Quiz = () => {
   const [timer, setTimer] = useState(0);
   const [error, setError] = useState('');
   const [showGuestModal, setShowGuestModal] = useState(false);
+  const [sessionId, setSessionId] = useState(null);
+  const [answers, setAnswers] = useState([]);
 
   const buildQuestions = useCallback(async () => {
     try {
       setStatus('loading');
       setError('');
+      setSessionId(null);
+      setAnswers([]);
+
+      if (isLoggedIn) {
+        const res = await api.post('/progress/quiz/start');
+        setSessionId(res.data.sessionId);
+        setQuestions(res.data.questions || []);
+        setCurrent(0);
+        setScore(0);
+        setCorrect(0);
+        setSelected(null);
+        setTimer(0);
+        setStatus('playing');
+        return;
+      }
 
       const res = await api.get('/words/popular');
       const words = res.data.words || [];
@@ -73,10 +90,10 @@ const Quiz = () => {
       setSelected(null);
       setTimer(0);
       setStatus('playing');
-    } catch {
-      setError('Nuk mund të ngarkohet kuizi. Provoni përsëri.');
+    } catch (err) {
+      setError(err?.response?.data?.message || 'Nuk mund të ngarkohet kuizi. Provoni përsëri.');
     }
-  }, []);
+  }, [isLoggedIn]);
 
   useEffect(() => {
     buildQuestions();
@@ -94,6 +111,11 @@ const Quiz = () => {
     setSelected(option);
     setStatus('answered');
 
+    if (sessionId) {
+      setAnswers((prev) => [...prev, { questionId: questions[current].id, answer: option }]);
+      return;
+    }
+
     const isCorrect = option === questions[current].correct_answer;
     if (isCorrect) {
       setCorrect((c) => c + 1);
@@ -103,25 +125,24 @@ const Quiz = () => {
   };
 
   const nextQuestion = async () => {
-    const wasCorrect = selected === questions[current]?.correct_answer;
-    const finalCorrect = correct + (wasCorrect && status === 'answered' ? 0 : 0); // correct is already updated
-
     if (current + 1 >= questions.length) {
       setStatus('finished');
 
-      // Submit progress
-      if (isLoggedIn) {
+      if (isLoggedIn && sessionId) {
         try {
-          await api.post('/progress/quiz', {
-            score,
-            totalQuestions: questions.length,
-            correctAnswers: correct,
-          });
-          loadUser(); // Refresh stats
-        } catch {
-          // silent fail
+          const res = await api.post('/progress/quiz', { sessionId, answers });
+          const earnedCorrect = res.data.correctAnswers ?? 0;
+          const earnedScore = res.data.score ?? 0;
+          setCorrect(earnedCorrect);
+          setScore(earnedScore);
+          loadUser();
+          if (earnedCorrect === questions.length) {
+            confetti({ particleCount: 150, spread: 100, origin: { y: 0.5 } });
+          }
+        } catch (err) {
+          setError(err?.response?.data?.message || 'Rezultati i kuizit nuk u ruajt. Provoni përsëri.');
         }
-      } else {
+      } else if (!isLoggedIn) {
         // Save guest progress locally
         const gp = getGuestProgress();
         saveGuestProgress({
@@ -134,7 +155,7 @@ const Quiz = () => {
         setShowGuestModal(true);
       }
 
-      if (correct === questions.length) {
+      if (!sessionId && correct === questions.length) {
         confetti({ particleCount: 150, spread: 100, origin: { y: 0.5 } });
       }
     } else {
@@ -320,7 +341,13 @@ const Quiz = () => {
               let optClass = 'card card-hover cursor-pointer';
 
               if (status === 'answered') {
-                if (isCorrectAnswer(option)) {
+                if (sessionId) {
+                  if (selected === option) {
+                    optClass = 'card border-fjalingo-blue bg-fjalingo-blue/10 cursor-default';
+                  } else {
+                    optClass = 'card opacity-50 cursor-default';
+                  }
+                } else if (isCorrectAnswer(option)) {
                   optClass = 'card border-fjalingo-green bg-fjalingo-green/10 cursor-default';
                 } else if (selected === option && !isCorrectAnswer(option)) {
                   optClass = 'card border-fjalingo-red bg-fjalingo-red/10 cursor-default animate-shake';
@@ -352,7 +379,11 @@ const Quiz = () => {
               animate={{ opacity: 1, y: 0 }}
               className="mt-6 text-center"
             >
-              {isCorrectAnswer(selected) ? (
+              {sessionId ? (
+                <p className="text-lg font-black text-heading dark:text-dark-text mb-3">
+                  Përgjigja u ruajt.
+                </p>
+              ) : isCorrectAnswer(selected) ? (
                 <p className="text-lg font-black text-fjalingo-green mb-3">
                   Saktë! +100 Pikë
                 </p>

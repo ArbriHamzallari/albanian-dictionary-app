@@ -241,6 +241,34 @@ const seed = async () => {
       );
     }
 
+    const allWords = await client.query(
+      'SELECT id, borrowed_word, correct_albanian FROM words ORDER BY id'
+    );
+    for (const word of allWords.rows) {
+      const wrongAnswers = allWords.rows
+        .filter((other) => other.id !== word.id)
+        .map((other) => other.correct_albanian)
+        .slice(0, 3);
+      if (wrongAnswers.length < 1) {
+        continue;
+      }
+
+      await client.query('DELETE FROM quiz_questions WHERE word_id = $1', [word.id]);
+      await client.query(
+        `INSERT INTO quiz_questions
+         (word_id, question_text, correct_answer, wrong_answer_1, wrong_answer_2, wrong_answer_3, is_active)
+         VALUES ($1, $2, $3, $4, $5, $6, true)`,
+        [
+          word.id,
+          word.borrowed_word,
+          word.correct_albanian,
+          wrongAnswers[0],
+          wrongAnswers[1] || wrongAnswers[0],
+          wrongAnswers[2] || wrongAnswers[0],
+        ]
+      );
+    }
+
     await client.query('COMMIT');
 
     const countResult = await client.query('SELECT COUNT(*) AS count FROM words');

@@ -71,10 +71,16 @@ const profileUpdateSchema = Joi.object({
   favorite_word: Joi.string().trim().max(255).allow('', null).optional(),
 });
 
-const quizProgressSchema = Joi.object({
-  score: Joi.number().integer().min(0).required(),
-  totalQuestions: Joi.number().integer().min(1).required(),
-  correctAnswers: Joi.number().integer().min(0).required(),
+const QUIZ_QUESTIONS_PER_SESSION = 10;
+
+const quizAnswerSchema = Joi.object({
+  questionId: Joi.number().integer().positive().required(),
+  answer: Joi.string().trim().max(255).required(),
+});
+
+const quizSubmitSchema = Joi.object({
+  sessionId: Joi.string().uuid().required(),
+  answers: Joi.array().items(quizAnswerSchema).min(1).max(QUIZ_QUESTIONS_PER_SESSION).required(),
 });
 
 module.exports = {
@@ -86,5 +92,6 @@ module.exports = {
   registerSchema,
   guestUpgradeSchema,
   profileUpdateSchema,
-  quizProgressSchema,
+  quizSubmitSchema,
+  QUIZ_QUESTIONS_PER_SESSION,
 };
