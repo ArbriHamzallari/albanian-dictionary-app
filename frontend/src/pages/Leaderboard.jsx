@@ -1,20 +1,23 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
 import { Trophy, Flame, Star } from 'lucide-react';
-import { useAuth } from '../context/AuthContext.jsx';
 import Avatar from '../components/Avatar.jsx';
 import LoadingSpinner from '../components/LoadingSpinner.jsx';
 import api from '../utils/api.js';
 
 const Leaderboard = () => {
-  const { user } = useAuth();
   const [leaderboard, setLeaderboard] = useState([]);
+  const [viewer, setViewer] = useState({ tier: 'free', canParticipate: false });
+  const [segment, setSegment] = useState('adults');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     api.get('/leaderboard')
-      .then((res) => setLeaderboard(res.data.leaderboard || []))
+      .then((res) => {
+        setLeaderboard(res.data.leaderboard || []);
+        setViewer(res.data.viewer || { tier: 'free', canParticipate: false });
+        setSegment(res.data.segment || 'adults');
+      })
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
@@ -27,8 +30,6 @@ const Leaderboard = () => {
     );
   }
 
-  const currentUuid = user?.profile?.uuid;
-
   return (
     <div className="max-w-2xl mx-auto px-6 py-10">
       <motion.div
@@ -38,12 +39,22 @@ const Leaderboard = () => {
       >
         <Trophy className="w-12 h-12 mx-auto mb-3 text-fjalingo-yellow" />
         <h2 className="text-3xl font-black text-heading dark:text-dark-text">Renditja</h2>
-        <p className="text-muted dark:text-dark-muted font-semibold mt-1">Top 10 lojtarët</p>
+        <p className="text-muted dark:text-dark-muted font-semibold mt-1">
+          Top 10 lojtarët Premium
+        </p>
+        <p className="text-xs text-muted dark:text-dark-muted font-semibold mt-1">
+          Segmenti: {segment === 'kids' ? 'fëmijë' : 'të rritur'} · vetëm emër publik dhe avatar
+        </p>
+        {!viewer.canParticipate && (
+          <p className="text-sm text-muted dark:text-dark-muted font-semibold mt-3">
+            Plani falas mund ta shohë renditjen, por pjesëmarrja kërkon Premium.
+          </p>
+        )}
       </motion.div>
 
       <div className="space-y-3">
         {leaderboard.map((entry, i) => {
-          const isMe = !entry.isDummy && currentUuid && entry.uuid === currentUuid;
+          const isMe = Boolean(entry.isCurrentUser);
           const rankDisplay = entry.rank;
 
           let rankBadge = null;
@@ -53,7 +64,7 @@ const Leaderboard = () => {
 
           return (
             <motion.div
-              key={entry.uuid || `dummy-${i}`}
+              key={`${entry.username}-${entry.rank || i}`}
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: i * 0.05 }}
@@ -81,13 +92,10 @@ const Leaderboard = () => {
                     {isMe && <span className="text-xs ml-1 text-fjalingo-green">(ti)</span>}
                   </p>
                 ) : (
-                  <Link
-                    to={`/profili/${encodeURIComponent(entry.uuid)}`}
-                    className={`font-bold text-heading dark:text-dark-text truncate hover:text-fjalingo-green ${isMe ? 'text-fjalingo-green' : ''}`}
-                  >
+                  <p className={`font-bold text-heading dark:text-dark-text truncate ${isMe ? 'text-fjalingo-green' : ''}`}>
                     {entry.username}
                     {isMe && <span className="text-xs ml-1 text-fjalingo-green">(ti)</span>}
-                  </Link>
+                  </p>
                 )}
                 <p className="text-xs font-semibold text-muted dark:text-dark-muted">
                   Niveli {entry.level}

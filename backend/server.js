@@ -17,7 +17,9 @@ const avatarsRoutes = require('./src/routes/avatars');
 const progressRoutes = require('./src/routes/progress');
 const leaderboardRoutes = require('./src/routes/leaderboard');
 const friendsRoutes = require('./src/routes/friends');
+const chatRoutes = require('./src/routes/chat');
 const notificationsRoutes = require('./src/routes/notifications');
+const billingRoutes = require('./src/routes/billing');
 
 const app = express();
 
@@ -58,6 +60,7 @@ app.use(cors({
   origin: corsOrigins,
   credentials: true,
 }));
+app.use('/api/billing/webhook', express.raw({ type: 'application/json', limit: '1mb' }));
 app.use(express.json({ limit: '1mb' }));
 app.use(morgan('dev'));
 
@@ -91,7 +94,9 @@ app.use('/api/avatars', avatarsRoutes);
 app.use('/api/progress', progressRoutes);
 app.use('/api/leaderboard', leaderboardRoutes);
 app.use('/api/friends', friendsRoutes);
+app.use('/api/chat', chatRoutes);
 app.use('/api/notifications', notificationsRoutes);
+app.use('/api/billing', billingRoutes);
 
 app.use((err, req, res, next) => {
   console.error(err);
@@ -124,15 +129,19 @@ if (isProduction) {
   }
 }
 
-const server = app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
-});
+if (require.main === module) {
+  const server = app.listen(port, () => {
+    console.log(`Server running on port ${port}`);
+  });
 
-server.on('error', (err) => {
-  if (err.code === 'EADDRINUSE') {
-    console.error(`Port ${port} is already in use. Stop the process using that port or set a different PORT in .env.`);
-  } else {
-    console.error('Server error:', err.message);
-  }
-  process.exit(1);
-});
+  server.on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+      console.error(`Port ${port} is already in use. Stop the process using that port or set a different PORT in .env.`);
+    } else {
+      console.error('Server error:', err.message);
+    }
+    process.exit(1);
+  });
+}
+
+module.exports = app;

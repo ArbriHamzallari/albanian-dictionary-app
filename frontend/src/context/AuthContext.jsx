@@ -58,6 +58,7 @@ export function AuthProvider({ children }) {
         stats: res.data.stats || null,
         rank: res.data.rank ?? null,
         achievements: res.data.achievements || [],
+        entitlement: res.data.entitlement || { tier: 'free' },
       });
     }
     // Return role explicitly so callers can redirect admin users
@@ -73,6 +74,7 @@ export function AuthProvider({ children }) {
         stats: res.data.stats || null,
         rank: res.data.rank ?? null,
         achievements: res.data.achievements || [],
+        entitlement: res.data.entitlement || { tier: 'free' },
       });
     }
     return res.data;
@@ -115,6 +117,7 @@ export function AuthProvider({ children }) {
         stats: res.data.stats || null,
         rank: res.data.rank ?? null,
         achievements: res.data.achievements || [],
+        entitlement: res.data.entitlement || { tier: 'free' },
       });
     }
     return res.data;

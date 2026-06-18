@@ -2,7 +2,8 @@
  * Shared SQL for ranking users.
  * Used by both GET /api/auth/me (single-user rank) and GET /api/leaderboard (top N).
  *
- * The CTE `ranked_users` ranks all real users (role='user') by xp DESC, streak DESC.
+ * The CTE `ranked_users` ranks premium real users (role='user') by xp DESC, streak DESC.
+ * Public leaderboards are segmented and exclude opted-out profiles.
  */
 
 const RANKED_USERS_CTE = `
@@ -16,6 +17,7 @@ const RANKED_USERS_CTE = `
     streak,
     total_quizzes,
     correct_answers,
+    leaderboard_segment,
     rank
   ) AS (
     SELECT
@@ -28,10 +30,17 @@ const RANKED_USERS_CTE = `
       s.streak,
       s.total_quizzes,
       s.correct_answers,
-      RANK() OVER (ORDER BY s.xp DESC, s.streak DESC)
+      u.leaderboard_segment,
+      RANK() OVER (PARTITION BY u.leaderboard_segment ORDER BY s.xp DESC, s.streak DESC)
     FROM users u
     JOIN user_stats s ON s.user_id = u.uuid
+    JOIN entitlements e ON e.user_id = u.uuid
     WHERE u.role = 'user'
+      AND e.tier = 'premium'
+      AND e.status IN ('active', 'trialing')
+      AND e.current_period_end > now()
+      AND u.leaderboard_opt_out = false
+      AND u.leaderboard_segment IN ('kids', 'adults')
   )
 `;
 
@@ -46,13 +55,14 @@ const USER_RANK_SQL = `
 
 /**
  * Get leaderboard (top N).
- * Params: $1 = limit (e.g. 10)
+ * Params: $1 = segment ('kids' or 'adults'), $2 = limit (e.g. 10)
  */
 const LEADERBOARD_SQL = `
   WITH ${RANKED_USERS_CTE}
   SELECT * FROM ranked_users
+  WHERE leaderboard_segment = $1
   ORDER BY rank ASC
-  LIMIT $1
+  LIMIT $2
 `;
 
 module.exports = { RANKED_USERS_CTE, USER_RANK_SQL, LEADERBOARD_SQL };

@@ -3,6 +3,14 @@ const jwt = require('jsonwebtoken');
 const pool = require('../utils/db');
 const { loginSchema, registerSchema, guestUpgradeSchema } = require('../utils/validation');
 const { USER_RANK_SQL } = require('../utils/rankSql');
+const { getEntitlement, entitlementIsPremium } = require('../middleware/entitlements');
+const {
+  getLeaderboardSegmentForAge,
+  isMinorAge,
+  normalizeCountryCode,
+  requiresParentalConsent,
+  validateUserText,
+} = require('../utils/childSafety');
 
 const LEVEL_FORMULA_SQL = `floor(sqrt((xp::numeric)/100))::int + 1`;
 const JWT_EXPIRY = '7d';
@@ -36,7 +44,46 @@ function profileFromRow(u) {
     avatar_filename: u.avatar_filename,
     bio: u.bio,
     favorite_word: u.favorite_word,
+    age: u.age,
+    country_code: u.country_code,
+    is_minor: u.is_minor,
+    parental_consent_required: u.parental_consent_required,
+    parental_consent_given: u.parental_consent_given,
+    profile_private: u.profile_private,
+    leaderboard_opt_out: u.leaderboard_opt_out,
+    leaderboard_segment: u.leaderboard_segment,
     created_at: u.created_at,
+  };
+}
+
+function buildChildSafetyFields(value) {
+  const countryCode = normalizeCountryCode(value.country_code);
+  const consentRequired = requiresParentalConsent(value.age, countryCode);
+
+  if (consentRequired && !value.parental_consent_given) {
+    return {
+      error: {
+        status: 403,
+        body: {
+          message: 'Kërkohet pëlqimi i prindit/kujdestarit për këtë moshë.',
+          code: 'PARENTAL_CONSENT_REQUIRED',
+        },
+      },
+    };
+  }
+
+  const isMinor = isMinorAge(value.age);
+  return {
+    fields: {
+      age: value.age,
+      countryCode,
+      isMinor,
+      parentalConsentRequired: consentRequired,
+      parentalConsentGiven: Boolean(value.parental_consent_given),
+      profilePrivate: isMinor,
+      leaderboardOptOut: false,
+      leaderboardSegment: getLeaderboardSegmentForAge(value.age),
+    },
   };
 }
 
@@ -48,6 +95,16 @@ const register = async (req, res, next) => {
       return res.status(400).json({ message: 'Të dhënat e regjistrimit janë të pavlefshme.' });
     }
 
+    const usernameSafety = validateUserText(value.username);
+    if (!usernameSafety.ok) {
+      return res.status(400).json({ message: 'Emri publik përmban tekst të palejuar ose të dhëna personale.' });
+    }
+
+    const safety = buildChildSafetyFields(value);
+    if (safety.error) {
+      return res.status(safety.error.status).json(safety.error.body);
+    }
+
     const passwordHash = await bcrypt.hash(value.password, 10);
 
     const client = await pool.connect();
@@ -55,15 +112,53 @@ const register = async (req, res, next) => {
       await client.query('BEGIN');
 
       const userResult = await client.query(
-        `INSERT INTO users (email, password_hash, full_name, role, username, username_normalized, avatar_filename)
-         VALUES ($1, $2, $3, 'user', $4, $5, 'default.png')
+        `INSERT INTO users (
+           email,
+           password_hash,
+           full_name,
+           role,
+           username,
+           username_normalized,
+           avatar_filename,
+           age,
+           country_code,
+           is_minor,
+           parental_consent_required,
+           parental_consent_given,
+           parental_consent_at,
+           profile_private,
+           leaderboard_opt_out,
+           leaderboard_segment
+         )
+         VALUES ($1, $2, $3, 'user', $4, $5, 'default.png', $6, $7, $8, $9, $10, CASE WHEN $10 THEN NOW() ELSE NULL END, $11, $12, $13)
          RETURNING *`,
-        [value.email, passwordHash, value.username, value.username, value.username.toLowerCase()]
+        [
+          value.email,
+          passwordHash,
+          value.username,
+          value.username,
+          value.username.toLowerCase(),
+          safety.fields.age,
+          safety.fields.countryCode,
+          safety.fields.isMinor,
+          safety.fields.parentalConsentRequired,
+          safety.fields.parentalConsentGiven,
+          safety.fields.profilePrivate,
+          safety.fields.leaderboardOptOut,
+          safety.fields.leaderboardSegment,
+        ]
       );
       const user = userResult.rows[0];
 
       await client.query(
         `INSERT INTO user_stats (user_id) VALUES ($1)`,
+        [user.uuid]
+      );
+
+      await client.query(
+        `INSERT INTO entitlements (user_id, tier, status)
+         VALUES ($1, 'free', 'free')
+         ON CONFLICT (user_id) DO NOTHING`,
         [user.uuid]
       );
 
@@ -76,6 +171,7 @@ const register = async (req, res, next) => {
         token,
         profile: profileFromRow(user),
         stats: statsResult.rows[0],
+        entitlement: { tier: 'free', status: 'free', current_period_end: null },
       });
     } catch (err) {
       await client.query('ROLLBACK');
@@ -132,10 +228,16 @@ const login = async (req, res, next) => {
 
     // For regular users return profile + stats
     const statsResult = await pool.query('SELECT * FROM user_stats WHERE user_id = $1', [user.uuid]);
+    const entitlement = await getEntitlement(user.uuid);
     return res.json({
       token,
       profile: profileFromRow(user),
       stats: statsResult.rows[0] || null,
+      entitlement: {
+        tier: entitlementIsPremium(entitlement) ? 'premium' : 'free',
+        status: entitlement?.status || 'free',
+        current_period_end: entitlement?.current_period_end || null,
+      },
     });
   } catch (err) {
     return next(err);
@@ -154,6 +256,7 @@ const me = async (req, res, next) => {
     const user = userResult.rows[0];
 
     const statsResult = await pool.query('SELECT * FROM user_stats WHERE user_id = $1::uuid', [userUuid]);
+    const entitlement = await getEntitlement(userUuid);
 
     // Rank
     const rankResult = await pool.query(USER_RANK_SQL, [userUuid]);
@@ -173,6 +276,11 @@ const me = async (req, res, next) => {
       stats: statsResult.rows[0] || null,
       rank,
       achievements: achievementsResult.rows,
+      entitlement: {
+        tier: entitlementIsPremium(entitlement) ? 'premium' : 'free',
+        status: entitlement?.status || 'free',
+        current_period_end: entitlement?.current_period_end || null,
+      },
     });
   } catch (err) {
     return next(err);
@@ -187,6 +295,16 @@ const guestUpgrade = async (req, res, next) => {
       return res.status(400).json({ message: 'Të dhënat janë të pavlefshme.' });
     }
 
+    const usernameSafety = validateUserText(value.username);
+    if (!usernameSafety.ok) {
+      return res.status(400).json({ message: 'Emri publik përmban tekst të palejuar ose të dhëna personale.' });
+    }
+
+    const safety = buildChildSafetyFields(value);
+    if (safety.error) {
+      return res.status(safety.error.status).json(safety.error.body);
+    }
+
     const gp = value.guestProgress;
     // Extra clamp: correct_answers cannot exceed total_quizzes * 10
     gp.correct_answers = Math.min(gp.correct_answers, gp.total_quizzes * 10);
@@ -198,10 +316,41 @@ const guestUpgrade = async (req, res, next) => {
       await client.query('BEGIN');
 
       const userResult = await client.query(
-        `INSERT INTO users (email, password_hash, full_name, role, username, username_normalized, avatar_filename)
-         VALUES ($1, $2, $3, 'user', $4, $5, 'default.png')
+        `INSERT INTO users (
+           email,
+           password_hash,
+           full_name,
+           role,
+           username,
+           username_normalized,
+           avatar_filename,
+           age,
+           country_code,
+           is_minor,
+           parental_consent_required,
+           parental_consent_given,
+           parental_consent_at,
+           profile_private,
+           leaderboard_opt_out,
+           leaderboard_segment
+         )
+         VALUES ($1, $2, $3, 'user', $4, $5, 'default.png', $6, $7, $8, $9, $10, CASE WHEN $10 THEN NOW() ELSE NULL END, $11, $12, $13)
          RETURNING *`,
-        [value.email, passwordHash, value.username, value.username, value.username.toLowerCase()]
+        [
+          value.email,
+          passwordHash,
+          value.username,
+          value.username,
+          value.username.toLowerCase(),
+          safety.fields.age,
+          safety.fields.countryCode,
+          safety.fields.isMinor,
+          safety.fields.parentalConsentRequired,
+          safety.fields.parentalConsentGiven,
+          safety.fields.profilePrivate,
+          safety.fields.leaderboardOptOut,
+          safety.fields.leaderboardSegment,
+        ]
       );
       const user = userResult.rows[0];
 
@@ -213,6 +362,13 @@ const guestUpgrade = async (req, res, next) => {
         [user.uuid, gp.xp, gp.streak, gp.total_quizzes, gp.correct_answers]
       );
 
+      await client.query(
+        `INSERT INTO entitlements (user_id, tier, status)
+         VALUES ($1, 'free', 'free')
+         ON CONFLICT (user_id) DO NOTHING`,
+        [user.uuid]
+      );
+
       await client.query('COMMIT');
 
       const statsResult = await client.query('SELECT * FROM user_stats WHERE user_id = $1', [user.uuid]);
@@ -222,6 +378,7 @@ const guestUpgrade = async (req, res, next) => {
         token,
         profile: profileFromRow(user),
         stats: statsResult.rows[0],
+        entitlement: { tier: 'free', status: 'free', current_period_end: null },
       });
     } catch (err) {
       await client.query('ROLLBACK');

@@ -1,5 +1,6 @@
 const express = require('express');
 const { authenticate } = require('../middleware/auth');
+const { isPremium, requirePremium } = require('../middleware/entitlements');
 const {
   sendRequest,
   acceptRequest,
@@ -12,12 +13,14 @@ const {
 
 const router = express.Router();
 
-router.post('/request', authenticate, sendRequest);
-router.post('/accept', authenticate, acceptRequest);
-router.post('/decline', authenticate, declineRequest);
-router.post('/cancel', authenticate, cancelRequest);
-router.get('/requests', authenticate, listRequests);
-router.get('/', authenticate, listFriends);
-router.post('/remove', authenticate, removeFriend);
+router.use(authenticate, isPremium, requirePremium);
+
+router.post('/request', sendRequest);
+router.post('/accept', acceptRequest);
+router.post('/decline', declineRequest);
+router.post('/cancel', cancelRequest);
+router.get('/requests', listRequests);
+router.get('/', listFriends);
+router.post('/remove', removeFriend);
 
 module.exports = router;

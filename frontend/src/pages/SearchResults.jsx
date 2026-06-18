@@ -26,9 +26,9 @@ const SearchResults = () => {
         setResults(response.data.results || []);
         // Unlock first search achievement
         unlockAchievement('first_search');
-      } catch {
+      } catch (err) {
         setResults([]);
-        setError('Nuk u gjetën rezultate për këtë kërkim.');
+        setError(err?.response?.data?.message || 'Nuk u gjetën rezultate për këtë kërkim.');
       } finally {
         setLoading(false);
       }

@@ -19,6 +19,7 @@ import Dashboard from './pages/Dashboard.jsx';
 import Profile from './pages/Profile.jsx';
 import Leaderboard from './pages/Leaderboard.jsx';
 import PublicProfile from './pages/PublicProfile.jsx';
+import Premium from './pages/Premium.jsx';
 import { initTheme } from './utils/userService.js';
 
 const App = () => {
@@ -45,6 +46,7 @@ const App = () => {
             <Route path="/profili" element={<Profile />} />
             <Route path="/profili/:uuid" element={<PublicProfile />} />
             <Route path="/renditja" element={<Leaderboard />} />
+            <Route path="/premium" element={<Premium />} />
             <Route path="/admin" element={<AdminLogin />} />
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
           </Routes>

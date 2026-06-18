@@ -55,8 +55,8 @@ const searchWords = async (req, res, next) => {
       );
 
       await client.query(
-        'INSERT INTO search_logs (search_term, found, ip_address) VALUES ($1, $2, $3)',
-        [query, response.length > 0, req.ip]
+        'INSERT INTO search_logs (search_term, found, ip_address, user_id) VALUES ($1, $2, $3, $4)',
+        [query, response.length > 0, req.ip, req.user?.uuid || null]
       );
 
       if (!response.length) {

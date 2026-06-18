@@ -5,6 +5,7 @@ import { Star, Flame, Trophy, Target, BarChart3, Clock } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.jsx';
 import Avatar from '../components/Avatar.jsx';
 import LoadingSpinner from '../components/LoadingSpinner.jsx';
+import PremiumCheckoutButton from '../components/PremiumCheckoutButton.jsx';
 import api from '../utils/api.js';
 
 const LEVEL_POINTS = (level) => {
@@ -44,6 +45,7 @@ const Dashboard = () => {
   }
 
   const { profile, stats, rank, achievements } = user;
+  const isPremium = user?.entitlement?.tier === 'premium';
   const xp = stats?.xp || 0;
   const level = stats?.level || 1;
   const streak = stats?.streak || 0;
@@ -75,6 +77,9 @@ const Dashboard = () => {
         <div className="flex items-center justify-center gap-3 mt-2">
           <span className="badge badge-green">Niveli {level}</span>
           {rank && <span className="badge badge-blue">#{rank}</span>}
+          <span className={isPremium ? 'badge badge-yellow' : 'badge badge-blue'}>
+            {isPremium ? 'Premium' : 'Falas'}
+          </span>
         </div>
       </motion.div>
 
@@ -145,6 +150,24 @@ const Dashboard = () => {
               </span>
             ))}
           </div>
+        </motion.div>
+      )}
+
+      {/* Quick actions */}
+      {!isPremium && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.23 }}
+          className="card mb-6 text-center"
+        >
+          <h3 className="text-lg font-black text-heading dark:text-dark-text mb-2">
+            Zhblloko praktikë pa kufi
+          </h3>
+          <p className="text-sm font-semibold text-muted dark:text-dark-muted mb-4">
+            Premium përfshin kërkime dhe kuize pa kufi, miq dhe pjesëmarrje në renditje.
+          </p>
+          <PremiumCheckoutButton className="btn-primary inline-flex justify-center" />
         </motion.div>
       )}
 

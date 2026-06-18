@@ -16,6 +16,7 @@ const Header = () => {
     { to: '/kuizi', label: 'Kuizi' },
     { to: '/arritjet', label: 'Arritjet' },
     { to: '/renditja', label: 'Renditja' },
+    { to: '/premium', label: 'Premium' },
     { to: '/propozo', label: 'Propozo Fjalë' },
   ];
 
