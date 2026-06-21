@@ -3,7 +3,7 @@ app = "albanian-dictionary-app"
 primary_region = "ams"
 
 [build]
-  dockerfile = "backend/Dockerfile"
+  dockerfile = "Dockerfile"
 
 [env]
   NODE_ENV = "production"
