@@ -1,6 +1,7 @@
 require('dotenv').config({ path: require('path').join(__dirname, '..', '.env') });
 const bcrypt = require('bcrypt');
 const pool = require('../src/utils/db');
+const { validateExercise } = require('../src/utils/exerciseSchemas');
 
 const isProduction = process.env.NODE_ENV === 'production';
 const adminEmail = process.env.ADMIN_EMAIL || (isProduction ? null : 'admin@fjalingo.al');
@@ -176,6 +177,299 @@ const words = [
   },
 ];
 
+// ─────────────────────────────────────────────────────────────
+// Starter curriculum (DEV-ONLY - see the !isProduction guard in seed()).
+// 2 units, 2 lessons each, 5 exercises per lesson (mix of all three types).
+// NOTE: the Albanian replacements below are my best authoring; please confirm
+// the less-common ones (schedule -> orar, feedback -> vlerësim, team -> ekip)
+// before relying on them in production content.
+// ─────────────────────────────────────────────────────────────
+const curriculum = [
+  {
+    slug: 'technology-alblish',
+    title: 'Technology Alblish',
+    description: 'Fjalët e teknologjisë që i themi në anglisht — dhe fjala jonë shqipe.',
+    icon: '💻',
+    color: '#2BB673',
+    is_premium_unit: false,
+    lessons: [
+      {
+        slug: 'tech-words-1',
+        title: 'Fjalë teknologjie 1',
+        exercises: [
+          {
+            type: 'spot_alblish',
+            prompt: { sentence: 'Më duhet të bëj download skedarin para mbledhjes.' },
+            answer: {
+              loanword: 'download',
+              corrected_sentence: 'Më duhet të shkarkoj skedarin para mbledhjes.',
+              correct_albanian: 'shkarkoj',
+            },
+            why_it_matters: "'download' erdhi me kompjuterët nga anglishtja. 'shkarkoj' është fjala jonë — e qartë dhe e plotë.",
+          },
+          {
+            type: 'translation',
+            prompt: { loanword: 'software', options: ['program', 'pajisje', 'ekran', 'rrjet'] },
+            answer: { correct: 'program' },
+            why_it_matters: "'software' = 'program'. Shqipja e ka fjalën e vet.",
+          },
+          {
+            type: 'fill_blank',
+            prompt: {
+              sentence: 'Më duhet një {{blank}} i fortë për llogarinë.',
+              options: ['fjalëkalim', 'program', 'skedar', 'ekran'],
+            },
+            answer: { correct: 'fjalëkalim' },
+            why_it_matters: "'password' = 'fjalëkalim'.",
+          },
+          {
+            type: 'spot_alblish',
+            prompt: { sentence: 'Dua të bëj upload fotot në sistem.' },
+            answer: {
+              loanword: 'upload',
+              corrected_sentence: 'Dua të ngarkoj fotot në sistem.',
+              correct_albanian: 'ngarkoj',
+            },
+            why_it_matters: "'upload' = 'ngarkoj'. E kundërta e 'shkarkoj'.",
+          },
+          {
+            type: 'translation',
+            prompt: { loanword: 'email', options: ['postë elektronike', 'skedar', 'lidhje', 'program'] },
+            answer: { correct: 'postë elektronike' },
+            why_it_matters: "'email' = 'postë elektronike' (shkurt: 'postë').",
+          },
+        ],
+      },
+      {
+        slug: 'tech-words-2',
+        title: 'Fjalë teknologjie 2',
+        exercises: [
+          {
+            type: 'spot_alblish',
+            prompt: { sentence: 'Kliko mbi link-un për të vazhduar.' },
+            answer: {
+              loanword: 'link',
+              corrected_sentence: 'Kliko mbi lidhjen për të vazhduar.',
+              correct_albanian: 'lidhje',
+            },
+            why_it_matters: "'link' = 'lidhje'.",
+          },
+          {
+            type: 'fill_blank',
+            prompt: {
+              sentence: 'Doli një {{blank}} i ri për aplikacionin.',
+              options: ['përditësim', 'program', 'skedar', 'ekran'],
+            },
+            answer: { correct: 'përditësim' },
+            why_it_matters: "'update' = 'përditësim'.",
+          },
+          {
+            type: 'translation',
+            prompt: { loanword: 'file', options: ['skedar', 'ekran', 'lidhje', 'program'] },
+            answer: { correct: 'skedar' },
+            why_it_matters: "'file' = 'skedar'.",
+          },
+          {
+            type: 'spot_alblish',
+            prompt: { sentence: 'Do të bëj save dokumentin tani.' },
+            answer: {
+              loanword: 'save',
+              corrected_sentence: 'Do ta ruaj dokumentin tani.',
+              correct_albanian: 'ruaj',
+            },
+            why_it_matters: "'save' = 'ruaj'.",
+          },
+          {
+            type: 'translation',
+            prompt: { loanword: 'delete', options: ['fshij', 'ruaj', 'ngarkoj', 'shkarkoj'] },
+            answer: { correct: 'fshij' },
+            why_it_matters: "'delete' = 'fshij'.",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    slug: 'office-alblish',
+    title: 'Office Alblish',
+    description: 'Fjalët e zyrës që i përziejmë me anglishten — dhe shqipja e vërtetë.',
+    icon: '🗂️',
+    color: '#8B7FF5',
+    is_premium_unit: false,
+    lessons: [
+      {
+        slug: 'office-words-1',
+        title: 'Fjalë zyre 1',
+        exercises: [
+          {
+            type: 'spot_alblish',
+            prompt: { sentence: 'Kemi një meeting të rëndësishëm nesër.' },
+            answer: {
+              loanword: 'meeting',
+              corrected_sentence: 'Kemi një takim të rëndësishëm nesër.',
+              correct_albanian: 'takim',
+            },
+            why_it_matters: "'meeting' hyri nga anglishtja pas viteve '90. 'takim' është fjala jonë — ajo që përdorte gjyshja.",
+          },
+          {
+            type: 'translation',
+            prompt: { loanword: 'deadline', options: ['afat', 'takim', 'objektiv', 'orar'] },
+            answer: { correct: 'afat' },
+            why_it_matters: "'deadline' = 'afat'.",
+          },
+          {
+            type: 'fill_blank',
+            prompt: {
+              sentence: 'Drejtuesi caktoi një {{blank}} të ri për ekipin.',
+              options: ['objektiv', 'afat', 'takim', 'orar'],
+            },
+            answer: { correct: 'objektiv' },
+            why_it_matters: "'target' = 'objektiv'.",
+          },
+          {
+            type: 'spot_alblish',
+            prompt: { sentence: 'Fola me manager-in për projektin.' },
+            answer: {
+              loanword: 'manager',
+              corrected_sentence: 'Fola me drejtuesin për projektin.',
+              correct_albanian: 'drejtues',
+            },
+            why_it_matters: "'manager' = 'drejtues'.",
+          },
+          {
+            type: 'translation',
+            prompt: { loanword: 'office', options: ['zyrë', 'takim', 'afat', 'ekip'] },
+            answer: { correct: 'zyrë' },
+            why_it_matters: "'office' = 'zyrë'.",
+          },
+        ],
+      },
+      {
+        slug: 'office-words-2',
+        title: 'Fjalë zyre 2',
+        exercises: [
+          {
+            type: 'spot_alblish',
+            prompt: { sentence: 'Më dha një feedback shumë të mirë.' },
+            answer: {
+              loanword: 'feedback',
+              corrected_sentence: 'Më dha një vlerësim shumë të mirë.',
+              correct_albanian: 'vlerësim',
+            },
+            why_it_matters: "'feedback' = 'vlerësim' (ose 'koment'). Zgjedh fjalën shqip.",
+          },
+          {
+            type: 'translation',
+            prompt: { loanword: 'team', options: ['ekip', 'zyrë', 'takim', 'afat'] },
+            answer: { correct: 'ekip' },
+            why_it_matters: "'team' = 'ekip'.",
+          },
+          {
+            type: 'fill_blank',
+            prompt: {
+              sentence: 'Ndryshuam {{blank}} e takimeve për këtë javë.',
+              options: ['orarin', 'afatin', 'objektivin', 'vlerësimin'],
+            },
+            answer: { correct: 'orarin' },
+            why_it_matters: "'schedule' = 'orar'.",
+          },
+          {
+            type: 'spot_alblish',
+            prompt: { sentence: 'Cili është deadline për raportin?' },
+            answer: {
+              loanword: 'deadline',
+              corrected_sentence: 'Cili është afati për raportin?',
+              correct_albanian: 'afat',
+            },
+            why_it_matters: "'deadline' = 'afat'.",
+          },
+          {
+            type: 'translation',
+            prompt: { loanword: 'target', options: ['objektiv', 'ekip', 'orar', 'zyrë'] },
+            answer: { correct: 'objektiv' },
+            why_it_matters: "'target' = 'objektiv'.",
+          },
+        ],
+      },
+    ],
+  },
+];
+
+const seedCurriculum = async (client) => {
+  let unitOrder = 0;
+  for (const unit of curriculum) {
+    const unitResult = await client.query(
+      `INSERT INTO units (slug, title, description, icon, color, order_index, is_premium_unit)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)
+       ON CONFLICT (slug) DO UPDATE SET
+         title = EXCLUDED.title,
+         description = EXCLUDED.description,
+         icon = EXCLUDED.icon,
+         color = EXCLUDED.color,
+         order_index = EXCLUDED.order_index,
+         is_premium_unit = EXCLUDED.is_premium_unit,
+         updated_at = now()
+       RETURNING id`,
+      [unit.slug, unit.title, unit.description, unit.icon, unit.color, unitOrder, unit.is_premium_unit]
+    );
+    const unitId = unitResult.rows[0].id;
+    unitOrder += 1;
+
+    let lessonOrder = 0;
+    for (const lesson of unit.lessons) {
+      const lessonResult = await client.query(
+        `INSERT INTO lessons (unit_id, slug, title, order_index)
+         VALUES ($1, $2, $3, $4)
+         ON CONFLICT (unit_id, slug) DO UPDATE SET
+           title = EXCLUDED.title,
+           order_index = EXCLUDED.order_index,
+           updated_at = now()
+         RETURNING id`,
+        [unitId, lesson.slug, lesson.title, lessonOrder]
+      );
+      const lessonId = lessonResult.rows[0].id;
+      lessonOrder += 1;
+
+      let exerciseOrder = 0;
+      for (const exercise of lesson.exercises) {
+        // Fail fast: every seeded exercise must satisfy its type's schema.
+        const payload = {
+          lesson_id: lessonId,
+          order_index: exerciseOrder,
+          type: exercise.type,
+          prompt: exercise.prompt,
+          answer: exercise.answer,
+          why_it_matters: exercise.why_it_matters,
+        };
+        const { error, value } = validateExercise(payload);
+        if (error) {
+          throw new Error(`Invalid seed exercise (${unit.slug}/${lesson.slug} #${exerciseOrder}): ${error.message}`);
+        }
+
+        await client.query(
+          `INSERT INTO exercises (lesson_id, order_index, type, prompt, answer, why_it_matters)
+           VALUES ($1, $2, $3, $4::jsonb, $5::jsonb, $6)
+           ON CONFLICT (lesson_id, order_index) DO UPDATE SET
+             type = EXCLUDED.type,
+             prompt = EXCLUDED.prompt,
+             answer = EXCLUDED.answer,
+             why_it_matters = EXCLUDED.why_it_matters,
+             updated_at = now()`,
+          [
+            lessonId,
+            exerciseOrder,
+            value.type,
+            JSON.stringify(value.prompt),
+            JSON.stringify(value.answer),
+            value.why_it_matters || null,
+          ]
+        );
+        exerciseOrder += 1;
+      }
+    }
+  }
+};
+
 const seed = async () => {
   const client = await pool.connect();
   try {
@@ -269,6 +563,11 @@ const seed = async () => {
       );
     }
 
+    // Dev-only: starter curriculum (units -> lessons -> exercises).
+    if (!isProduction) {
+      await seedCurriculum(client);
+    }
+
     await client.query('COMMIT');
 
     const countResult = await client.query('SELECT COUNT(*) AS count FROM words');
@@ -276,7 +575,16 @@ const seed = async () => {
     const wotdResult = await client.query('SELECT COUNT(*) AS count FROM word_of_the_day WHERE display_date = CURRENT_DATE');
     const wotdSet = (wotdResult.rows[0]?.count ?? 0) > 0;
 
+    let curriculumSummary = 'skipped (production)';
+    if (!isProduction) {
+      const unitsCount = await client.query('SELECT COUNT(*) AS count FROM units');
+      const lessonsCount = await client.query('SELECT COUNT(*) AS count FROM lessons');
+      const exercisesCount = await client.query('SELECT COUNT(*) AS count FROM exercises');
+      curriculumSummary = `${unitsCount.rows[0].count} units, ${lessonsCount.rows[0].count} lessons, ${exercisesCount.rows[0].count} exercises`;
+    }
+
     console.log(`Seed completed: ${wordCount} words in database, word of the day ${wotdSet ? 'set' : 'not set'}.`);
+    console.log(`Curriculum: ${curriculumSummary}.`);
   } catch (error) {
     await client.query('ROLLBACK').catch(() => {});
     console.error('Seed failed:', error.message);

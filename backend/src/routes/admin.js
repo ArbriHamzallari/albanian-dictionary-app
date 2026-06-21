@@ -9,6 +9,7 @@ const {
 } = require('../controllers/adminController');
 const { getMetrics } = require('../controllers/metricsController');
 const { authenticate, authorizeAdmin } = require('../middleware/auth');
+const curriculumRoutes = require('./adminCurriculum');
 
 const router = express.Router();
 
@@ -21,5 +22,8 @@ router.delete('/words/:id', deleteWord);
 router.post('/word-of-the-day', setWordOfDay);
 router.get('/analytics/top-searches', getTopSearches);
 router.get('/metrics', getMetrics);
+
+// Three-level curriculum CRUD (units -> lessons -> exercises).
+router.use('/curriculum', curriculumRoutes);
 
 module.exports = router;
