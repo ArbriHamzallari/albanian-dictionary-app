@@ -20,18 +20,26 @@ const friendsRoutes = require('./src/routes/friends');
 const chatRoutes = require('./src/routes/chat');
 const notificationsRoutes = require('./src/routes/notifications');
 const billingRoutes = require('./src/routes/billing');
+const pool = require('./src/utils/db');
 
 const app = express();
 
 const isProduction = process.env.NODE_ENV === 'production';
 const normalizeOrigin = (origin) => origin.replace(/\/+$/, '');
 
+function parseOriginList(value) {
+  if (!value?.trim()) return [];
+  return value
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean)
+    .map((origin) => normalizeOrigin(origin));
+}
+
 function buildCorsOrigins() {
   const origins = [];
   if (isProduction) {
-    if (process.env.FRONTEND_URL?.trim()) {
-      origins.push(normalizeOrigin(process.env.FRONTEND_URL.trim()));
-    }
+    origins.push(...parseOriginList(process.env.FRONTEND_URL));
     if (process.env.FRONTEND_URL_ALT?.trim()) {
       origins.push(normalizeOrigin(process.env.FRONTEND_URL_ALT.trim()));
     }
@@ -41,15 +49,7 @@ function buildCorsOrigins() {
       normalizeOrigin(process.env.FRONTEND_URL_ALT || 'http://localhost:5174'),
     );
   }
-  if (process.env.FRONTEND_URL_EXTRA) {
-    origins.push(
-      ...process.env.FRONTEND_URL_EXTRA
-        .split(',')
-        .map((s) => s.trim())
-        .filter(Boolean)
-        .map((origin) => normalizeOrigin(origin))
-    );
-  }
+  origins.push(...parseOriginList(process.env.FRONTEND_URL_EXTRA));
   return [...new Set(origins.filter(Boolean))];
 }
 
@@ -57,7 +57,18 @@ const corsOrigins = buildCorsOrigins();
 
 app.use(helmet());
 app.use(cors({
-  origin: corsOrigins,
+  origin(origin, callback) {
+    if (!origin) {
+      callback(null, true);
+      return;
+    }
+    const normalized = normalizeOrigin(origin);
+    if (corsOrigins.includes(normalized)) {
+      callback(null, true);
+      return;
+    }
+    callback(null, false);
+  },
   credentials: true,
 }));
 app.use('/api/billing/webhook', express.raw({ type: 'application/json', limit: '1mb' }));
@@ -81,8 +92,19 @@ const authLimiter = rateLimit({
 app.use('/api', apiLimiter);
 app.use('/api/auth', authLimiter);
 
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok' });
+app.get('/api/health', async (req, res) => {
+  let db = 'fail';
+  try {
+    await pool.query('SELECT 1');
+    db = 'ok';
+  } catch (err) {
+    console.error('Health check DB error:', err.message);
+  }
+  res.json({
+    status: 'ok',
+    uptime: Math.floor(process.uptime()),
+    db,
+  });
 });
 
 app.use('/api/words', wordsRoutes);
@@ -130,7 +152,7 @@ if (isProduction) {
 }
 
 if (require.main === module) {
-  const server = app.listen(port, () => {
+  const server = app.listen(port, '0.0.0.0', () => {
     console.log(`Server running on port ${port}`);
   });
 

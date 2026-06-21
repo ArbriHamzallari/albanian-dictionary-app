@@ -1,0 +1,10 @@
+# Keep secrets and local artifacts out of the Fly image.
+**/.env
+**/.env.*
+!**/.env.example
+**/node_modules
+frontend
+dist
+*.log
+*.dump
+.git
