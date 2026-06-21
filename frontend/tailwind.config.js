@@ -5,7 +5,24 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Fjalingo Brand
+        // Design tokens (tokens.css)
+        brand: {
+          green: 'var(--brand-green)',
+          'green-dark': 'var(--brand-green-dark)',
+        },
+        accent: {
+          yellow: 'var(--accent-yellow)',
+          coral: 'var(--accent-coral)',
+          purple: 'var(--accent-purple)',
+        },
+        ink: {
+          DEFAULT: 'var(--ink)',
+          soft: 'var(--ink-soft)',
+        },
+        paper: 'var(--paper)',
+        cloud: 'var(--cloud)',
+        line: 'var(--line)',
+        // Legacy aliases (migrate gradually)
         'fjalingo-green': '#58CC02',
         'fjalingo-green-dark': '#4CAF02',
         'fjalingo-blue': '#1CB0F6',

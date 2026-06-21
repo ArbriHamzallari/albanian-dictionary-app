@@ -1,21 +1,64 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, useReducedMotion } from 'framer-motion';
-import { Target, Gamepad2, Trophy, ArrowRight, Star } from 'lucide-react';
+import { ArrowRight, Star } from 'lucide-react';
 import SearchBar from '../components/SearchBar.jsx';
 import WordCard from '../components/WordCard.jsx';
 import LoadingSpinner from '../components/LoadingSpinner.jsx';
 import ErrorMessage from '../components/ErrorMessage.jsx';
 import DailyChallengeCard from '../components/DailyChallengeCard.jsx';
 import PurposeSection from '../components/PurposeSection.jsx';
-import AnimatedBackground from '../components/AnimatedBackground.jsx';
+import Button from '../components/ui/Button.jsx';
+import Heading from '../components/ui/Heading.jsx';
+import Parrot from '../components/mascot/Parrot.jsx';
 import api from '../utils/api.js';
 
 const fadeUp = {
-  initial: { opacity: 0, y: 30 },
+  initial: { opacity: 0, y: 24 },
   animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.5 },
+  transition: { duration: 0.2 },
 };
+
+const SPRING = { type: 'spring', stiffness: 300, damping: 22 };
+
+const ScrollHint = ({ reduceMotion }) => (
+  <motion.a
+    href="#me-teper"
+    aria-label="Shiko ç'të pret poshtë"
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    transition={{ delay: 0.45, duration: 0.2 }}
+    className="group mt-6 flex flex-col items-center gap-2 sm:mt-8"
+  >
+    <span className="rounded-full border-2 border-brand-green/20 bg-paper px-4 py-1.5 text-sm font-extrabold text-brand-green shadow-[0_3px_0_0_var(--brand-green-dark)] transition-transform group-hover:-translate-y-0.5 group-active:translate-y-0.5 group-active:shadow-none sm:text-base">
+      Shiko ç&apos;të pret poshtë
+    </span>
+    <motion.span
+      aria-hidden="true"
+      className="flex h-9 w-9 items-center justify-center rounded-full bg-accent-yellow text-brand-green-dark shadow-[0_3px_0_0_color-mix(in_srgb,var(--accent-yellow)_60%,var(--ink))]"
+      animate={reduceMotion ? undefined : { y: [0, 5, 0] }}
+      transition={{ ...SPRING, repeat: Infinity, repeatDelay: 0.3 }}
+    >
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" className="mt-0.5">
+        <path
+          d="M4 7 L9 12 L14 7"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M4 11 L9 16 L14 11"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          opacity="0.45"
+        />
+      </svg>
+    </motion.span>
+  </motion.a>
+);
 
 const Home = () => {
   const reduceMotion = useReducedMotion();
@@ -49,89 +92,66 @@ const Home = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-white dark:bg-dark-bg">
-      {/* Hero */}
-      <section className="relative overflow-hidden">
-        <AnimatedBackground />
-        <div className="absolute inset-0 bg-gradient-to-br from-fjalingo-green/5 via-transparent to-fjalingo-blue/5 dark:from-fjalingo-green/3 dark:to-fjalingo-blue/3 pointer-events-none" />
-        <div className="relative max-w-6xl mx-auto px-6 pt-12 pb-16 text-center z-10">
-          <motion.div {...fadeUp}>
-            <motion.span
-              className="text-5xl md:text-6xl block mb-4"
-              animate={
-                reduceMotion
-                  ? {}
-                  : { y: [0, -6, 0], rotate: [0, 1.5, 0, -1.5, 0] }
-              }
-              transition={
-                reduceMotion
-                  ? {}
-                  : { duration: 6, ease: 'easeInOut', repeat: Infinity }
-              }
-            >
-              🦅
-            </motion.span>
-            <h2 className="text-4xl md:text-5xl font-black text-heading dark:text-dark-text mb-4 leading-tight">
-              Mëso shqipen autentike,<br />
-              <span className="text-fjalingo-green">argëtohu ndërkohë!</span>
-            </h2>
-            <p className="text-xl md:text-2xl font-medium text-transparent bg-clip-text bg-gradient-to-r from-fjalingo-green to-fjalingo-blue max-w-2xl mx-auto mb-8">
-              Kthe fjalët e huazuara në shqipe të pastër.
-            </p>
-          </motion.div>
+    <div className="min-h-screen bg-cloud">
+      {/* Splash hero — papagalli, slogani, CTA dhe treguesi i rrëshqitjes */}
+      <section className="flex min-h-[100dvh] flex-col items-center justify-center px-4 py-10 text-center sm:px-6 sm:py-12">
+        <motion.div
+          {...fadeUp}
+          className="flex w-full max-w-lg flex-col items-center gap-5 sm:gap-7"
+        >
+          <Parrot state="wave" size={150} className="sm:hidden" />
+          <Parrot state="wave" size={200} className="hidden sm:block md:hidden" />
+          <Parrot state="wave" size={220} className="hidden md:block" />
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="max-w-2xl mx-auto mb-6"
+          <Heading
+            level={1}
+            className="text-balance px-1 text-[1.65rem] leading-snug sm:px-2 sm:text-3xl md:text-5xl"
           >
-            <SearchBar showHint />
-          </motion.div>
+            Fol shqipen e vërtetë, jo të huazuarën
+          </Heading>
 
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-          >
-            <Link to="/kuizi" className="btn-primary inline-flex items-center gap-2 text-lg px-10 py-4">
-              Fillo Tani <ArrowRight className="w-5 h-5" />
-            </Link>
-          </motion.div>
-        </div>
+          <Link to="/kuizi" className="w-full max-w-xs px-2 sm:px-0">
+            <Button size="lg" fullWidth>
+              Fillo
+            </Button>
+          </Link>
+
+          <ScrollHint reduceMotion={reduceMotion} />
+        </motion.div>
       </section>
 
-      {/* Feature Cards */}
-      <section className="max-w-6xl mx-auto px-6 pb-12">
-        <div className="grid md:grid-cols-3 gap-6">
+      {/* Përmbajtja poshtë fold-it */}
+      <section id="me-teper" className="mx-auto max-w-6xl scroll-mt-6 px-4 pb-12 sm:px-6">
+        <motion.div
+          initial={reduceMotion ? false : { opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.2 }}
+          className="max-w-2xl mx-auto mb-12"
+        >
+          <SearchBar showHint />
+        </motion.div>
+
+        <div className="mb-12 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 md:grid-cols-3">
           {[
             {
-              icon: Target,
               emoji: '🎯',
               title: 'SFIDA E DITËS',
               desc: 'Testoje veten çdo ditë!',
-              color: 'border-fjalingo-green/30 bg-fjalingo-green/5 dark:bg-fjalingo-green/3',
-              iconColor: 'text-fjalingo-green',
               link: '/fjala-e-dites',
               cta: 'Fillo',
             },
             {
-              icon: Gamepad2,
               emoji: '🎮',
               title: 'KUIZI I SHPEJTË',
               desc: 'Luaj dhe mëso fjalë të reja!',
-              color: 'border-fjalingo-blue/30 bg-fjalingo-blue/5 dark:bg-fjalingo-blue/3',
-              iconColor: 'text-fjalingo-blue',
               link: '/kuizi',
               cta: 'Luaj tani!',
             },
             {
-              icon: Trophy,
               emoji: '🏆',
               title: 'ARRITJET',
               desc: 'Shkyç arritje dhe mbledh pikë!',
-              color: 'border-fjalingo-purple/30 bg-fjalingo-purple/5 dark:bg-fjalingo-purple/3',
-              iconColor: 'text-fjalingo-purple',
               link: '/arritjet',
               cta: 'Shiko',
             },
@@ -139,10 +159,11 @@ const Home = () => {
             <motion.div
               key={card.title}
               initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
               transition={{ duration: 0.4, delay: 0.2 + i * 0.1 }}
             >
-              <Link to={card.link} className={`card card-hover block ${card.color} text-center py-8`}>
+              <Link to={card.link} className="card card-hover block text-center py-8">
                 <span className="text-4xl block mb-3">{card.emoji}</span>
                 <h3 className="text-sm font-black text-heading dark:text-dark-text tracking-wide mb-2">
                   {card.title}
@@ -157,14 +178,12 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Daily Challenge */}
-      <section className="max-w-6xl mx-auto px-6 pb-12">
+      <section className="mx-auto max-w-6xl px-4 pb-12 sm:px-6">
         <DailyChallengeCard />
       </section>
 
-      {/* Stats */}
-      <section className="max-w-6xl mx-auto px-6 pb-12">
-        <div className="grid grid-cols-3 gap-4 md:gap-6">
+      <section className="mx-auto max-w-6xl px-4 pb-12 sm:px-6">
+        <div className="grid grid-cols-3 gap-2 sm:gap-4 md:gap-6">
           {[
             { label: 'Fjalë', value: '500+', emoji: '📚' },
             { label: 'Përdorues', value: '150+', emoji: '👥' },
@@ -176,18 +195,17 @@ const Home = () => {
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
               transition={{ duration: 0.3, delay: i * 0.1 }}
-              className="card text-center py-6"
+              className="card py-4 text-center sm:py-6"
             >
-              <span className="text-2xl block mb-2">{stat.emoji}</span>
-              <p className="text-2xl md:text-3xl font-black text-heading dark:text-dark-text">{stat.value}</p>
-              <p className="text-sm font-semibold text-muted dark:text-dark-muted mt-1">{stat.label}</p>
+              <span className="mb-1 block text-xl sm:mb-2 sm:text-2xl">{stat.emoji}</span>
+              <p className="text-lg font-black text-heading dark:text-dark-text sm:text-2xl md:text-3xl">{stat.value}</p>
+              <p className="mt-0.5 text-xs font-semibold text-muted dark:text-dark-muted sm:mt-1 sm:text-sm">{stat.label}</p>
             </motion.div>
           ))}
         </div>
       </section>
 
-      {/* Word of the Day */}
-      <section className="max-w-6xl mx-auto px-6 pb-12">
+      <section className="mx-auto max-w-6xl px-4 pb-12 sm:px-6">
         <div className="card border-fjalingo-yellow/30 bg-gradient-to-br from-fjalingo-yellow/5 to-transparent dark:from-fjalingo-yellow/3">
           <h3 className="text-sm font-black text-fjalingo-yellow tracking-wide flex items-center gap-2 mb-4">
             <Star className="w-4 h-4 fill-fjalingo-yellow text-fjalingo-yellow" /> FJALA E DITËS
@@ -223,20 +241,18 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Purpose Section */}
       <PurposeSection />
 
-      {/* Popular Words */}
-      <section className="max-w-6xl mx-auto px-6 py-12">
-        <div className="flex items-center justify-between mb-6">
-          <h3 className="text-lg font-black text-heading dark:text-dark-text">
+      <section className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
+        <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <h3 className="text-base font-black text-heading dark:text-dark-text sm:text-lg">
             Fjalët më të kërkuara 🔥
           </h3>
-          <Link to="/kerko?q=investigoj" className="text-fjalingo-green text-sm font-bold hover:gap-2 inline-flex items-center gap-1 transition-all">
-            Shiko të gjitha <ArrowRight className="w-4 h-4" />
+          <Link to="/kerko?q=investigoj" className="inline-flex items-center gap-1 text-sm font-bold text-fjalingo-green transition-all hover:gap-2">
+            Shiko të gjitha <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
-        <div className="grid md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-3">
           {popularWords.map((word) => (
             <WordCard key={word.id} word={word} />
           ))}

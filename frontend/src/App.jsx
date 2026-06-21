@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import Header from './components/Header.jsx';
 import Footer from './components/Footer.jsx';
@@ -20,17 +20,24 @@ import Profile from './pages/Profile.jsx';
 import Leaderboard from './pages/Leaderboard.jsx';
 import PublicProfile from './pages/PublicProfile.jsx';
 import Premium from './pages/Premium.jsx';
+import DesignGallery from './pages/DesignGallery.jsx';
 import { initTheme } from './utils/userService.js';
 
 const App = () => {
+  const location = useLocation();
+  const isSplash = location.pathname === '/';
+  const isDesign = location.pathname === '/design';
+
   useEffect(() => {
     initTheme();
   }, []);
 
+  const showChrome = !isSplash && !isDesign;
+
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-dark-bg">
-      <Header />
-      <main className="flex-1 pb-20 md:pb-0">
+      {showChrome && <Header />}
+      <main className={`flex-1 ${showChrome ? 'pb-20 md:pb-0' : ''}`}>
         <AnimatePresence mode="wait">
           <Routes>
             <Route path="/" element={<Home />} />
@@ -49,13 +56,16 @@ const App = () => {
             <Route path="/premium" element={<Premium />} />
             <Route path="/admin" element={<AdminLogin />} />
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            <Route path="/design" element={<DesignGallery />} />
           </Routes>
         </AnimatePresence>
       </main>
-      <div className="hidden md:block">
-        <Footer />
-      </div>
-      <MobileNav />
+      {showChrome && (
+        <div className="hidden md:block">
+          <Footer />
+        </div>
+      )}
+      {showChrome && <MobileNav />}
     </div>
   );
 };
