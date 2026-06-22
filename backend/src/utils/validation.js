@@ -47,6 +47,11 @@ const wordOfDaySchema = Joi.object({
   display_date: Joi.string().regex(/\d{4}-\d{2}-\d{2}/).required(),
 });
 
+const consentCheckSchema = Joi.object({
+  age: Joi.number().integer().min(1).max(120).required(),
+  country_code: Joi.string().trim().uppercase().length(2).required(),
+});
+
 const registerSchema = Joi.object({
   username: Joi.string().trim().pattern(/^[A-Za-z0-9_-]+$/).min(3).max(30).required(),
   email: Joi.string().email().max(255).required(),
@@ -96,6 +101,7 @@ module.exports = {
   loginSchema,
   wordSchema,
   wordOfDaySchema,
+  consentCheckSchema,
   registerSchema,
   guestUpgradeSchema,
   profileUpdateSchema,

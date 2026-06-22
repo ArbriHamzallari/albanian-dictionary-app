@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const pool = require('../utils/db');
-const { loginSchema, registerSchema, guestUpgradeSchema } = require('../utils/validation');
+const { loginSchema, registerSchema, guestUpgradeSchema, consentCheckSchema } = require('../utils/validation');
 const { USER_RANK_SQL } = require('../utils/rankSql');
 const { getEntitlement, entitlementIsPremium } = require('../middleware/entitlements');
 const { touchLastSeen } = require('../utils/presence');
@@ -404,6 +404,24 @@ const guestUpgrade = async (req, res, next) => {
   }
 };
 
+// ── POST /consent-check ──────────────────────────────────────
+// Public. Given age + country, returns the child-safety fields the register
+// endpoint will compute, so onboarding can decide whether to show the parental
+// consent screen. Reuses the same childSafety helpers (no re-implementation).
+const consentCheck = (req, res) => {
+  const { error, value } = consentCheckSchema.validate(req.body);
+  if (error) {
+    return res.status(400).json({ message: 'Mosha ose shteti janë të pavlefshme.' });
+  }
+
+  const countryCode = normalizeCountryCode(value.country_code);
+  return res.json({
+    is_minor: isMinorAge(value.age),
+    leaderboard_segment: getLeaderboardSegmentForAge(value.age),
+    parental_consent_required: requiresParentalConsent(value.age, countryCode),
+  });
+};
+
 // ── POST /heartbeat ──────────────────────────────────────────
 const heartbeat = async (req, res, next) => {
   try {
@@ -414,4 +432,4 @@ const heartbeat = async (req, res, next) => {
   }
 };
 
-module.exports = { register, login, me, guestUpgrade, heartbeat };
+module.exports = { register, login, me, guestUpgrade, heartbeat, consentCheck };
