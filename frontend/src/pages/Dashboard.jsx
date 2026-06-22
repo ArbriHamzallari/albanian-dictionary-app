@@ -210,7 +210,7 @@ const Dashboard = () => {
           <p className="text-sm font-semibold text-muted dark:text-dark-muted mb-4">
             Premium përfshin kërkime dhe kuize pa kufi, miq dhe pjesëmarrje në renditje.
           </p>
-          <PremiumCheckoutButton className="btn-primary inline-flex justify-center" />
+          <PremiumCheckoutButton />
         </motion.div>
       )}
 

@@ -16,6 +16,10 @@ const Header = () => {
     { to: '/kuizi', label: 'Kuizi' },
     { to: '/arritjet', label: 'Arritjet' },
     { to: '/renditja', label: 'Renditja' },
+    ...(isLoggedIn && !isAdmin ? [
+      { to: '/miqte', label: 'Miqtë' },
+      { to: '/bisedat', label: 'Bisedat' },
+    ] : []),
     { to: '/premium', label: 'Premium' },
     { to: '/propozo', label: 'Propozo Fjalë' },
   ];
@@ -65,8 +69,9 @@ const Header = () => {
               </NavLink>
               <button
                 onClick={logout}
-                className="p-2 rounded-xl hover:bg-card dark:hover:bg-dark-card transition text-muted hover:text-fjalingo-red"
+                className="p-2 rounded-xl hover:bg-card dark:hover:bg-dark-card transition text-muted hover:text-fjalingo-red focus:outline-none focus-visible:ring-2 focus-visible:ring-fjalingo-green"
                 title="Dil"
+                aria-label="Dil"
               >
                 <LogOut className="w-4 h-4" />
               </button>
@@ -94,7 +99,9 @@ const Header = () => {
           <ThemeToggle />
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="p-2 rounded-xl hover:bg-card dark:hover:bg-dark-card transition-colors"
+            className="p-2 rounded-xl hover:bg-card dark:hover:bg-dark-card transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-fjalingo-green"
+            aria-label={mobileOpen ? 'Mbyll menunë' : 'Hap menunë'}
+            aria-expanded={mobileOpen}
           >
             {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
