@@ -65,6 +65,7 @@ const Button = ({
       className={[
         'inline-flex items-center justify-center gap-2 rounded-2xl font-extrabold',
         'transition-[box-shadow,transform] duration-100 ease-out',
+        'focus:outline-none focus-visible:ring-4 focus-visible:ring-brand-green/40 focus-visible:ring-offset-2 focus-visible:ring-offset-cloud',
         'disabled:opacity-60 disabled:cursor-not-allowed disabled:shadow-none',
         'active:translate-y-[3px]',
         styles.bg,

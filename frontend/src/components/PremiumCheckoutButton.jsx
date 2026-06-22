@@ -3,8 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import api from '../utils/api.js';
 import { openPremiumCheckout } from '../utils/paddleCheckout.js';
 import { useAuth } from '../context/AuthContext.jsx';
+import Button from './ui/Button.jsx';
 
-const PremiumCheckoutButton = ({ className = 'btn-primary' }) => {
+const PremiumCheckoutButton = ({ fullWidth = false, size = 'lg' }) => {
   const { isLoggedIn } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -29,11 +30,11 @@ const PremiumCheckoutButton = ({ className = 'btn-primary' }) => {
   };
 
   return (
-    <div>
-      <button type="button" onClick={startCheckout} disabled={loading} className={className}>
-        {loading ? 'Duke hapur...' : 'Bëhu Premium - 25 EUR/vit'}
-      </button>
-      {error && <p className="text-sm font-semibold text-fjalingo-red mt-2">{error}</p>}
+    <div className={fullWidth ? 'w-full' : 'inline-block'}>
+      <Button variant="primary" size={size} fullWidth={fullWidth} loading={loading} onClick={startCheckout}>
+        {loading ? 'Duke hapur…' : 'Bëhu Premium · 25 EUR/vit'}
+      </Button>
+      {error && <p className="text-sm font-semibold text-accent-coral mt-2">{error}</p>}
     </div>
   );
 };
