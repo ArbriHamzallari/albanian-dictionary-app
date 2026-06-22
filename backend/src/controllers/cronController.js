@@ -1,12 +1,14 @@
 const pool = require('../utils/db');
+const { processSeasonEnd } = require('../utils/leagues');
 
 // ─────────────────────────────────────────────────────────────
-// Nightly maintenance for the streak system. Idempotent: safe to run more than
-// once per day. Intended to be hit by an external scheduler (with the
-// x-cron-secret header) or manually by an admin.
+// Nightly maintenance. Idempotent: safe to run more than once per day.
+// Intended to be hit by an external scheduler (with the x-cron-secret header)
+// or manually by an admin.
 //   1. Grant 2 streak freezes to active-Premium users, once per calendar month.
 //   2. For users who missed a day: spend a freeze if available, else reset the
 //      streak. The "day" is evaluated in each user's own timezone.
+//   3. End-of-season league processing: rank, promote/demote, seed next season.
 // ─────────────────────────────────────────────────────────────
 const runDailyCron = async (req, res, next) => {
   const client = await pool.connect();
@@ -91,6 +93,9 @@ const runDailyCron = async (req, res, next) => {
       }
     }
 
+    // 3. End-of-season league processing (rank, promote/demote, seed next).
+    const leagues = await processSeasonEnd(client);
+
     await client.query('COMMIT');
 
     return res.json({
@@ -98,6 +103,7 @@ const runDailyCron = async (req, res, next) => {
       freezes_granted: granted.rowCount,
       streaks_frozen: frozen,
       streaks_reset: reset,
+      leagues,
     });
   } catch (err) {
     await client.query('ROLLBACK');

@@ -7,6 +7,7 @@ import Avatar from '../components/Avatar.jsx';
 import LoadingSpinner from '../components/LoadingSpinner.jsx';
 import PremiumCheckoutButton from '../components/PremiumCheckoutButton.jsx';
 import DashboardQuestCard from '../components/DashboardQuestCard.jsx';
+import LeagueResultToast from '../components/LeagueResultToast.jsx';
 import Card from '../components/ui/Card.jsx';
 import Parrot from '../components/mascot/Parrot.jsx';
 import api from '../utils/api.js';
@@ -65,6 +66,7 @@ const Dashboard = () => {
 
   return (
     <div className="max-w-2xl mx-auto px-6 py-10">
+      <LeagueResultToast />
       {/* Profile header */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -210,6 +212,9 @@ const Dashboard = () => {
       >
         <Link to="/kuizi" className="btn-primary flex-1 text-center">
           Luaj Kuizin
+        </Link>
+        <Link to="/liga" className="btn-outline flex-1 text-center">
+          Liga
         </Link>
         <Link to="/renditja" className="btn-outline flex-1 text-center">
           Renditja
