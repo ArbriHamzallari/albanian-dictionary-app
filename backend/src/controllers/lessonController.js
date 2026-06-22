@@ -6,6 +6,7 @@ const {
   lessonSubmitSchema,
 } = require('../utils/exerciseSchemas');
 const { updateQuestProgress, longestCorrectRun, formatQuest } = require('../utils/quests');
+const { addWeeklyXp } = require('../utils/leagues');
 
 // ─────────────────────────────────────────────────────────────
 // Lesson player: serve lessons (prompt only, no answers), grade submissions
@@ -460,6 +461,9 @@ const submitLesson = async (req, res, next) => {
         xpEarned,
         correctRun: longestCorrectRun(results),
       });
+
+      // Weekly league: add this submission's XP to the current season total.
+      await addWeeklyXp(client, userUuid, xpEarned);
 
       await client.query('COMMIT');
 
