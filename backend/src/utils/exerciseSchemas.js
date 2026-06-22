@@ -140,10 +140,65 @@ function validateExercise(payload) {
   return schema.validate(payload, { abortEarly: false, convert: true, stripUnknown: true });
 }
 
+// ── Server-side grading ──────────────────────────────────────
+// The client submits a `response` string; the server grades it against the
+// exercise's stored `answer` (which is never sent to non-admin clients). Casing
+// and diacritics are normalized before comparison.
+//
+// - spot_alblish: the response is the tapped token. We accept it if it CONTAINS
+//   the loanword, so a tapped token with attached morphology/punctuation
+//   ("link-un", "meeting,") still grades correctly.
+// - translation / fill_blank: the response must equal the correct option.
+function gradeExercise(type, answer, response) {
+  const r = norm(response);
+  if (!r) return false;
+  if (type === 'spot_alblish') {
+    return r.includes(norm(answer.loanword));
+  }
+  if (type === 'translation' || type === 'fill_blank') {
+    return r === norm(answer.correct);
+  }
+  return false;
+}
+
+// ── Spaced repetition schedule (Practice Mistakes) ───────────
+// CLAUDE.md §8: 1 day -> 3 days -> 1 week -> 2 weeks, then graduate (mastered).
+const SRS_INTERVALS_DAYS = [1, 3, 7, 14];
+
+// Given the current interval (in days), return the next one, or null to signal
+// the item has graduated out of the review queue.
+function nextSrsIntervalDays(currentDays) {
+  const idx = SRS_INTERVALS_DAYS.indexOf(currentDays);
+  if (idx === -1) return SRS_INTERVALS_DAYS[0]; // not yet scheduled -> 1 day
+  if (idx >= SRS_INTERVALS_DAYS.length - 1) return null; // past 14 days -> mastered
+  return SRS_INTERVALS_DAYS[idx + 1];
+}
+
+// ── Lesson submission payload ────────────────────────────────
+const lessonSubmitSchema = Joi.object({
+  answers: Joi.array()
+    .items(
+      Joi.object({
+        exercise_id: Joi.string().uuid().required(),
+        response: Joi.string().trim().min(1).max(500).required(),
+      })
+    )
+    .min(1)
+    .max(50)
+    .required(),
+  // check=true grades and reveals without persisting (in-flow feedback);
+  // check=false (default) finalizes: XP, progress, and SRS are written.
+  check: Joi.boolean().default(false),
+});
+
 module.exports = {
   EXERCISE_TYPES,
   unitSchema,
   lessonSchema,
   exerciseSchemasByType,
   validateExercise,
+  gradeExercise,
+  SRS_INTERVALS_DAYS,
+  nextSrsIntervalDays,
+  lessonSubmitSchema,
 };
