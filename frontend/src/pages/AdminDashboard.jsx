@@ -6,6 +6,9 @@ import api from '../utils/api.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import ErrorMessage from '../components/ErrorMessage.jsx';
 import LoadingSpinner from '../components/LoadingSpinner.jsx';
+import Button from '../components/ui/Button.jsx';
+import Heading from '../components/ui/Heading.jsx';
+import ConfirmDialog from '../components/ui/ConfirmDialog.jsx';
 
 const CATEGORIES = ['Folje', 'Emër', 'Mbiemër', 'Ndajfolje'];
 
@@ -238,16 +241,15 @@ const AdminDashboard = () => {
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-10">
-      <h2 className="text-2xl font-black text-heading dark:text-dark-text mb-6">
-        ADMIN PANEL – Fjalingo
-      </h2>
+      <Heading level={2} className="mb-6">ADMIN PANEL – Fjalingo</Heading>
 
       <ErrorMessage message={error} />
       {success && (
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-fjalingo-green/10 border-2 border-fjalingo-green/20 text-fjalingo-green px-5 py-4 rounded-2xl font-semibold mb-4"
+          role="status"
+          className="bg-brand-green/10 border-2 border-brand-green/20 text-brand-green px-5 py-4 rounded-2xl font-semibold mb-4"
         >
           {success}
         </motion.div>
@@ -341,17 +343,19 @@ const AdminDashboard = () => {
           </h3>
           <div className="flex gap-2 w-full sm:w-auto">
             <div className="flex items-center bg-white dark:bg-dark-bg border-2 border-border dark:border-dark-border rounded-xl px-3 flex-1 sm:flex-initial">
-              <Search className="w-4 h-4 text-muted" />
+              <Search className="w-4 h-4 text-muted" aria-hidden="true" />
+              <label htmlFor="admin-word-search" className="sr-only">Kërko fjalë</label>
               <input
+                id="admin-word-search"
                 value={searchQ}
                 onChange={(e) => setSearchQ(e.target.value)}
                 placeholder="Kërko..."
                 className="py-2 px-2 text-sm font-semibold bg-transparent text-heading dark:text-dark-text focus:outline-none w-full sm:w-40"
               />
             </div>
-            <button onClick={openAddForm} className="btn-primary py-2 px-4 text-sm inline-flex items-center gap-1">
-              <Plus className="w-4 h-4" /> Shto
-            </button>
+            <Button onClick={openAddForm} variant="primary" size="md">
+              <Plus className="w-4 h-4" aria-hidden="true" /> Shto
+            </Button>
           </div>
         </div>
 
@@ -375,11 +379,11 @@ const AdminDashboard = () => {
                     <span className="badge badge-blue">{w.category || '—'}</span>
                   </td>
                   <td className="py-3 px-2 text-right">
-                    <button onClick={() => openEditForm(w)} className="p-1.5 rounded-lg hover:bg-fjalingo-blue/10 text-fjalingo-blue transition mr-1">
-                      <Pencil className="w-4 h-4" />
+                    <button onClick={() => openEditForm(w)} aria-label={`Ndrysho ${w.borrowed_word}`} className="p-1.5 rounded-lg hover:bg-brand-green/10 text-brand-green transition mr-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green">
+                      <Pencil className="w-4 h-4" aria-hidden="true" />
                     </button>
-                    <button onClick={() => setDeleteId(w.id)} className="p-1.5 rounded-lg hover:bg-fjalingo-red/10 text-fjalingo-red transition">
-                      <Trash2 className="w-4 h-4" />
+                    <button onClick={() => setDeleteId(w.id)} aria-label={`Fshij ${w.borrowed_word}`} className="p-1.5 rounded-lg hover:bg-accent-coral/10 text-accent-coral transition focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-coral">
+                      <Trash2 className="w-4 h-4" aria-hidden="true" />
                     </button>
                   </td>
                 </tr>
@@ -505,12 +509,12 @@ const AdminDashboard = () => {
                 </div>
 
                 <div className="flex gap-3 pt-4">
-                  <button onClick={saveWord} disabled={formLoading} className="btn-primary flex-1">
-                    {formLoading ? 'Duke ruajtur...' : editingId ? 'Përditëso Fjalën' : 'Ruaj Fjalën'}
-                  </button>
-                  <button onClick={() => setShowForm(false)} className="btn-outline flex-1">
+                  <Button onClick={saveWord} variant="primary" size="md" fullWidth loading={formLoading}>
+                    {editingId ? 'Përditëso Fjalën' : 'Ruaj Fjalën'}
+                  </Button>
+                  <Button onClick={() => setShowForm(false)} variant="secondary" size="md" fullWidth>
                     Anulo
-                  </button>
+                  </Button>
                 </div>
               </div>
             </motion.div>
@@ -518,38 +522,16 @@ const AdminDashboard = () => {
         )}
       </AnimatePresence>
 
-      {/* Delete Confirmation Modal */}
-      <AnimatePresence>
-        {deleteId && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4"
-            onClick={() => setDeleteId(null)}
-          >
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              onClick={(e) => e.stopPropagation()}
-              className="bg-white dark:bg-dark-bg rounded-2xl shadow-xl w-full max-w-sm p-6 text-center"
-            >
-              <span className="text-4xl block mb-4">⚠️</span>
-              <h3 className="text-lg font-black text-heading dark:text-dark-text mb-2">Fshi Fjalën?</h3>
-              <p className="text-sm text-muted dark:text-dark-muted mb-6">
-                Je i sigurt që dëshiron të fshish këtë fjalë? Ky veprim nuk kthehet mbrapsht.
-              </p>
-              <div className="flex gap-3">
-                <button onClick={() => setDeleteId(null)} className="btn-outline flex-1">Anulo</button>
-                <button onClick={deleteWord} className="bg-fjalingo-red text-white font-bold py-3 px-8 rounded-xl shadow-button transition-all hover:brightness-110 flex-1">
-                  Fshij
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Delete Confirmation */}
+      <ConfirmDialog
+        open={!!deleteId}
+        title="Fshi Fjalën?"
+        description="Je i sigurt që dëshiron të fshish këtë fjalë? Ky veprim nuk kthehet mbrapsht."
+        confirmLabel="Fshij"
+        variant="danger"
+        onConfirm={deleteWord}
+        onCancel={() => setDeleteId(null)}
+      />
     </div>
   );
 };
