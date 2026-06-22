@@ -1,0 +1,388 @@
+const pool = require('../utils/db');
+const Joi = require('joi');
+const {
+  gradeExercise,
+  nextSrsIntervalDays,
+  lessonSubmitSchema,
+} = require('../utils/exerciseSchemas');
+
+// ─────────────────────────────────────────────────────────────
+// Lesson player: serve lessons (prompt only, no answers), grade submissions
+// server-side, award XP, advance streak, and feed the spaced-repetition
+// mistake queue. Practice Mistakes (Premium) reuses the same submit handler.
+// ─────────────────────────────────────────────────────────────
+
+const FREE_DAILY_LESSON_LIMIT = 5;
+const XP_PER_CORRECT = 10;
+const LESSON_COMPLETION_BONUS = 20;
+const COMPLETION_THRESHOLD = 80; // percent
+const PRACTICE_LESSON_ID = 'practice';
+
+const LEVEL_FORMULA_SQL = `floor(sqrt((xp::numeric)/100))::int + 1`;
+
+const uuidSchema = Joi.string().uuid();
+
+// Number of lessons this free user has completed today (UTC day, matching the
+// quiz/search limiters). order-0 lessons are always free but still count toward
+// the daily total.
+async function countCompletedToday(client, userUuid) {
+  const result = await client.query(
+    `SELECT COUNT(*)::int AS count
+     FROM user_lesson_progress
+     WHERE user_id = $1::uuid
+       AND completed_at IS NOT NULL
+       AND completed_at >= (now() AT TIME ZONE 'utc')::date`,
+    [userUuid]
+  );
+  return result.rows[0].count;
+}
+
+// Returns null if access is allowed, or { status, body } describing the block.
+// Premium users always pass. For free users: premium units are fully locked,
+// the first lesson (order_index 0) of every unit is always free, and any other
+// lesson is allowed only while under the daily limit.
+async function checkFreeAccess(client, { isPremium, lesson, userUuid }) {
+  if (isPremium) return null;
+
+  if (lesson.is_premium_unit) {
+    return {
+      status: 402,
+      body: { message: 'Kjo njësi kërkon Premium.', code: 'PREMIUM_REQUIRED' },
+    };
+  }
+
+  if (lesson.order_index === 0) return null;
+
+  const completedToday = await countCompletedToday(client, userUuid);
+  if (completedToday >= FREE_DAILY_LESSON_LIMIT) {
+    return {
+      status: 402,
+      body: {
+        message: 'Plani falas përfshin 5 mësime në ditë. Për mësime pa kufi, kaloni në Premium.',
+        code: 'DAILY_LESSON_LIMIT_REACHED',
+      },
+    };
+  }
+
+  return null;
+}
+
+async function fetchLessonWithUnit(client, lessonId) {
+  const result = await client.query(
+    `SELECT l.id, l.unit_id, l.slug, l.title, l.order_index,
+            u.title AS unit_title, u.slug AS unit_slug, u.is_premium_unit
+     FROM lessons l
+     JOIN units u ON u.id = l.unit_id
+     WHERE l.id = $1`,
+    [lessonId]
+  );
+  return result.rows[0] || null;
+}
+
+// ── GET /api/lessons/:lessonId ───────────────────────────────
+const getLesson = async (req, res, next) => {
+  try {
+    const { error } = uuidSchema.validate(req.params.lessonId);
+    if (error) {
+      return res.status(404).json({ message: 'Mësimi nuk u gjet.' });
+    }
+
+    const lesson = await fetchLessonWithUnit(pool, req.params.lessonId);
+    if (!lesson) {
+      return res.status(404).json({ message: 'Mësimi nuk u gjet.' });
+    }
+
+    const access = await checkFreeAccess(pool, {
+      isPremium: Boolean(req.entitlement?.isPremium),
+      lesson,
+      userUuid: req.user.uuid,
+    });
+    if (access) {
+      return res.status(access.status).json(access.body);
+    }
+
+    // Prompt only — `answer` and `why_it_matters` are part of the post-answer
+    // reveal and are never sent before the user responds.
+    const exercises = await pool.query(
+      `SELECT id, type, order_index, prompt
+       FROM exercises
+       WHERE lesson_id = $1
+       ORDER BY order_index ASC`,
+      [req.params.lessonId]
+    );
+
+    return res.json({
+      lesson: {
+        id: lesson.id,
+        slug: lesson.slug,
+        title: lesson.title,
+        order_index: lesson.order_index,
+        unit_id: lesson.unit_id,
+        unit_title: lesson.unit_title,
+        unit_slug: lesson.unit_slug,
+      },
+      exercises: exercises.rows,
+    });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+// ── GET /api/lessons/practice-mistakes (Premium) ─────────────
+const practiceMistakes = async (req, res, next) => {
+  try {
+    const result = await pool.query(
+      `SELECT e.id, e.type, e.order_index, e.prompt, m.due_at
+       FROM user_exercise_mistakes m
+       JOIN exercises e ON e.id = m.exercise_id
+       WHERE m.user_id = $1::uuid
+         AND m.due_at <= now()
+       ORDER BY m.due_at ASC
+       LIMIT 8`,
+      [req.user.uuid]
+    );
+    return res.json({ exercises: result.rows });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+// Upsert the spaced-repetition state for one graded exercise.
+// Wrong -> reset to 1 day. Correct on a tracked mistake -> advance the interval
+// (1->3->7->14) or graduate (delete) once it passes 14 days.
+async function applySrs(client, userUuid, exerciseId, correct) {
+  if (!correct) {
+    await client.query(
+      `INSERT INTO user_exercise_mistakes
+         (user_id, exercise_id, last_wrong_at, due_at, interval_days, correct_streak)
+       VALUES ($1::uuid, $2::uuid, now(), now() + make_interval(days => 1), 1, 0)
+       ON CONFLICT (user_id, exercise_id) DO UPDATE SET
+         last_wrong_at = now(),
+         due_at = now() + make_interval(days => 1),
+         interval_days = 1,
+         correct_streak = 0`,
+      [userUuid, exerciseId]
+    );
+    return;
+  }
+
+  const existing = await client.query(
+    `SELECT interval_days FROM user_exercise_mistakes
+     WHERE user_id = $1::uuid AND exercise_id = $2::uuid`,
+    [userUuid, exerciseId]
+  );
+  if (!existing.rows.length) {
+    return; // correct answer on an exercise that was never a mistake
+  }
+
+  const next = nextSrsIntervalDays(existing.rows[0].interval_days);
+  if (next === null) {
+    await client.query(
+      `DELETE FROM user_exercise_mistakes
+       WHERE user_id = $1::uuid AND exercise_id = $2::uuid`,
+      [userUuid, exerciseId]
+    );
+    return;
+  }
+
+  await client.query(
+    `UPDATE user_exercise_mistakes
+     SET interval_days = $3,
+         due_at = now() + make_interval(days => $3),
+         correct_streak = correct_streak + 1
+     WHERE user_id = $1::uuid AND exercise_id = $2::uuid`,
+    [userUuid, exerciseId, next]
+  );
+}
+
+// ── POST /api/lessons/:lessonId/submit ───────────────────────
+// Also handles practice mode when :lessonId === 'practice'.
+const submitLesson = async (req, res, next) => {
+  try {
+    const { error, value } = lessonSubmitSchema.validate(req.body);
+    if (error) {
+      return res.status(400).json({ message: 'Të dhënat e përgjigjeve janë të pavlefshme.' });
+    }
+
+    const userUuid = req.user.uuid;
+    const isPremium = Boolean(req.entitlement?.isPremium);
+    const isPractice = req.params.lessonId === PRACTICE_LESSON_ID;
+    const { answers, check } = value;
+
+    // Reject duplicate exercise_ids up front.
+    const submittedIds = answers.map((a) => a.exercise_id);
+    if (new Set(submittedIds).size !== submittedIds.length) {
+      return res.status(400).json({ message: 'Përgjigjet përmbajnë ushtrime të përsëritura.' });
+    }
+
+    if (isPractice && !isPremium) {
+      return res.status(402).json({ message: 'Përsërit gabimet kërkon Premium.', code: 'PREMIUM_REQUIRED' });
+    }
+
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+
+      let lesson = null;
+      let lessonExerciseCount = 0;
+      let exerciseRows;
+
+      if (isPractice) {
+        // Practice items must already be in this user's mistake queue.
+        const result = await client.query(
+          `SELECT e.id, e.type, e.answer, e.why_it_matters
+           FROM exercises e
+           JOIN user_exercise_mistakes m ON m.exercise_id = e.id
+           WHERE m.user_id = $1::uuid AND e.id = ANY($2::uuid[])`,
+          [userUuid, submittedIds]
+        );
+        exerciseRows = result.rows;
+      } else {
+        const { error: idError } = uuidSchema.validate(req.params.lessonId);
+        if (idError) {
+          await client.query('ROLLBACK');
+          return res.status(404).json({ message: 'Mësimi nuk u gjet.' });
+        }
+
+        lesson = await fetchLessonWithUnit(client, req.params.lessonId);
+        if (!lesson) {
+          await client.query('ROLLBACK');
+          return res.status(404).json({ message: 'Mësimi nuk u gjet.' });
+        }
+
+        const access = await checkFreeAccess(client, { isPremium, lesson, userUuid });
+        if (access) {
+          await client.query('ROLLBACK');
+          return res.status(access.status).json(access.body);
+        }
+
+        const result = await client.query(
+          `SELECT id, type, answer, why_it_matters
+           FROM exercises
+           WHERE lesson_id = $1`,
+          [req.params.lessonId]
+        );
+        exerciseRows = result.rows;
+        lessonExerciseCount = result.rows.length;
+      }
+
+      const exById = new Map(exerciseRows.map((e) => [e.id, e]));
+      for (const id of submittedIds) {
+        if (!exById.has(id)) {
+          await client.query('ROLLBACK');
+          return res.status(400).json({
+            message: isPractice
+              ? 'Një ose më shumë ushtrime nuk janë në radhën e gabimeve.'
+              : 'Një ose më shumë ushtrime nuk i përkasin këtij mësimi.',
+          });
+        }
+      }
+
+      const results = answers.map((a) => {
+        const ex = exById.get(a.exercise_id);
+        const correct = gradeExercise(ex.type, ex.answer, a.response);
+        return {
+          exercise_id: ex.id,
+          type: ex.type,
+          correct,
+          response: a.response,
+          answer: ex.answer,
+          why_it_matters: ex.why_it_matters,
+        };
+      });
+
+      const correctCount = results.filter((r) => r.correct).length;
+      const denominator = isPractice ? results.length : lessonExerciseCount;
+      const score = denominator > 0 ? Math.round((correctCount / denominator) * 100) : 0;
+      const completed = !isPractice && score >= COMPLETION_THRESHOLD;
+      const xpEarned = correctCount * XP_PER_CORRECT + (completed ? LESSON_COMPLETION_BONUS : 0);
+
+      // check mode: grade + reveal only, no writes.
+      if (check) {
+        await client.query('ROLLBACK');
+        return res.json({
+          check: true,
+          results,
+          correctCount,
+          total: denominator,
+          score,
+        });
+      }
+
+      // Finalize: SRS for every graded exercise.
+      for (const r of results) {
+        await applySrs(client, userUuid, r.exercise_id, r.correct);
+      }
+
+      // Lesson progress (skip for practice).
+      if (!isPractice) {
+        await client.query(
+          `INSERT INTO user_lesson_progress (user_id, lesson_id, completed_at, best_score, attempts)
+           VALUES ($1::uuid, $2::uuid, CASE WHEN $3 THEN now() ELSE NULL END, $4, 1)
+           ON CONFLICT (user_id, lesson_id) DO UPDATE SET
+             attempts = user_lesson_progress.attempts + 1,
+             best_score = GREATEST(COALESCE(user_lesson_progress.best_score, 0), EXCLUDED.best_score),
+             completed_at = CASE
+               WHEN user_lesson_progress.completed_at IS NOT NULL THEN user_lesson_progress.completed_at
+               WHEN $3 THEN now()
+               ELSE NULL
+             END`,
+          [userUuid, req.params.lessonId, completed, score]
+        );
+      }
+
+      // XP + streak. Streak advances on a completed lesson, or on any practice
+      // session with at least one correct answer (engagement that day).
+      const advanceStreak = completed || (isPractice && correctCount > 0);
+      const statsResult = await client.query(
+        `UPDATE user_stats
+         SET xp = xp + $2,
+             streak = CASE WHEN $3 THEN (
+               CASE
+                 WHEN last_quiz_date = ((now() AT TIME ZONE 'utc')::date - 1) THEN streak + 1
+                 WHEN last_quiz_date = (now() AT TIME ZONE 'utc')::date THEN streak
+                 ELSE 1
+               END
+             ) ELSE streak END,
+             last_quiz_date = CASE WHEN $3 THEN (now() AT TIME ZONE 'utc')::date ELSE last_quiz_date END,
+             level = ${LEVEL_FORMULA_SQL}
+         WHERE user_id = $1::uuid
+         RETURNING xp, level, streak, last_quiz_date`,
+        [userUuid, xpEarned, advanceStreak]
+      );
+      const stats = statsResult.rows[0] || null;
+
+      await client.query('COMMIT');
+
+      return res.json({
+        check: false,
+        practice: isPractice,
+        results,
+        wrongAnswers: results.filter((r) => !r.correct),
+        correctCount,
+        total: denominator,
+        score,
+        completed,
+        xpEarned,
+        streak: stats ? stats.streak : null,
+        stats,
+      });
+    } catch (err) {
+      await client.query('ROLLBACK');
+      throw err;
+    } finally {
+      client.release();
+    }
+  } catch (err) {
+    return next(err);
+  }
+};
+
+module.exports = {
+  getLesson,
+  submitLesson,
+  practiceMistakes,
+  FREE_DAILY_LESSON_LIMIT,
+  XP_PER_CORRECT,
+  LESSON_COMPLETION_BONUS,
+};

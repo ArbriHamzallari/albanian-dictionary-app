@@ -12,6 +12,7 @@ import SuggestWord from './pages/SuggestWord.jsx';
 import AdminLogin from './pages/AdminLogin.jsx';
 import AdminDashboard from './pages/AdminDashboard.jsx';
 import Quiz from './pages/Quiz.jsx';
+import Lesson from './pages/Lesson.jsx';
 import Achievements from './pages/Achievements.jsx';
 import Login from './pages/Login.jsx';
 import Register from './pages/Register.jsx';
@@ -46,6 +47,8 @@ const App = () => {
             <Route path="/fjala-e-dites" element={<WordOfTheDay />} />
             <Route path="/propozo" element={<SuggestWord />} />
             <Route path="/kuizi" element={<Quiz />} />
+            <Route path="/mesimi/:lessonId" element={<Lesson />} />
+            <Route path="/perserit-gabimet" element={<Lesson />} />
             <Route path="/arritjet" element={<Achievements />} />
             <Route path="/hyr" element={<Login />} />
             <Route path="/regjistrohu" element={<Register />} />
