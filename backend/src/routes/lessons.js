@@ -1,9 +1,24 @@
 const express = require('express');
-const { getLesson, submitLesson, practiceMistakes } = require('../controllers/lessonController');
+const {
+  getLesson,
+  submitLesson,
+  practiceMistakes,
+  getSampleExercise,
+  gradeSampleExercise,
+  getFirstLesson,
+} = require('../controllers/lessonController');
 const { authenticate } = require('../middleware/auth');
 const { isPremium, requirePremium } = require('../middleware/entitlements');
 
 const router = express.Router();
+
+// Onboarding "first taste" — public, no account, no persistence. Registered
+// before /:lessonId so these literal paths are not captured as a lessonId.
+router.get('/sample', getSampleExercise);
+router.post('/sample/grade', gradeSampleExercise);
+
+// Onboarding hand-off: resolve Unit 1 Lesson 1 after sign-up.
+router.get('/first', authenticate, getFirstLesson);
 
 // Practice Mistakes (Premium). Registered before /:lessonId so the literal path
 // is matched as an exact route rather than captured as a lessonId.

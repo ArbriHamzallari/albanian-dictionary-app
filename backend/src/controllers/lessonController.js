@@ -195,6 +195,87 @@ async function applySrs(client, userUuid, exerciseId, correct) {
   );
 }
 
+// ── GET /api/lessons/sample (public, onboarding first taste) ──
+// One Spot-the-Alblish exercise from the seed curriculum, prompt only.
+const getSampleExercise = async (req, res, next) => {
+  try {
+    const result = await pool.query(
+      `SELECT e.id, e.type, e.order_index, e.prompt
+       FROM exercises e
+       JOIN lessons l ON l.id = e.lesson_id
+       JOIN units u ON u.id = l.unit_id
+       WHERE e.type = 'spot_alblish'
+       ORDER BY u.order_index ASC, l.order_index ASC, e.order_index ASC
+       LIMIT 1`
+    );
+    if (!result.rows.length) {
+      return res.status(404).json({ message: 'Asnjë ushtrim shembull nuk u gjet.' });
+    }
+    return res.json({ exercise: result.rows[0] });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+// ── POST /api/lessons/sample/grade (public, onboarding) ───────
+// Grades the first-taste exercise without any persistence. Mirrors the `check`
+// response shape so the Lesson player can reuse the same code path.
+const gradeSampleExercise = async (req, res, next) => {
+  try {
+    const schema = Joi.object({
+      exercise_id: Joi.string().uuid().required(),
+      response: Joi.string().trim().min(1).max(500).required(),
+    });
+    const { error, value } = schema.validate(req.body);
+    if (error) {
+      return res.status(400).json({ message: 'Të dhënat e përgjigjes janë të pavlefshme.' });
+    }
+
+    const result = await pool.query(
+      `SELECT id, type, answer, why_it_matters FROM exercises WHERE id = $1`,
+      [value.exercise_id]
+    );
+    if (!result.rows.length) {
+      return res.status(404).json({ message: 'Ushtrimi nuk u gjet.' });
+    }
+
+    const ex = result.rows[0];
+    const correct = gradeExercise(ex.type, ex.answer, value.response);
+    return res.json({
+      results: [{
+        exercise_id: ex.id,
+        type: ex.type,
+        correct,
+        response: value.response,
+        answer: ex.answer,
+        why_it_matters: ex.why_it_matters,
+      }],
+    });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+// ── GET /api/lessons/first (auth, onboarding hand-off) ────────
+// The first lesson of the first unit (Unit 1, Lesson 1) by order.
+const getFirstLesson = async (req, res, next) => {
+  try {
+    const result = await pool.query(
+      `SELECT l.id
+       FROM lessons l
+       JOIN units u ON u.id = l.unit_id
+       ORDER BY u.order_index ASC, l.order_index ASC
+       LIMIT 1`
+    );
+    if (!result.rows.length) {
+      return res.status(404).json({ message: 'Asnjë mësim nuk u gjet.' });
+    }
+    return res.json({ lesson_id: result.rows[0].id });
+  } catch (err) {
+    return next(err);
+  }
+};
+
 // ── POST /api/lessons/:lessonId/submit ───────────────────────
 // Also handles practice mode when :lessonId === 'practice'.
 const submitLesson = async (req, res, next) => {
@@ -382,6 +463,9 @@ module.exports = {
   getLesson,
   submitLesson,
   practiceMistakes,
+  getSampleExercise,
+  gradeSampleExercise,
+  getFirstLesson,
   FREE_DAILY_LESSON_LIMIT,
   XP_PER_CORRECT,
   LESSON_COMPLETION_BONUS,

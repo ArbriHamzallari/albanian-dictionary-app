@@ -187,13 +187,20 @@ const ChoiceExercise = ({ exercise, reveal, selectedValue, onSelect }) => {
   );
 };
 
-const Lesson = () => {
+// `taste` mode plays a single public Spot-the-Alblish exercise with no account
+// and no persistence (used by onboarding). `onComplete` is called when the user
+// finishes it. In taste mode the component renders embedded (no full-screen
+// chrome) so it can sit inside the onboarding stepper card.
+const Lesson = ({ taste = false, onComplete }) => {
   const { lessonId } = useParams();
-  const isPractice = !lessonId;
+  const isPractice = !taste && !lessonId;
   const navigate = useNavigate();
   const { loadUser } = useAuth();
 
-  const submitPath = isPractice ? '/lessons/practice/submit' : `/lessons/${lessonId}/submit`;
+  let submitPath;
+  if (taste) submitPath = '/lessons/sample/grade';
+  else if (isPractice) submitPath = '/lessons/practice/submit';
+  else submitPath = `/lessons/${lessonId}/submit`;
 
   const [status, setStatus] = useState('loading'); // loading | error | playing | finished | empty
   const [errorInfo, setErrorInfo] = useState(null); // { message, code }
@@ -213,7 +220,11 @@ const Lesson = () => {
     setIndex(0);
     setFinalResult(null);
     try {
-      if (isPractice) {
+      if (taste) {
+        const res = await api.get('/lessons/sample');
+        setExercises(res.data.exercise ? [res.data.exercise] : []);
+        setMeta({ title: 'Provo një shembull' });
+      } else if (isPractice) {
         const res = await api.get('/lessons/practice-mistakes');
         const list = res.data.exercises || [];
         if (!list.length) {
@@ -241,7 +252,7 @@ const Lesson = () => {
       });
       setStatus('error');
     }
-  }, [isPractice, lessonId]);
+  }, [taste, isPractice, lessonId]);
 
   useEffect(() => {
     load();
@@ -295,6 +306,10 @@ const Lesson = () => {
   };
 
   const handleContinue = () => {
+    if (taste) {
+      if (onComplete) onComplete();
+      return;
+    }
     if (isLast) {
       finalize();
     } else {
@@ -305,8 +320,20 @@ const Lesson = () => {
   // ── Render states ──────────────────────────────────────────
   if (status === 'loading') {
     return (
-      <div className="min-h-screen bg-cloud flex items-center justify-center">
-        <Parrot state="idle" size={120} />
+      <div className={taste ? 'flex items-center justify-center py-12' : 'min-h-screen bg-cloud flex items-center justify-center'}>
+        <Parrot state="idle" size={taste ? 90 : 120} />
+      </div>
+    );
+  }
+
+  if (status === 'error' && taste) {
+    return (
+      <div className="flex flex-col items-center justify-center py-12 text-center gap-4">
+        <Parrot state="think" size={100} />
+        <p className="text-ink-soft font-semibold max-w-sm">{errorInfo?.message}</p>
+        <Button variant="secondary" size="md" onClick={load}>
+          Provo përsëri
+        </Button>
       </div>
     );
   }
@@ -397,63 +424,69 @@ const Lesson = () => {
     ? currentReveal.answer.correct_albanian
     : undefined;
 
-  return (
-    <div className="min-h-screen bg-cloud px-6 py-6">
-      <div className="max-w-2xl mx-auto">
+  const body = (
+    <div className={taste ? '' : 'max-w-2xl mx-auto'}>
+      {/* Single-exercise taste mode hides the internal progress bar; the
+          onboarding stepper shows its own dot indicator. */}
+      {!taste && (
         <div className="flex items-center gap-3 mb-8">
           <span className="text-sm font-black text-ink whitespace-nowrap">
             {index + 1}/{exercises.length}
           </span>
           <ProgressBar value={progress} />
         </div>
+      )}
 
-        <div className="flex justify-center mb-6">
-          <Parrot state={parrotState} size={120} correctionText={correctionText} />
-        </div>
+      <div className="flex justify-center mb-6">
+        <Parrot state={parrotState} size={taste ? 100 : 120} correctionText={correctionText} />
+      </div>
 
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={current.id}
-            initial={{ opacity: 0, x: 24 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -24 }}
-            transition={{ duration: 0.2 }}
-          >
-            <Card padding="lg">
-              {current.type === 'spot_alblish' ? (
-                <SpotAlblish
-                  exercise={current}
-                  reveal={currentReveal}
-                  selectedIndex={selected[current.id]?.index ?? null}
-                  onSelect={handleSelect}
-                />
-              ) : (
-                <ChoiceExercise
-                  exercise={current}
-                  reveal={currentReveal}
-                  selectedValue={selected[current.id]?.value ?? null}
-                  onSelect={(value) => handleSelect(value)}
-                />
-              )}
-            </Card>
-          </motion.div>
-        </AnimatePresence>
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={current.id}
+          initial={{ opacity: 0, x: 24 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -24 }}
+          transition={{ duration: 0.2 }}
+        >
+          <Card padding="lg">
+            {current.type === 'spot_alblish' ? (
+              <SpotAlblish
+                exercise={current}
+                reveal={currentReveal}
+                selectedIndex={selected[current.id]?.index ?? null}
+                onSelect={handleSelect}
+              />
+            ) : (
+              <ChoiceExercise
+                exercise={current}
+                reveal={currentReveal}
+                selectedValue={selected[current.id]?.value ?? null}
+                onSelect={(value) => handleSelect(value)}
+              />
+            )}
+          </Card>
+        </motion.div>
+      </AnimatePresence>
 
-        <div className="mt-8">
-          <Button
-            variant="primary"
-            size="lg"
-            fullWidth
-            disabled={!currentReveal}
-            loading={checking}
-            onClick={handleContinue}
-          >
-            Vazhdo
-          </Button>
-        </div>
+      <div className="mt-8">
+        <Button
+          variant="primary"
+          size="lg"
+          fullWidth
+          disabled={!currentReveal}
+          loading={checking}
+          onClick={handleContinue}
+        >
+          Vazhdo
+        </Button>
       </div>
     </div>
   );
+
+  if (taste) return body;
+
+  return <div className="min-h-screen bg-cloud px-6 py-6">{body}</div>;
 };
 
 export default Lesson;

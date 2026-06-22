@@ -13,6 +13,7 @@ import AdminLogin from './pages/AdminLogin.jsx';
 import AdminDashboard from './pages/AdminDashboard.jsx';
 import Quiz from './pages/Quiz.jsx';
 import Lesson from './pages/Lesson.jsx';
+import Onboarding from './pages/Onboarding.jsx';
 import Achievements from './pages/Achievements.jsx';
 import Login from './pages/Login.jsx';
 import Register from './pages/Register.jsx';
@@ -28,12 +29,13 @@ const App = () => {
   const location = useLocation();
   const isSplash = location.pathname === '/';
   const isDesign = location.pathname === '/design';
+  const isOnboarding = location.pathname === '/start';
 
   useEffect(() => {
     initTheme();
   }, []);
 
-  const showChrome = !isSplash && !isDesign;
+  const showChrome = !isSplash && !isDesign && !isOnboarding;
 
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-dark-bg">
@@ -47,6 +49,7 @@ const App = () => {
             <Route path="/fjala-e-dites" element={<WordOfTheDay />} />
             <Route path="/propozo" element={<SuggestWord />} />
             <Route path="/kuizi" element={<Quiz />} />
+            <Route path="/start" element={<Onboarding />} />
             <Route path="/mesimi/:lessonId" element={<Lesson />} />
             <Route path="/perserit-gabimet" element={<Lesson />} />
             <Route path="/arritjet" element={<Achievements />} />
