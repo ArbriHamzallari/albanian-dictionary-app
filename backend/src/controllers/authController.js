@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const pool = require('../utils/db');
@@ -5,6 +6,7 @@ const { loginSchema, registerSchema, guestUpgradeSchema, consentCheckSchema } = 
 const { USER_RANK_SQL } = require('../utils/rankSql');
 const { getEntitlement, entitlementIsPremium } = require('../middleware/entitlements');
 const { touchLastSeen } = require('../utils/presence');
+const { parseCookies } = require('../utils/cookies');
 const {
   getLeaderboardSegmentForAge,
   isMinorAge,
@@ -14,10 +16,22 @@ const {
 } = require('../utils/childSafety');
 
 const LEVEL_FORMULA_SQL = `floor(sqrt((xp::numeric)/100))::int + 1`;
-const JWT_EXPIRY = '7d';
 
-// ── helpers ──────────────────────────────────────────────────
-function signToken(user) {
+// ── Auth tokens & cookies ────────────────────────────────────
+// JWT lives in an httpOnly cookie so an XSS cannot read it. A short-lived access
+// token (2h) is refreshed via a long-lived refresh token (14d). A non-HttpOnly
+// CSRF token cookie is echoed by the client in the x-fjalingo-csrf header.
+const ACCESS_TTL = '2h';
+const REFRESH_TTL = '14d';
+const ACCESS_MAX_AGE_MS = 2 * 60 * 60 * 1000;
+const REFRESH_MAX_AGE_MS = 14 * 24 * 60 * 60 * 1000;
+const ACCESS_COOKIE = 'fjalingo_token';
+const REFRESH_COOKIE = 'fjalingo_refresh';
+const CSRF_COOKIE = 'fjalingo_csrf';
+const BCRYPT_COST = 12;
+const isProduction = process.env.NODE_ENV === 'production';
+
+function signAccessToken(user) {
   return jwt.sign(
     {
       id: user.id,
@@ -27,8 +41,37 @@ function signToken(user) {
       username: user.username,
     },
     process.env.JWT_SECRET,
-    { expiresIn: JWT_EXPIRY }
+    { expiresIn: ACCESS_TTL }
   );
+}
+
+function signRefreshToken(user) {
+  return jwt.sign({ uuid: user.uuid, type: 'refresh' }, process.env.JWT_SECRET, { expiresIn: REFRESH_TTL });
+}
+
+// secure:true requires HTTPS, so it is enabled only in production. SameSite=Lax
+// requires the frontend and API to share a registrable domain in production
+// (e.g. fjalingo.al + api.fjalingo.al).
+function cookieBase() {
+  return { secure: isProduction, sameSite: 'lax', path: '/' };
+}
+
+// Issues access + refresh + csrf cookies and returns the access token (also sent
+// in the JSON body so non-browser/Bearer clients keep working).
+function setSessionCookies(res, user) {
+  const access = signAccessToken(user);
+  const refresh = signRefreshToken(user);
+  const csrf = crypto.randomBytes(24).toString('hex');
+  res.cookie(ACCESS_COOKIE, access, { ...cookieBase(), httpOnly: true, maxAge: ACCESS_MAX_AGE_MS });
+  res.cookie(REFRESH_COOKIE, refresh, { ...cookieBase(), httpOnly: true, maxAge: REFRESH_MAX_AGE_MS });
+  res.cookie(CSRF_COOKIE, csrf, { ...cookieBase(), httpOnly: false, maxAge: REFRESH_MAX_AGE_MS });
+  return access;
+}
+
+function clearSessionCookies(res) {
+  res.clearCookie(ACCESS_COOKIE, { ...cookieBase(), httpOnly: true });
+  res.clearCookie(REFRESH_COOKIE, { ...cookieBase(), httpOnly: true });
+  res.clearCookie(CSRF_COOKIE, { ...cookieBase(), httpOnly: false });
 }
 
 function isUniqueViolation(err) {
@@ -121,7 +164,7 @@ const register = async (req, res, next) => {
     }
 
     const timezone = resolveTimezone(value.timezone);
-    const passwordHash = await bcrypt.hash(value.password, 10);
+    const passwordHash = await bcrypt.hash(value.password, BCRYPT_COST);
 
     const client = await pool.connect();
     try {
@@ -184,7 +227,7 @@ const register = async (req, res, next) => {
 
       const statsResult = await client.query('SELECT * FROM user_stats WHERE user_id = $1', [user.uuid]);
 
-      const token = signToken(user);
+      const token = setSessionCookies(res, user);
       return res.status(201).json({
         token,
         profile: profileFromRow(user),
@@ -240,7 +283,7 @@ const login = async (req, res, next) => {
       [user.id]
     );
 
-    const token = signToken(user);
+    const token = setSessionCookies(res, user);
 
     // For admin users return token + role + profile (so frontend can detect admin immediately)
     if (user.role === 'admin') {
@@ -269,6 +312,16 @@ const login = async (req, res, next) => {
 const me = async (req, res, next) => {
   try {
     const userUuid = req.user.uuid;
+
+    // Cookie-authenticated sessions need a CSRF token available to JS; issue one
+    // if it is missing (e.g. a session that predates this change).
+    if (!parseCookies(req)[CSRF_COOKIE]) {
+      res.cookie(CSRF_COOKIE, crypto.randomBytes(24).toString('hex'), {
+        ...cookieBase(),
+        httpOnly: false,
+        maxAge: REFRESH_MAX_AGE_MS,
+      });
+    }
 
     const userResult = await pool.query('SELECT * FROM users WHERE uuid = $1::uuid', [userUuid]);
     if (!userResult.rows.length) {
@@ -331,7 +384,7 @@ const guestUpgrade = async (req, res, next) => {
     gp.correct_answers = Math.min(gp.correct_answers, gp.total_quizzes * 10);
 
     const timezone = resolveTimezone(value.timezone);
-    const passwordHash = await bcrypt.hash(value.password, 10);
+    const passwordHash = await bcrypt.hash(value.password, BCRYPT_COST);
 
     const client = await pool.connect();
     try {
@@ -397,7 +450,7 @@ const guestUpgrade = async (req, res, next) => {
 
       const statsResult = await client.query('SELECT * FROM user_stats WHERE user_id = $1', [user.uuid]);
 
-      const token = signToken(user);
+      const token = setSessionCookies(res, user);
       return res.status(201).json({
         token,
         profile: profileFromRow(user),
@@ -452,4 +505,43 @@ const heartbeat = async (req, res, next) => {
   }
 };
 
-module.exports = { register, login, me, guestUpgrade, heartbeat, consentCheck };
+// ── POST /refresh ────────────────────────────────────────────
+// Verifies the refresh cookie and rotates the access + refresh cookies. Note:
+// rotation is stateless (no server-side denylist), so the previous refresh token
+// stays valid until it expires — a token store is a future hardening step.
+const refresh = async (req, res) => {
+  const refreshToken = parseCookies(req)[REFRESH_COOKIE];
+  if (!refreshToken) {
+    return res.status(401).json({ message: 'Sesioni ka skaduar.', code: 'NO_REFRESH' });
+  }
+
+  let payload;
+  try {
+    payload = jwt.verify(refreshToken, process.env.JWT_SECRET);
+  } catch (err) {
+    clearSessionCookies(res);
+    return res.status(401).json({ message: 'Sesioni ka skaduar.', code: 'REFRESH_INVALID' });
+  }
+
+  if (payload.type !== 'refresh' || !payload.uuid) {
+    clearSessionCookies(res);
+    return res.status(401).json({ message: 'Sesioni ka skaduar.', code: 'REFRESH_INVALID' });
+  }
+
+  const userResult = await pool.query('SELECT * FROM users WHERE uuid = $1::uuid', [payload.uuid]);
+  if (!userResult.rows.length) {
+    clearSessionCookies(res);
+    return res.status(401).json({ message: 'Sesioni ka skaduar.', code: 'REFRESH_INVALID' });
+  }
+
+  setSessionCookies(res, userResult.rows[0]);
+  return res.json({ ok: true });
+};
+
+// ── POST /logout ─────────────────────────────────────────────
+const logout = (req, res) => {
+  clearSessionCookies(res);
+  return res.json({ ok: true });
+};
+
+module.exports = { register, login, me, guestUpgrade, heartbeat, consentCheck, refresh, logout };

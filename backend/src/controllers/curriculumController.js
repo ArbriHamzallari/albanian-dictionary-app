@@ -4,6 +4,7 @@ const {
   lessonSchema,
   validateExercise,
 } = require('../utils/exerciseSchemas');
+const { logAdminAction } = require('../utils/auditLog');
 
 // ─────────────────────────────────────────────────────────────
 // Admin curriculum CRUD: units -> lessons -> exercises.
@@ -64,6 +65,7 @@ const createUnit = async (req, res, next) => {
         value.is_premium_unit,
       ]
     );
+    await logAdminAction(req, { action: 'unit.create', targetType: 'unit', targetId: result.rows[0].id, metadata: { slug: result.rows[0].slug } });
     return res.status(201).json({ unit: result.rows[0] });
   } catch (err) {
     if (isUniqueViolation(err)) {
@@ -99,6 +101,7 @@ const updateUnit = async (req, res, next) => {
     if (!result.rows.length) {
       return res.status(404).json({ message: 'Njësia nuk u gjet.' });
     }
+    await logAdminAction(req, { action: 'unit.update', targetType: 'unit', targetId: req.params.id, metadata: { slug: result.rows[0].slug } });
     return res.json({ unit: result.rows[0] });
   } catch (err) {
     if (isUniqueViolation(err)) {
@@ -114,6 +117,7 @@ const deleteUnit = async (req, res, next) => {
     if (!result.rows.length) {
       return res.status(404).json({ message: 'Njësia nuk u gjet.' });
     }
+    await logAdminAction(req, { action: 'unit.delete', targetType: 'unit', targetId: req.params.id });
     return res.json({ message: 'Njësia u fshi me sukses.' });
   } catch (err) {
     return next(err);
@@ -167,6 +171,7 @@ const createLesson = async (req, res, next) => {
        RETURNING *`,
       [value.unit_id, value.slug, value.title, value.order_index]
     );
+    await logAdminAction(req, { action: 'lesson.create', targetType: 'lesson', targetId: result.rows[0].id, metadata: { unit_id: result.rows[0].unit_id, slug: result.rows[0].slug } });
     return res.status(201).json({ lesson: result.rows[0] });
   } catch (err) {
     if (isForeignKeyViolation(err)) {
@@ -195,6 +200,7 @@ const updateLesson = async (req, res, next) => {
     if (!result.rows.length) {
       return res.status(404).json({ message: 'Mësimi nuk u gjet.' });
     }
+    await logAdminAction(req, { action: 'lesson.update', targetType: 'lesson', targetId: req.params.id, metadata: { slug: result.rows[0].slug } });
     return res.json({ lesson: result.rows[0] });
   } catch (err) {
     if (isForeignKeyViolation(err)) {
@@ -213,6 +219,7 @@ const deleteLesson = async (req, res, next) => {
     if (!result.rows.length) {
       return res.status(404).json({ message: 'Mësimi nuk u gjet.' });
     }
+    await logAdminAction(req, { action: 'lesson.delete', targetType: 'lesson', targetId: req.params.id });
     return res.json({ message: 'Mësimi u fshi me sukses.' });
   } catch (err) {
     return next(err);
@@ -269,6 +276,7 @@ const createExercise = async (req, res, next) => {
         value.why_it_matters || null,
       ]
     );
+    await logAdminAction(req, { action: 'exercise.create', targetType: 'exercise', targetId: result.rows[0].id, metadata: { lesson_id: value.lesson_id, type: value.type } });
     return res.status(201).json({ exercise: result.rows[0] });
   } catch (err) {
     if (isForeignKeyViolation(err)) {
@@ -306,6 +314,7 @@ const updateExercise = async (req, res, next) => {
     if (!result.rows.length) {
       return res.status(404).json({ message: 'Ushtrimi nuk u gjet.' });
     }
+    await logAdminAction(req, { action: 'exercise.update', targetType: 'exercise', targetId: req.params.id, metadata: { type: value.type } });
     return res.json({ exercise: result.rows[0] });
   } catch (err) {
     if (isForeignKeyViolation(err)) {
@@ -324,6 +333,7 @@ const deleteExercise = async (req, res, next) => {
     if (!result.rows.length) {
       return res.status(404).json({ message: 'Ushtrimi nuk u gjet.' });
     }
+    await logAdminAction(req, { action: 'exercise.delete', targetType: 'exercise', targetId: req.params.id });
     return res.json({ message: 'Ushtrimi u fshi me sukses.' });
   } catch (err) {
     return next(err);
