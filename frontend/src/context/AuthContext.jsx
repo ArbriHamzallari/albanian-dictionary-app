@@ -6,6 +6,15 @@ const AuthContext = createContext(null);
 const TOKEN_KEY = 'fjalingo_token';
 const GUEST_PROGRESS_KEY = 'fjalingo_guest_progress';
 
+// Browser IANA timezone (e.g. "Europe/Tirane"), used to anchor the streak day.
+function getBrowserTimeZone() {
+  try {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+  } catch {
+    return 'UTC';
+  }
+}
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);       // { profile, stats, rank, achievements }
   const [loading, setLoading] = useState(true);
@@ -87,6 +96,7 @@ export function AuthProvider({ children }) {
       age: Number(age),
       country_code: countryCode,
       parental_consent_given: parentalConsentGiven,
+      timezone: getBrowserTimeZone(),
     });
     setToken(res.data.token);
     if (res.data.profile) {
@@ -131,6 +141,7 @@ export function AuthProvider({ children }) {
       age: Number(age),
       country_code: countryCode,
       parental_consent_given: parentalConsentGiven,
+      timezone: getBrowserTimeZone(),
       guestProgress,
     });
     clearGuestProgress();

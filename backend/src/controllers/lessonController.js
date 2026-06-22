@@ -5,6 +5,7 @@ const {
   nextSrsIntervalDays,
   lessonSubmitSchema,
 } = require('../utils/exerciseSchemas');
+const { updateQuestProgress, longestCorrectRun, formatQuest } = require('../utils/quests');
 
 // ─────────────────────────────────────────────────────────────
 // Lesson player: serve lessons (prompt only, no answers), grade submissions
@@ -413,25 +414,52 @@ const submitLesson = async (req, res, next) => {
       }
 
       // XP + streak. Streak advances on a completed lesson, or on any practice
-      // session with at least one correct answer (engagement that day).
+      // session with at least one correct answer (engagement that day). The
+      // "day" boundary is the date in the user's timezone, and the streak is
+      // computed from users.last_activity_date (the prior activity day).
       const advanceStreak = completed || (isPractice && correctCount > 0);
-      const statsResult = await client.query(
-        `UPDATE user_stats
-         SET xp = xp + $2,
-             streak = CASE WHEN $3 THEN (
-               CASE
-                 WHEN last_quiz_date = ((now() AT TIME ZONE 'utc')::date - 1) THEN streak + 1
-                 WHEN last_quiz_date = (now() AT TIME ZONE 'utc')::date THEN streak
+
+      if (advanceStreak) {
+        await client.query(
+          `UPDATE user_stats us
+           SET xp = xp + $2,
+               streak = CASE
+                 WHEN u.last_activity_date = (now() AT TIME ZONE COALESCE(u.timezone, 'UTC'))::date THEN us.streak
+                 WHEN u.last_activity_date = ((now() AT TIME ZONE COALESCE(u.timezone, 'UTC'))::date - 1) THEN us.streak + 1
                  ELSE 1
                END
-             ) ELSE streak END,
-             last_quiz_date = CASE WHEN $3 THEN (now() AT TIME ZONE 'utc')::date ELSE last_quiz_date END,
-             level = ${LEVEL_FORMULA_SQL}
+           FROM users u
+           WHERE us.user_id = $1::uuid AND u.uuid = $1::uuid`,
+          [userUuid, xpEarned]
+        );
+        await client.query(
+          `UPDATE users
+           SET last_activity_date = (now() AT TIME ZONE COALESCE(timezone, 'UTC'))::date
+           WHERE uuid = $1::uuid`,
+          [userUuid]
+        );
+      } else {
+        await client.query(
+          `UPDATE user_stats SET xp = xp + $2 WHERE user_id = $1::uuid`,
+          [userUuid, xpEarned]
+        );
+      }
+
+      // Recompute level from the now-current xp and read back fresh stats.
+      const statsResult = await client.query(
+        `UPDATE user_stats SET level = ${LEVEL_FORMULA_SQL}
          WHERE user_id = $1::uuid
-         RETURNING xp, level, streak, last_quiz_date`,
-        [userUuid, xpEarned, advanceStreak]
+         RETURNING xp, level, streak`,
+        [userUuid]
       );
       const stats = statsResult.rows[0] || null;
+
+      // Daily quest progress (atomic with XP/streak in this transaction).
+      const quest = await updateQuestProgress(client, userUuid, {
+        lessonsCompleted: (!isPractice && completed) ? 1 : 0,
+        xpEarned,
+        correctRun: longestCorrectRun(results),
+      });
 
       await client.query('COMMIT');
 
@@ -447,6 +475,7 @@ const submitLesson = async (req, res, next) => {
         xpEarned,
         streak: stats ? stats.streak : null,
         stats,
+        quest: formatQuest(quest),
       });
     } catch (err) {
       await client.query('ROLLBACK');

@@ -59,6 +59,7 @@ const registerSchema = Joi.object({
   age: Joi.number().integer().min(1).max(120).required(),
   country_code: Joi.string().trim().uppercase().length(2).required(),
   parental_consent_given: Joi.boolean().default(false),
+  timezone: Joi.string().trim().max(64).optional(),
 });
 
 const guestUpgradeSchema = Joi.object({
@@ -68,6 +69,7 @@ const guestUpgradeSchema = Joi.object({
   age: Joi.number().integer().min(1).max(120).required(),
   country_code: Joi.string().trim().uppercase().length(2).required(),
   parental_consent_given: Joi.boolean().default(false),
+  timezone: Joi.string().trim().max(64).optional(),
   guestProgress: Joi.object({
     xp: Joi.number().integer().min(0).max(500000).default(0),
     total_quizzes: Joi.number().integer().min(0).max(10000).default(0),
