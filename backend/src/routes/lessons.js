@@ -3,6 +3,7 @@ const {
   getLesson,
   submitLesson,
   practiceMistakes,
+  practiceMistakesCount,
   getSampleExercise,
   gradeSampleExercise,
   getFirstLesson,
@@ -19,6 +20,10 @@ router.post('/sample/grade', gradeSampleExercise);
 
 // Onboarding hand-off: resolve Unit 1 Lesson 1 after sign-up.
 router.get('/first', authenticate, getFirstLesson);
+
+// Practice Mistakes count — authenticated only (free users see the teaser).
+// Registered before /practice-mistakes and /:lessonId.
+router.get('/practice-mistakes/count', authenticate, practiceMistakesCount);
 
 // Practice Mistakes (Premium). Registered before /:lessonId so the literal path
 // is matched as an exact route rather than captured as a lessonId.
