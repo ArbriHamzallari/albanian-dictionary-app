@@ -6,6 +6,9 @@ import { useAuth } from '../context/AuthContext.jsx';
 import Avatar from '../components/Avatar.jsx';
 import LoadingSpinner from '../components/LoadingSpinner.jsx';
 import PremiumCheckoutButton from '../components/PremiumCheckoutButton.jsx';
+import DashboardQuestCard from '../components/DashboardQuestCard.jsx';
+import Card from '../components/ui/Card.jsx';
+import Parrot from '../components/mascot/Parrot.jsx';
 import api from '../utils/api.js';
 
 const LEVEL_POINTS = (level) => {
@@ -101,6 +104,33 @@ const Dashboard = () => {
         <div className="progress-bar">
           <div className="progress-bar-fill" style={{ width: `${progressPct}%` }} />
         </div>
+      </motion.div>
+
+      {/* Streak (Seria ditore) + daily quest (Sfida e ditës) */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.12 }}
+        className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6"
+      >
+        <Card padding="md" className="flex items-center gap-4">
+          {streak >= 7 ? (
+            <Parrot state="streak-fire" size={64} />
+          ) : (
+            <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-accent-yellow/15">
+              <Flame className="h-8 w-8 text-accent-yellow" />
+            </span>
+          )}
+          <div>
+            <p className="text-3xl font-black text-ink">
+              {streak} <span className="text-xl">🔥</span>
+            </p>
+            <p className="text-xs font-bold text-ink-soft">
+              Seria ditore{streak >= 7 ? ' — në zjarr!' : ''}
+            </p>
+          </div>
+        </Card>
+        <DashboardQuestCard />
       </motion.div>
 
       {/* Stats cards */}

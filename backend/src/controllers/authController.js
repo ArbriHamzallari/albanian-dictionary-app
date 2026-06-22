@@ -35,6 +35,20 @@ function isUniqueViolation(err) {
   return err.code === '23505'; // Postgres unique_violation
 }
 
+// Validate a client-supplied IANA timezone; fall back to UTC if missing/invalid
+// so `now() AT TIME ZONE timezone` can never throw downstream.
+function resolveTimezone(tz) {
+  if (tz && typeof tz === 'string') {
+    try {
+      Intl.DateTimeFormat(undefined, { timeZone: tz });
+      return tz;
+    } catch {
+      // fall through to UTC
+    }
+  }
+  return 'UTC';
+}
+
 function profileFromRow(u) {
   return {
     uuid: u.uuid,
@@ -106,6 +120,7 @@ const register = async (req, res, next) => {
       return res.status(safety.error.status).json(safety.error.body);
     }
 
+    const timezone = resolveTimezone(value.timezone);
     const passwordHash = await bcrypt.hash(value.password, 10);
 
     const client = await pool.connect();
@@ -129,9 +144,10 @@ const register = async (req, res, next) => {
            parental_consent_at,
            profile_private,
            leaderboard_opt_out,
-           leaderboard_segment
+           leaderboard_segment,
+           timezone
          )
-         VALUES ($1, $2, $3, 'user', $4, $5, 'default.png', $6, $7, $8, $9, $10, CASE WHEN $10 THEN NOW() ELSE NULL END, $11, $12, $13)
+         VALUES ($1, $2, $3, 'user', $4, $5, 'default.png', $6, $7, $8, $9, $10, CASE WHEN $10 THEN NOW() ELSE NULL END, $11, $12, $13, $14)
          RETURNING *`,
         [
           value.email,
@@ -147,6 +163,7 @@ const register = async (req, res, next) => {
           safety.fields.profilePrivate,
           safety.fields.leaderboardOptOut,
           safety.fields.leaderboardSegment,
+          timezone,
         ]
       );
       const user = userResult.rows[0];
@@ -313,6 +330,7 @@ const guestUpgrade = async (req, res, next) => {
     // Extra clamp: correct_answers cannot exceed total_quizzes * 10
     gp.correct_answers = Math.min(gp.correct_answers, gp.total_quizzes * 10);
 
+    const timezone = resolveTimezone(value.timezone);
     const passwordHash = await bcrypt.hash(value.password, 10);
 
     const client = await pool.connect();
@@ -336,9 +354,10 @@ const guestUpgrade = async (req, res, next) => {
            parental_consent_at,
            profile_private,
            leaderboard_opt_out,
-           leaderboard_segment
+           leaderboard_segment,
+           timezone
          )
-         VALUES ($1, $2, $3, 'user', $4, $5, 'default.png', $6, $7, $8, $9, $10, CASE WHEN $10 THEN NOW() ELSE NULL END, $11, $12, $13)
+         VALUES ($1, $2, $3, 'user', $4, $5, 'default.png', $6, $7, $8, $9, $10, CASE WHEN $10 THEN NOW() ELSE NULL END, $11, $12, $13, $14)
          RETURNING *`,
         [
           value.email,
@@ -354,6 +373,7 @@ const guestUpgrade = async (req, res, next) => {
           safety.fields.profilePrivate,
           safety.fields.leaderboardOptOut,
           safety.fields.leaderboardSegment,
+          timezone,
         ]
       );
       const user = userResult.rows[0];
