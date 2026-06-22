@@ -7,6 +7,7 @@ import Avatar from '../components/Avatar.jsx';
 import LoadingSpinner from '../components/LoadingSpinner.jsx';
 import PremiumCheckoutButton from '../components/PremiumCheckoutButton.jsx';
 import DashboardQuestCard from '../components/DashboardQuestCard.jsx';
+import DashboardPracticeCard from '../components/DashboardPracticeCard.jsx';
 import LeagueResultToast from '../components/LeagueResultToast.jsx';
 import Card from '../components/ui/Card.jsx';
 import Parrot from '../components/mascot/Parrot.jsx';
@@ -133,6 +134,16 @@ const Dashboard = () => {
           </div>
         </Card>
         <DashboardQuestCard />
+      </motion.div>
+
+      {/* Practice Mistakes (Përsërit gabimet) */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.14 }}
+        className="mb-6"
+      >
+        <DashboardPracticeCard />
       </motion.div>
 
       {/* Stats cards */}

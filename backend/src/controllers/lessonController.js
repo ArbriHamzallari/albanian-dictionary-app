@@ -149,9 +149,27 @@ const practiceMistakes = async (req, res, next) => {
   }
 };
 
+// ── GET /api/lessons/practice-mistakes/count ─────────────────
+// Lightweight count of due review items. Available to all authenticated users
+// (including free) so the dashboard can show the locked-but-visible teaser.
+const practiceMistakesCount = async (req, res, next) => {
+  try {
+    const result = await pool.query(
+      `SELECT COUNT(*)::int AS count
+       FROM user_exercise_mistakes
+       WHERE user_id = $1::uuid AND due_at <= now()`,
+      [req.user.uuid]
+    );
+    return res.json({ count: result.rows[0].count });
+  } catch (err) {
+    return next(err);
+  }
+};
+
 // Upsert the spaced-repetition state for one graded exercise.
 // Wrong -> reset to 1 day. Correct on a tracked mistake -> advance the interval
-// (1->3->7->14) or graduate (delete) once it passes 14 days.
+// along the ladder (1->3->7->14->30), capped at 30 days. Items are never removed
+// by review; only a wrong answer (re-queue) or external cleanup changes that.
 async function applySrs(client, userUuid, exerciseId, correct) {
   if (!correct) {
     await client.query(
@@ -178,15 +196,6 @@ async function applySrs(client, userUuid, exerciseId, correct) {
   }
 
   const next = nextSrsIntervalDays(existing.rows[0].interval_days);
-  if (next === null) {
-    await client.query(
-      `DELETE FROM user_exercise_mistakes
-       WHERE user_id = $1::uuid AND exercise_id = $2::uuid`,
-      [userUuid, exerciseId]
-    );
-    return;
-  }
-
   await client.query(
     `UPDATE user_exercise_mistakes
      SET interval_days = $3,
@@ -496,6 +505,7 @@ module.exports = {
   getLesson,
   submitLesson,
   practiceMistakes,
+  practiceMistakesCount,
   getSampleExercise,
   gradeSampleExercise,
   getFirstLesson,

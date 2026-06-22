@@ -162,15 +162,21 @@ function gradeExercise(type, answer, response) {
 }
 
 // ── Spaced repetition schedule (Practice Mistakes) ───────────
-// CLAUDE.md §8: 1 day -> 3 days -> 1 week -> 2 weeks, then graduate (mastered).
-const SRS_INTERVALS_DAYS = [1, 3, 7, 14];
+// 1 day -> 3 days -> 1 week -> 2 weeks -> capped at 30 days. Items stay in the
+// review queue at the 30-day ceiling rather than graduating out, so a mistake is
+// always reviewable until the user gets it right repeatedly over time.
+const SRS_INTERVALS_DAYS = [1, 3, 7, 14, 30];
+const SRS_MAX_INTERVAL_DAYS = 30;
 
-// Given the current interval (in days), return the next one, or null to signal
-// the item has graduated out of the review queue.
+// Given the current interval (in days), return the next one on the ladder,
+// capped at 30. Never returns null — items are not removed from the queue.
 function nextSrsIntervalDays(currentDays) {
   const idx = SRS_INTERVALS_DAYS.indexOf(currentDays);
-  if (idx === -1) return SRS_INTERVALS_DAYS[0]; // not yet scheduled -> 1 day
-  if (idx >= SRS_INTERVALS_DAYS.length - 1) return null; // past 14 days -> mastered
+  if (idx === -1) {
+    // Off-ladder value: clamp to the ceiling if already large, else start at 1.
+    return currentDays >= SRS_MAX_INTERVAL_DAYS ? SRS_MAX_INTERVAL_DAYS : SRS_INTERVALS_DAYS[0];
+  }
+  if (idx >= SRS_INTERVALS_DAYS.length - 1) return SRS_MAX_INTERVAL_DAYS; // capped
   return SRS_INTERVALS_DAYS[idx + 1];
 }
 
