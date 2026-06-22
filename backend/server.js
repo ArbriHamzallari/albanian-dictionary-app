@@ -24,11 +24,35 @@ const friendsRoutes = require('./src/routes/friends');
 const chatRoutes = require('./src/routes/chat');
 const notificationsRoutes = require('./src/routes/notifications');
 const billingRoutes = require('./src/routes/billing');
+const { csrfProtection } = require('./src/middleware/csrf');
 const pool = require('./src/utils/db');
 
 const app = express();
 
 const isProduction = process.env.NODE_ENV === 'production';
+
+// Behind a TLS-terminating proxy (Fly/Render/Netlify) so req.ip and req.secure
+// reflect the client, and Secure cookies behave correctly.
+if (isProduction) {
+  app.set('trust proxy', 1);
+}
+
+// Paddle.js loads from cdn.paddle.com and opens checkout iframes from
+// *.paddle.com; allow exactly those. style-src keeps 'unsafe-inline' until the
+// design-system styles are externalized.
+const PADDLE = 'https://*.paddle.com';
+const cspDirectives = {
+  defaultSrc: ["'self'"],
+  scriptSrc: ["'self'", 'https://cdn.paddle.com', PADDLE],
+  styleSrc: ["'self'", "'unsafe-inline'"],
+  imgSrc: ["'self'", 'data:', 'blob:'],
+  fontSrc: ["'self'", 'data:'],
+  connectSrc: ["'self'", PADDLE],
+  frameSrc: ["'self'", PADDLE],
+  objectSrc: ["'none'"],
+  baseUri: ["'self'"],
+  frameAncestors: ["'self'"],
+};
 const normalizeOrigin = (origin) => origin.replace(/\/+$/, '');
 
 function parseOriginList(value) {
@@ -59,7 +83,11 @@ function buildCorsOrigins() {
 
 const corsOrigins = buildCorsOrigins();
 
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: { directives: cspDirectives },
+  // HSTS is sent only over HTTPS; harmless in dev (browsers ignore it on http).
+  hsts: { maxAge: 15552000, includeSubDomains: true, preload: true },
+}));
 app.use(cors({
   origin(origin, callback) {
     if (!origin) {
@@ -78,6 +106,10 @@ app.use(cors({
 app.use('/api/billing/webhook', express.raw({ type: 'application/json', limit: '1mb' }));
 app.use(express.json({ limit: '1mb' }));
 app.use(morgan('dev'));
+
+// CSRF for cookie-authenticated, state-changing requests (no-op for Bearer/
+// webhook/cron requests that carry no session cookie).
+app.use(csrfProtection);
 
 const apiLimiter = rateLimit({
   windowMs: 60 * 1000,

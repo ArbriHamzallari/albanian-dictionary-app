@@ -19,7 +19,7 @@ const emptyWord = {
 };
 
 const AdminDashboard = () => {
-  const { token, isLoggedIn, isAdmin, loading: authLoading, logout } = useAuth();
+  const { isLoggedIn, isAdmin, loading: authLoading, logout } = useAuth();
   const navigate = useNavigate();
   const [suggestions, setSuggestions] = useState([]);
   const [topSearches, setTopSearches] = useState([]);
@@ -45,18 +45,19 @@ const AdminDashboard = () => {
   const [metrics, setMetrics] = useState(null);
   const [metricsLoading, setMetricsLoading] = useState(true);
 
-  const headers = token ? { Authorization: `Bearer ${token}` } : {};
+  // Auth travels in the httpOnly session cookie (api uses credentials: include).
+  const headers = {};
 
   const fetchMetrics = useCallback(async () => {
     try {
-      const res = await api.get('/admin/metrics', { headers: { Authorization: `Bearer ${token}` } });
+      const res = await api.get('/admin/metrics');
       setMetrics(res.data);
     } catch {
       // silently fail — main data still loads
     } finally {
       setMetricsLoading(false);
     }
-  }, [token]);
+  }, []);
 
   useEffect(() => {
     // Wait for auth to finish loading before checking
@@ -76,7 +77,7 @@ const AdminDashboard = () => {
     // Auto-refresh metrics every 30 seconds
     const metricsInterval = setInterval(fetchMetrics, 30_000);
     return () => clearInterval(metricsInterval);
-  }, [authLoading, isLoggedIn, isAdmin, token]);
+  }, [authLoading, isLoggedIn, isAdmin]);
 
   const fetchAll = async () => {
     try {

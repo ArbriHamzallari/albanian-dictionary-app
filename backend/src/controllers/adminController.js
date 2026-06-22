@@ -1,5 +1,6 @@
 const pool = require('../utils/db');
 const { wordSchema, wordOfDaySchema } = require('../utils/validation');
+const { logAdminAction } = require('../utils/auditLog');
 
 const createWord = async (req, res, next) => {
   try {
@@ -52,6 +53,12 @@ const createWord = async (req, res, next) => {
       }
 
       await client.query('COMMIT');
+      await logAdminAction(req, {
+        action: 'word.create',
+        targetType: 'word',
+        targetId: word.id,
+        metadata: { borrowed_word: word.borrowed_word },
+      });
       return res.status(201).json({ word });
     } catch (error) {
       await client.query('ROLLBACK');
@@ -127,6 +134,12 @@ const updateWord = async (req, res, next) => {
       }
 
       await client.query('COMMIT');
+      await logAdminAction(req, {
+        action: 'word.update',
+        targetType: 'word',
+        targetId: id,
+        metadata: { borrowed_word: wordResult.rows[0].borrowed_word },
+      });
       return res.json({ word: wordResult.rows[0] });
     } catch (error) {
       await client.query('ROLLBACK');
@@ -146,6 +159,12 @@ const deleteWord = async (req, res, next) => {
     if (!result.rows.length) {
       return res.status(404).json({ message: 'Fjala nuk u gjet.' });
     }
+    await logAdminAction(req, {
+      action: 'word.delete',
+      targetType: 'word',
+      targetId: id,
+      metadata: { borrowed_word: result.rows[0].borrowed_word },
+    });
     return res.json({ message: 'Fjala u fshi me sukses.' });
   } catch (error) {
     return next(error);
@@ -168,6 +187,12 @@ const setWordOfDay = async (req, res, next) => {
       [value.word_id, value.display_date]
     );
 
+    await logAdminAction(req, {
+      action: 'word_of_the_day.set',
+      targetType: 'word',
+      targetId: value.word_id,
+      metadata: { display_date: value.display_date },
+    });
     return res.json({ word_of_the_day: result.rows[0] });
   } catch (error) {
     return next(error);

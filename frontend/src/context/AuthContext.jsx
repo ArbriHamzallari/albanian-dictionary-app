@@ -3,7 +3,6 @@ import api from '../utils/api.js';
 
 const AuthContext = createContext(null);
 
-const TOKEN_KEY = 'fjalingo_token';
 const GUEST_PROGRESS_KEY = 'fjalingo_guest_progress';
 
 // Browser IANA timezone (e.g. "Europe/Tirane"), used to anchor the streak day.
@@ -18,72 +17,50 @@ function getBrowserTimeZone() {
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);       // { profile, stats, rank, achievements }
   const [loading, setLoading] = useState(true);
-  const [token, setTokenState] = useState(() => localStorage.getItem(TOKEN_KEY));
 
-  const setToken = useCallback((t) => {
-    if (t) {
-      localStorage.setItem(TOKEN_KEY, t);
-    } else {
-      localStorage.removeItem(TOKEN_KEY);
-    }
-    setTokenState(t);
-  }, []);
-
-  // Load user profile from /auth/me when token exists
+  // Load the current user from the session cookie. The JWT is never in JS.
   const loadUser = useCallback(async () => {
-    const t = localStorage.getItem(TOKEN_KEY);
-    if (!t) {
-      setUser(null);
-      setLoading(false);
-      return;
-    }
     try {
-      const res = await api.get('/auth/me', {
-        headers: { Authorization: `Bearer ${t}` },
-      });
+      const res = await api.get('/auth/me');
       setUser(res.data);
     } catch (err) {
-      // Clear token only when it's truly invalid/expired.
-      if (err?.response?.status === 401) {
-        setToken(null);
-        setUser(null);
-      }
+      // 401 (after the api client's refresh attempt) means no valid session.
+      setUser(null);
     } finally {
       setLoading(false);
     }
-  }, [setToken]);
+  }, []);
 
   useEffect(() => {
     loadUser();
-  }, [loadUser, token]);
+  }, [loadUser]);
 
   // Presence heartbeat for logged-in users (throttled server-side)
   useEffect(() => {
-    const t = localStorage.getItem(TOKEN_KEY);
-    if (!t || !user?.profile) return;
+    if (!user?.profile) return undefined;
 
-    const ping = () => {
-      api.post('/auth/heartbeat', null, { headers: { Authorization: `Bearer ${t}` } }).catch(() => {});
-    };
-
+    const ping = () => { api.post('/auth/heartbeat').catch(() => {}); };
     ping();
     const interval = setInterval(ping, 120_000);
     return () => clearInterval(interval);
-  }, [token, user?.profile]);
+  }, [user?.profile]);
+
+  function applyAuthResponse(data) {
+    if (data.profile) {
+      setUser({
+        profile: data.profile,
+        stats: data.stats || null,
+        rank: data.rank ?? null,
+        achievements: data.achievements || [],
+        entitlement: data.entitlement || { tier: 'free' },
+      });
+    }
+  }
 
   // ── Actions ────────────────────────────────────────────────
   const login = async (email, password) => {
     const res = await api.post('/auth/login', { email, password });
-    setToken(res.data.token);
-    if (res.data.profile) {
-      setUser({
-        profile: res.data.profile,
-        stats: res.data.stats || null,
-        rank: res.data.rank ?? null,
-        achievements: res.data.achievements || [],
-        entitlement: res.data.entitlement || { tier: 'free' },
-      });
-    }
+    applyAuthResponse(res.data);
     // Return role explicitly so callers can redirect admin users
     return { ...res.data, role: res.data.role || res.data.profile?.role || 'user' };
   };
@@ -98,24 +75,17 @@ export function AuthProvider({ children }) {
       parental_consent_given: parentalConsentGiven,
       timezone: getBrowserTimeZone(),
     });
-    setToken(res.data.token);
-    if (res.data.profile) {
-      setUser({
-        profile: res.data.profile,
-        stats: res.data.stats || null,
-        rank: res.data.rank ?? null,
-        achievements: res.data.achievements || [],
-        entitlement: res.data.entitlement || { tier: 'free' },
-      });
-    }
+    applyAuthResponse(res.data);
     return res.data;
   };
 
-  const logout = () => {
-    setToken(null);
+  const logout = async () => {
+    try {
+      await api.post('/auth/logout');
+    } catch {
+      // Clearing local state below is enough even if the request fails.
+    }
     setUser(null);
-    // Clean up legacy admin token key if it exists
-    localStorage.removeItem('auth_token');
   };
 
   const updateUserProfile = (profileUpdate) => {
@@ -145,16 +115,7 @@ export function AuthProvider({ children }) {
       guestProgress,
     });
     clearGuestProgress();
-    setToken(res.data.token);
-    if (res.data.profile) {
-      setUser({
-        profile: res.data.profile,
-        stats: res.data.stats || null,
-        rank: res.data.rank ?? null,
-        achievements: res.data.achievements || [],
-        entitlement: res.data.entitlement || { tier: 'free' },
-      });
-    }
+    applyAuthResponse(res.data);
     return res.data;
   };
 
@@ -176,14 +137,13 @@ export function AuthProvider({ children }) {
     localStorage.removeItem(GUEST_PROGRESS_KEY);
   };
 
-  const isLoggedIn = !!user && !!token;
+  const isLoggedIn = !!user;
   const isAdmin = user?.profile?.role === 'admin';
 
   return (
     <AuthContext.Provider
       value={{
         user,
-        token,
         loading,
         isLoggedIn,
         isAdmin,
