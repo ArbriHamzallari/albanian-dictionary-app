@@ -212,7 +212,7 @@ const register = async (req, res, next) => {
       const user = userResult.rows[0];
 
       await client.query(
-        `INSERT INTO user_stats (user_id) VALUES ($1)`,
+        `INSERT INTO user_stats (user_id) VALUES ($1) ON CONFLICT (user_id) DO NOTHING`,
         [user.uuid]
       );
 
@@ -435,7 +435,8 @@ const guestUpgrade = async (req, res, next) => {
       // Level = floor(sqrt(xp/100)) + 1, computed from the xp parameter ($2)
       await client.query(
         `INSERT INTO user_stats (user_id, xp, level, streak, total_quizzes, correct_answers)
-         VALUES ($1, $2, floor(sqrt(($2::numeric)/100))::int + 1, $3, $4, $5)`,
+         VALUES ($1, $2, floor(sqrt(($2::numeric)/100))::int + 1, $3, $4, $5)
+         ON CONFLICT (user_id) DO NOTHING`,
         [user.uuid, gp.xp, gp.streak, gp.total_quizzes, gp.correct_answers]
       );
 
