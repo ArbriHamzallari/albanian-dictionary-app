@@ -1,9 +1,11 @@
 # Netlify headers for the Fjalingo SPA (production).
 # CSP protects the app document from XSS. Paddle.js (cdn.paddle.com) and its
-# checkout iframes (*.paddle.com) are explicitly allowed. connect-src must list
-# the API origin — update https://*.fjalingo.al if the API lives elsewhere.
+# checkout iframes (*.paddle.com) are explicitly allowed. connect-src MUST list
+# the API origin the browser calls (VITE_API_URL), or every API request is
+# blocked. Currently allows the Fly API (*.fly.dev) and the future custom domain
+# (*.fjalingo.al) — pin these to your exact host when DNS is finalized.
 /*
-  Content-Security-Policy: default-src 'self'; script-src 'self' https://cdn.paddle.com https://*.paddle.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://*.fjalingo.al https://*.paddle.com; frame-src 'self' https://*.paddle.com; object-src 'none'; base-uri 'self'; frame-ancestors 'self'
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://cdn.paddle.com https://*.paddle.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://*.fly.dev https://*.fjalingo.al https://*.paddle.com; frame-src 'self' https://*.paddle.com; object-src 'none'; base-uri 'self'; frame-ancestors 'self'
   Strict-Transport-Security: max-age=15552000; includeSubDomains; preload
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
