@@ -183,8 +183,12 @@ const AdminDashboard = () => {
       setWords((prev) => prev.filter((w) => w.id !== deleteId));
       setDeleteId(null);
       flash('Fjala u fshi me sukses!');
-    } catch {
-      setError('Gabim gjatë fshirjes.');
+    } catch (err) {
+      // Surface the specific server reason (e.g. a real FK conflict) rather
+      // than always showing a generic catch-all.
+      const detail = err?.response?.data?.detail;
+      const message = err?.response?.data?.message || 'Gabim gjatë fshirjes.';
+      setError(detail ? `${message} (${detail})` : message);
     }
   };
 

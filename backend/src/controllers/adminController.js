@@ -167,6 +167,17 @@ const deleteWord = async (req, res, next) => {
     });
     return res.json({ message: 'Fjala u fshi me sukses.' });
   } catch (error) {
+    // 23503 = foreign_key_violation: a child row still references this word.
+    // After 014_words_cascade this should not occur for known child tables, but
+    // if a new dependency is added without a delete rule, surface a specific
+    // reason instead of a generic 500. Include the Postgres detail in dev only.
+    if (error.code === '23503') {
+      const isDev = process.env.NODE_ENV !== 'production';
+      return res.status(409).json({
+        message: 'Fjala nuk mund të fshihet sepse përdoret nga të dhëna të tjera.',
+        detail: isDev ? (error.detail || error.message) : undefined,
+      });
+    }
     return next(error);
   }
 };
