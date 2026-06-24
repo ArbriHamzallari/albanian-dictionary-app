@@ -22,9 +22,11 @@ export default {
         paper: 'var(--paper)',
         cloud: 'var(--cloud)',
         line: 'var(--line)',
-        // Legacy aliases (migrate gradually)
-        'fjalingo-green': '#58CC02',
-        'fjalingo-green-dark': '#4CAF02',
+        // Legacy aliases (migrate gradually) — kept as hex so opacity
+        // modifiers (e.g. bg-fjalingo-green/10) keep working. Values match
+        // the canonical --brand-green / --brand-green-dark tokens.
+        'fjalingo-green': '#2BB673',
+        'fjalingo-green-dark': '#1F8F58',
         'fjalingo-blue': '#1CB0F6',
         'fjalingo-yellow': '#FFC800',
         'fjalingo-red': '#FF4B4B',

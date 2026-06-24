@@ -95,7 +95,7 @@ body {
 
 .progress-bar-fill {
   @apply h-full rounded-pill transition-all duration-700 ease-out;
-  background: linear-gradient(90deg, #58CC02, #FFC800);
+  background: linear-gradient(90deg, #2BB673, #FFC800);
 }
 
 /* ── Scrollbar ── */
