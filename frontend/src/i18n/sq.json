@@ -113,11 +113,14 @@
     "result": {
       "greatTitle": "Shkëlqyeshëm!",
       "goodTitle": "Punë e mirë!",
+      "unknownTitle": "Kuizi përfundoi",
       "subtitle": "Rezultati yt",
       "correctLabel": "Saktë",
       "pointsLabel": "Pikë",
       "timeLabel": "Koha",
-      "playAgain": "Luaj Përsëri"
+      "playAgain": "Luaj Përsëri",
+      "submitRetry": "Rezultati nuk u ruajt në server. Provo ta ruash përsëri.",
+      "retryButton": "Provo ta ruash përsëri"
     },
     "guestModal": {
       "title": "Ruaje progresin!",

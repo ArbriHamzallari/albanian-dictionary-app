@@ -19,20 +19,50 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   // Load the current user from the session cookie. The JWT is never in JS.
+  //
+  // Only an explicit 401 (after the api client already tried /auth/refresh)
+  // means there is genuinely no session, so only then do we clear it.
+  // Transient failures — network down, CORS, a Render cold start — must NEVER
+  // drop a still-valid session, or the user appears "logged out on refresh".
+  // We retry those with backoff, and the `online` listener below recovers the
+  // session once connectivity returns.
   const loadUser = useCallback(async () => {
-    try {
-      const res = await api.get('/auth/me');
-      setUser(res.data);
-    } catch (err) {
-      // 401 (after the api client's refresh attempt) means no valid session.
-      setUser(null);
-    } finally {
-      setLoading(false);
+    const MAX_ATTEMPTS = 4;
+    for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt += 1) {
+      try {
+        const res = await api.get('/auth/me');
+        setUser(res.data);
+        setLoading(false);
+        return;
+      } catch (err) {
+        if (err.response?.status === 401) {
+          setUser(null); // genuine: no/lost session → guards redirect to /hyr
+          setLoading(false);
+          return;
+        }
+        // Transient (no response / 5xx / cold start): keep any existing
+        // session, back off, and retry.
+        if (attempt < MAX_ATTEMPTS) {
+          await new Promise((resolve) => setTimeout(resolve, attempt * 1500));
+        }
+      }
     }
+    // Retries exhausted without a definitive 401: do NOT clear the session.
+    // Stop the initial spinner; the `online` listener recovers it later.
+    setLoading(false);
   }, []);
 
   useEffect(() => {
     loadUser();
+  }, [loadUser]);
+
+  // Recover the session when connectivity returns (e.g. the user refreshed
+  // while offline). A transient failure never cleared the httpOnly cookie, so
+  // a successful /auth/me here restores the logged-in state.
+  useEffect(() => {
+    const onOnline = () => { loadUser(); };
+    window.addEventListener('online', onOnline);
+    return () => window.removeEventListener('online', onOnline);
   }, [loadUser]);
 
   // Presence heartbeat for logged-in users (throttled server-side)

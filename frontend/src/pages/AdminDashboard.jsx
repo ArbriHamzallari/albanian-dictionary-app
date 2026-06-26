@@ -184,8 +184,12 @@ const AdminDashboard = () => {
       setWords((prev) => prev.filter((w) => w.id !== deleteId));
       setDeleteId(null);
       flash(t('admin.wordDeleted'));
-    } catch {
-      setError(t('admin.deleteError'));
+    } catch (err) {
+      // Surface the specific server reason (e.g. a real FK conflict) rather
+      // than always showing a generic catch-all.
+      const detail = err?.response?.data?.detail;
+      const message = err?.response?.data?.message || t('admin.deleteError');
+      setError(detail ? `${message} (${detail})` : message);
     }
   };
 

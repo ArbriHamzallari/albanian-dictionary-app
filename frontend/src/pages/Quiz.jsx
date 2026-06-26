@@ -35,11 +35,20 @@ const Quiz = () => {
   const [showGuestModal, setShowGuestModal] = useState(false);
   const [sessionId, setSessionId] = useState(null);
   const [answers, setAnswers] = useState([]);
+  // Submit-time error is kept separate from `error`: `error` swaps in the
+  // full-page error view, which must NOT happen on the results screen. A failed
+  // submit shows an inline banner and the results stay visible.
+  const [submitError, setSubmitError] = useState('');
+  // True once the backend has graded and returned the score for a logged-in
+  // session. Local guest quizzes are always "known" (graded client-side).
+  const [resultConfirmed, setResultConfirmed] = useState(false);
 
   const buildQuestions = useCallback(async () => {
     try {
       setStatus('loading');
       setError('');
+      setSubmitError('');
+      setResultConfirmed(false);
       setSessionId(null);
       setAnswers([]);
 
@@ -125,24 +134,36 @@ const Quiz = () => {
     }
   };
 
+  // Server-graded submission for logged-in sessions. On failure we keep the
+  // results screen up and surface an inline banner with a retry — we never
+  // swap in the full-page error view, so the screen can't go blank or show a
+  // raw "Statistikat nuk u gjetën". // TODO i18n
+  const submitResults = async () => {
+    try {
+      const res = await api.post('/progress/quiz', { sessionId, answers });
+      const earnedCorrect = res.data.correctAnswers ?? 0;
+      const earnedScore = res.data.score ?? 0;
+      setCorrect(earnedCorrect);
+      setScore(earnedScore);
+      setResultConfirmed(true);
+      setSubmitError('');
+      loadUser();
+      if (earnedCorrect === questions.length) {
+        confetti({ particleCount: 150, spread: 100, origin: { y: 0.5 } });
+      }
+    } catch (err) {
+      console.error('Quiz submit failed:', err);
+      setResultConfirmed(false);
+      setSubmitError(t('quiz.result.submitRetry'));
+    }
+  };
+
   const nextQuestion = async () => {
     if (current + 1 >= questions.length) {
       setStatus('finished');
 
       if (isLoggedIn && sessionId) {
-        try {
-          const res = await api.post('/progress/quiz', { sessionId, answers });
-          const earnedCorrect = res.data.correctAnswers ?? 0;
-          const earnedScore = res.data.score ?? 0;
-          setCorrect(earnedCorrect);
-          setScore(earnedScore);
-          loadUser();
-          if (earnedCorrect === questions.length) {
-            confetti({ particleCount: 150, spread: 100, origin: { y: 0.5 } });
-          }
-        } catch (err) {
-          setError(err?.response?.data?.message || t('quiz.error.submitFailed'));
-        }
+        await submitResults();
       } else if (!isLoggedIn) {
         // Save guest progress locally
         const gp = getGuestProgress();
@@ -193,7 +214,10 @@ const Quiz = () => {
   }
 
   if (status === 'finished') {
-    const percentage = Math.round((correct / questions.length) * 100);
+    // For a logged-in session the score is only trustworthy once the backend
+    // confirms it. Guest quizzes are graded locally, so they are always known.
+    const resultsKnown = !sessionId || resultConfirmed;
+    const percentage = resultsKnown ? Math.round((correct / questions.length) * 100) : null;
     return (
       <>
         <motion.div
@@ -201,22 +225,38 @@ const Quiz = () => {
           animate={{ opacity: 1, scale: 1 }}
           className="max-w-lg mx-auto px-6 py-16 text-center"
         >
-          <span className="text-6xl block mb-4">{percentage >= 70 ? '🎉' : '💪'}</span>
+          <span className="text-6xl block mb-4">
+            {!resultsKnown ? '⚠️' : percentage >= 70 ? '🎉' : '💪'}
+          </span>
           <h2 className="text-3xl font-black text-heading dark:text-dark-text mb-2">
-            {percentage >= 70 ? t('quiz.result.greatTitle') : t('quiz.result.goodTitle')}
+            {!resultsKnown ? t('quiz.result.unknownTitle') : percentage >= 70 ? t('quiz.result.greatTitle') : t('quiz.result.goodTitle')}
           </h2>
           <p className="text-lg font-semibold text-muted dark:text-dark-muted mb-6">
             {t('quiz.result.subtitle')}
           </p>
 
+          {submitError && (
+            <div className="card mb-6 border-fjalingo-yellow bg-fjalingo-yellow/15 text-left">
+              <p className="text-sm font-bold text-heading dark:text-dark-text mb-3">
+                {submitError}
+              </p>
+              <button
+                onClick={submitResults}
+                className="btn-outline inline-flex items-center gap-2 text-sm"
+              >
+                <RotateCcw className="w-4 h-4" /> {t('quiz.result.retryButton')}
+              </button>
+            </div>
+          )}
+
           <div className="card mb-8">
             <div className="grid grid-cols-3 gap-4">
               <div className="text-center">
-                <p className="text-3xl font-black text-fjalingo-green">{correct}</p>
+                <p className="text-3xl font-black text-fjalingo-green">{resultsKnown ? correct : '—'}</p>
                 <p className="text-xs font-bold text-muted dark:text-dark-muted">{t('quiz.result.correctLabel')}</p>
               </div>
               <div className="text-center">
-                <p className="text-3xl font-black text-fjalingo-blue">{score}</p>
+                <p className="text-3xl font-black text-fjalingo-blue">{resultsKnown ? score : '—'}</p>
                 <p className="text-xs font-bold text-muted dark:text-dark-muted">{t('quiz.result.pointsLabel')}</p>
               </div>
               <div className="text-center">

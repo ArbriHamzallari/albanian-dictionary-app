@@ -493,6 +493,18 @@ const seed = async () => {
       );
     }
 
+    // The admin is created here, not via /register, so it needs its 1:1
+    // user_stats row explicitly — otherwise submitQuiz returns 404
+    // "Statistikat nuk u gjetën" when the admin takes a quiz. Re-read the uuid
+    // in case it was just backfilled above.
+    const adminUuid = (
+      await client.query(`SELECT uuid FROM users WHERE id = $1`, [adminResult.rows[0].id])
+    ).rows[0].uuid;
+    await client.query(
+      `INSERT INTO user_stats (user_id) VALUES ($1) ON CONFLICT (user_id) DO NOTHING`,
+      [adminUuid]
+    );
+
     for (const word of words) {
       const wordResult = await client.query(
         `INSERT INTO words

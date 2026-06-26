@@ -31,7 +31,7 @@ const app = express();
 
 const isProduction = process.env.NODE_ENV === 'production';
 
-// Behind a TLS-terminating proxy (Fly/Render/Netlify) so req.ip and req.secure
+// Behind a TLS-terminating proxy (Fly/Render) so req.ip and req.secure
 // reflect the client, and Secure cookies behave correctly.
 if (isProduction) {
   app.set('trust proxy', 1);

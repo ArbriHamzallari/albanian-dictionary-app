@@ -168,7 +168,21 @@ Kthen kërkimet më të shpeshta.
 
 ## Deploy
 
-Hapat e plotë për deploy falas (Netlify + backend + databazë) janë në **[DEPLOYMENT.md](DEPLOYMENT.md)**.
+The frontend is deployed on **Vercel**. The backend runs on **Fly.io** (always-on; no cold starts).
+
+**API base URL pattern:** `https://<fly-app-name>.fly.dev/api`  
+Example: if your Fly app is `fjalingo-api`, set `VITE_API_URL=https://fjalingo-api.fly.dev/api` on Vercel.
+
+Full step-by-step instructions (database, Fly secrets, Vercel env, migrations, verification) are in **[DEPLOYMENT.md](DEPLOYMENT.md)**.
+
+Quick checklist:
+
+1. Create the Fly app and set secrets (`DATABASE_URL`, `JWT_SECRET`, `PADDLE_*`, `FRONTEND_URL`, `NODE_ENV=production`).
+2. From the repo root: `fly deploy`.
+3. Run migrations once against production `DATABASE_URL` (local shell).
+4. Set Vercel `VITE_API_URL` to `https://<fly-app-name>.fly.dev/api` (Production + Preview + Development) and redeploy.
+5. Set Fly `FRONTEND_URL` to your Vercel URL (e.g. `https://your-app.vercel.app`) for CORS.
+6. Verify: `curl https://<fly-app-name>.fly.dev/api/health` returns 200 in under 300ms.
 
 ---
 
