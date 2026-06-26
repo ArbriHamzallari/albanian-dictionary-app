@@ -3,21 +3,24 @@ import { motion } from 'framer-motion';
 import { Lock, Check } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.jsx';
 import LoadingSpinner from '../components/LoadingSpinner.jsx';
+import { t } from '../i18n/index.js';
 
-// Static achievements list (matches backend profileController ACHIEVEMENTS)
+// Static achievements list (matches backend profileController ACHIEVEMENTS).
+// Names/descriptions live in sq.json under achievements.items.<id> and are
+// resolved via t() at render time.
 const ALL_ACHIEVEMENTS = [
-  { id: 'first_search', name: 'Kërkim i Parë', description: 'Kërko fjalën e parë', icon: '🔍', points: 50 },
-  { id: 'first_quiz', name: 'Kuizier', description: 'Përfundo kuizin e parë', icon: '🎮', points: 50 },
-  { id: 'quiz_master', name: 'Mjeshtër Kuizi', description: 'Përfundo 10 kuize', icon: '🧠', points: 200 },
-  { id: 'perfect_quiz', name: 'Perfekt!', description: 'Merr 10/10 në kuiz', icon: '💯', points: 300 },
-  { id: 'streak_3', name: 'Seria 3', description: 'Arrit serinë 3-ditore', icon: '🔥', points: 100 },
-  { id: '7_day_streak', name: 'Seria 7-Ditore', description: 'Luaj kuizin 7 ditë rresht', icon: '🔥', points: 500 },
-  { id: 'streak_30', name: 'Seria 30', description: 'Arrit serinë 30-ditore', icon: '🔥', points: 500 },
-  { id: 'points_500', name: 'Grumbullues', description: 'Merr 500 pikë', icon: '⭐', points: 100 },
-  { id: 'points_1000', name: 'Ekspert', description: 'Merr 1000 pikë', icon: '🏆', points: 200 },
-  { id: 'points_5000', name: 'Legjendë', description: 'Merr 5000 pikë', icon: '👑', points: 500 },
-  { id: 'word_explorer', name: 'Eksplorues', description: 'Shiko 20 fjalë', icon: '📚', points: 100 },
-  { id: 'suggester', name: 'Kontributor', description: 'Propozo një fjalë', icon: '💡', points: 50 },
+  { id: 'first_search', icon: '🔍', points: 50 },
+  { id: 'first_quiz', icon: '🎮', points: 50 },
+  { id: 'quiz_master', icon: '🧠', points: 200 },
+  { id: 'perfect_quiz', icon: '💯', points: 300 },
+  { id: 'streak_3', icon: '🔥', points: 100 },
+  { id: '7_day_streak', icon: '🔥', points: 500 },
+  { id: 'streak_30', icon: '🔥', points: 500 },
+  { id: 'points_500', icon: '⭐', points: 100 },
+  { id: 'points_1000', icon: '🏆', points: 200 },
+  { id: 'points_5000', icon: '👑', points: 500 },
+  { id: 'word_explorer', icon: '📚', points: 100 },
+  { id: 'suggester', icon: '💡', points: 50 },
 ];
 
 const Achievements = () => {
@@ -43,10 +46,10 @@ const Achievements = () => {
       >
         <span className="text-5xl block mb-3">🏆</span>
         <h2 className="text-3xl font-black text-heading dark:text-dark-text mb-2">
-          Arritjet
+          {t('achievements.title')}
         </h2>
         <p className="text-muted dark:text-dark-muted font-semibold">
-          {unlockedCount} nga {ALL_ACHIEVEMENTS.length} shkyçur
+          {t('achievements.progress', { unlocked: unlockedCount, total: ALL_ACHIEVEMENTS.length })}
         </p>
         <div className="progress-bar w-64 mx-auto mt-3">
           <div
@@ -71,10 +74,10 @@ const Achievements = () => {
             >
               <span className="text-4xl block mb-2">{ach.icon}</span>
               <h4 className="text-sm font-black text-heading dark:text-dark-text mb-1">
-                {ach.name}
+                {t(`achievements.items.${ach.id}.name`)}
               </h4>
               <p className="text-xs font-semibold text-muted dark:text-dark-muted mb-2">
-                {ach.description}
+                {t(`achievements.items.${ach.id}.description`)}
               </p>
               <span className={`badge ${unlocked ? 'badge-green' : 'badge-yellow'}`}>
                 {unlocked ? `+${ach.points}pt` : `+${ach.points}pt`}

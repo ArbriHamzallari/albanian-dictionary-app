@@ -219,6 +219,52 @@
     "submit": "Dërgo Propozimin",
     "submitLoading": "Duke dërguar..."
   },
+  "achievements": {
+    "title": "Arritjet",
+    "progress": "{unlocked} nga {total} shkyçur",
+    "items": {
+      "first_search": { "name": "Kërkim i Parë", "description": "Kërko fjalën e parë" },
+      "first_quiz": { "name": "Kuizier", "description": "Përfundo kuizin e parë" },
+      "quiz_master": { "name": "Mjeshtër Kuizi", "description": "Përfundo 10 kuize" },
+      "perfect_quiz": { "name": "Perfekt!", "description": "Merr 10/10 në kuiz" },
+      "streak_3": { "name": "Seria 3", "description": "Arrit serinë 3-ditore" },
+      "7_day_streak": { "name": "Seria 7-Ditore", "description": "Luaj kuizin 7 ditë rresht" },
+      "streak_30": { "name": "Seria 30", "description": "Arrit serinë 30-ditore" },
+      "points_500": { "name": "Grumbullues", "description": "Merr 500 pikë" },
+      "points_1000": { "name": "Ekspert", "description": "Merr 1000 pikë" },
+      "points_5000": { "name": "Legjendë", "description": "Merr 5000 pikë" },
+      "word_explorer": { "name": "Eksplorues", "description": "Shiko 20 fjalë" },
+      "suggester": { "name": "Kontributor", "description": "Propozo një fjalë" }
+    }
+  },
+  "leaderboard": {
+    "title": "Renditja",
+    "subtitle": "Top 10 lojtarët Premium",
+    "segmentInfo": "Segmenti: {segment} · vetëm emër publik dhe avatar",
+    "segmentKids": "fëmijë",
+    "segmentAdults": "të rritur",
+    "freeNote": "Plani falas mund ta shohë renditjen, por pjesëmarrja kërkon Premium.",
+    "empty": "Ende askush në renditje. Bëhu i pari!",
+    "you": "(ti)"
+  },
+  "profile": {
+    "title": "Ndrysho Profilin",
+    "savedProfile": "Profili u përditësua!",
+    "saveError": "Gabim gjatë ruajtjes.",
+    "savedAvatar": "Avatari u ndryshua!",
+    "avatarError": "Gabim gjatë ndryshimit të avatarit.",
+    "chooseAvatar": "Zgjidh Avatarin",
+    "chooseAvatarAria": "Zgjidh avatarin {name}",
+    "usernameLabel": "Emri i përdoruesit",
+    "bioLabel": "Biografia",
+    "bioPlaceholder": "Shkruaj diçka për veten…",
+    "favoriteLabel": "Fjala ime e preferuar",
+    "favoritePlaceholder": "p.sh. shqiponjë",
+    "optOutLabel": "Mos më shfaq në renditjen publike botërore.",
+    "save": "Ruaj Ndryshimet",
+    "friendsDesc": "Shto, prano dhe menaxho miqtë e tu.",
+    "friendsCta": "Shiko"
+  },
   "auth": {
     "login": {
       "title": "Hyr",

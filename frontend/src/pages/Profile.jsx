@@ -10,6 +10,7 @@ import Heading from '../components/ui/Heading.jsx';
 import Parrot from '../components/mascot/Parrot.jsx';
 import ErrorMessage from '../components/ErrorMessage.jsx';
 import api from '../utils/api.js';
+import { t } from '../i18n/index.js';
 
 const inputClass = 'w-full rounded-2xl border-2 border-line bg-paper px-4 h-14 font-bold text-ink focus:outline-none focus:border-brand-green';
 
@@ -59,10 +60,10 @@ const Profile = () => {
         leaderboard_opt_out: leaderboardOptOut,
       });
       updateUserProfile(res.data?.profile);
-      flash('Profili u përditësua!');
+      flash(t('profile.savedProfile'));
       loadUser();
     } catch (err) {
-      setError(err.response?.status === 409 ? err.response.data.message : (err.response?.data?.message || 'Gabim gjatë ruajtjes.'));
+      setError(err.response?.status === 409 ? err.response.data.message : (err.response?.data?.message || t('profile.saveError')));
     } finally {
       setSaving(false);
     }
@@ -73,10 +74,10 @@ const Profile = () => {
     try {
       const res = await api.put('/profile/avatar', { filename });
       updateUserProfile(res.data?.profile);
-      flash('Avatari u ndryshua!');
+      flash(t('profile.savedAvatar'));
       loadUser();
     } catch (err) {
-      setError(err.response?.data?.message || 'Gabim gjatë ndryshimit të avatarit.');
+      setError(err.response?.data?.message || t('profile.avatarError'));
     }
   };
 
@@ -93,7 +94,7 @@ const Profile = () => {
         className="text-center mb-8"
       >
         <Avatar filename={selectedAvatar} size={80} className="mx-auto mb-4 ring-4 ring-brand-green/20" />
-        <Heading level={2}>Ndrysho Profilin</Heading>
+        <Heading level={2}>{t('profile.title')}</Heading>
       </motion.div>
 
       <ErrorMessage message={error} />
@@ -110,7 +111,7 @@ const Profile = () => {
 
       {/* Avatar selector */}
       <Card padding="md" className="mb-6">
-        <Heading level={3} className="mb-4">Zgjidh Avatarin</Heading>
+        <Heading level={3} className="mb-4">{t('profile.chooseAvatar')}</Heading>
         <div className="grid grid-cols-6 sm:grid-cols-8 gap-3">
           {avatars.map((filename) => {
             const active = selectedAvatar === filename;
@@ -119,7 +120,7 @@ const Profile = () => {
                 key={filename}
                 type="button"
                 onClick={() => saveAvatar(filename)}
-                aria-label={`Zgjidh avatarin ${filename.replace('.png', '')}`}
+                aria-label={t('profile.chooseAvatarAria', { name: filename.replace('.png', '') })}
                 aria-pressed={active}
                 className={`relative rounded-xl p-1 border-2 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green ${
                   active ? 'border-brand-green bg-brand-green/10' : 'border-transparent hover:border-line'
@@ -141,24 +142,24 @@ const Profile = () => {
       <Card padding="md" className="mb-6">
         <div className="space-y-5">
           <div>
-            <label htmlFor="pf-username" className="block text-xs font-bold text-ink-soft mb-1">Emri i përdoruesit</label>
+            <label htmlFor="pf-username" className="block text-xs font-bold text-ink-soft mb-1">{t('profile.usernameLabel')}</label>
             <input id="pf-username" type="text" value={username} onChange={(e) => setUsername(e.target.value)} className={inputClass} minLength={3} maxLength={30} pattern="[A-Za-z0-9_-]+" />
           </div>
           <div>
-            <label htmlFor="pf-bio" className="block text-xs font-bold text-ink-soft mb-1">Biografia</label>
-            <textarea id="pf-bio" value={bio} onChange={(e) => setBio(e.target.value)} className={`${inputClass} h-auto resize-none`} rows={3} maxLength={500} placeholder="Shkruaj diçka për veten…" />
+            <label htmlFor="pf-bio" className="block text-xs font-bold text-ink-soft mb-1">{t('profile.bioLabel')}</label>
+            <textarea id="pf-bio" value={bio} onChange={(e) => setBio(e.target.value)} className={`${inputClass} h-auto resize-none`} rows={3} maxLength={500} placeholder={t('profile.bioPlaceholder')} />
           </div>
           <div>
-            <label htmlFor="pf-fav" className="block text-xs font-bold text-ink-soft mb-1">Fjala ime e preferuar</label>
-            <input id="pf-fav" type="text" value={favoriteWord} onChange={(e) => setFavoriteWord(e.target.value)} className={inputClass} maxLength={255} placeholder="p.sh. shqiponjë" />
+            <label htmlFor="pf-fav" className="block text-xs font-bold text-ink-soft mb-1">{t('profile.favoriteLabel')}</label>
+            <input id="pf-fav" type="text" value={favoriteWord} onChange={(e) => setFavoriteWord(e.target.value)} className={inputClass} maxLength={255} placeholder={t('profile.favoritePlaceholder')} />
           </div>
           <label className="flex items-start gap-3 text-sm font-semibold text-ink-soft">
             <input type="checkbox" checked={leaderboardOptOut} onChange={(e) => setLeaderboardOptOut(e.target.checked)} className="mt-1" />
-            Mos më shfaq në renditjen publike botërore.
+            {t('profile.optOutLabel')}
           </label>
 
           <Button variant="primary" size="lg" fullWidth loading={saving} onClick={saveProfile}>
-            <Save className="w-4 h-4" aria-hidden="true" /> Ruaj Ndryshimet
+            <Save className="w-4 h-4" aria-hidden="true" /> {t('profile.save')}
           </Button>
         </div>
       </Card>
@@ -170,11 +171,11 @@ const Profile = () => {
             <Users className="h-6 w-6 text-brand-green" aria-hidden="true" />
           </span>
           <div className="flex-1">
-            <p className="font-extrabold text-ink">Miqtë</p>
-            <p className="text-sm font-semibold text-ink-soft">Shto, prano dhe menaxho miqtë e tu.</p>
+            <p className="font-extrabold text-ink">{t('nav.friends')}</p>
+            <p className="text-sm font-semibold text-ink-soft">{t('profile.friendsDesc')}</p>
           </div>
           <Link to="/miqte">
-            <Button variant="secondary" size="md">Shiko</Button>
+            <Button variant="secondary" size="md">{t('profile.friendsCta')}</Button>
           </Link>
         </Card>
       )}
