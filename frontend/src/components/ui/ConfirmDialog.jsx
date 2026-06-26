@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import Button from './Button.jsx';
+import { t } from '../../i18n/index.js';
 
 const SPRING = { type: 'spring', stiffness: 300, damping: 24 };
 
@@ -10,8 +11,8 @@ const ConfirmDialog = ({
   open,
   title,
   description,
-  confirmLabel = 'Konfirmo',
-  cancelLabel = 'Anulo',
+  confirmLabel = t('common.confirm'),
+  cancelLabel = t('common.cancel'),
   variant = 'danger',
   onConfirm,
   onCancel,

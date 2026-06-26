@@ -7,7 +7,7 @@ import Button from '../components/ui/Button.jsx';
 import Heading from '../components/ui/Heading.jsx';
 import Avatar from '../components/Avatar.jsx';
 import Parrot from '../components/mascot/Parrot.jsx';
-import { TIER_STYLE } from '../constants/leagues.js';
+import { TIER_STYLE, tierName } from '../constants/leagues.js';
 import { t } from '../i18n/index.js';
 
 const SPRING = { type: 'spring', stiffness: 300, damping: 18 };
@@ -83,7 +83,7 @@ const LeaguePage = () => {
           >
             {style.medal}
           </motion.div>
-          <Heading level={2} className={style.text}>{style.name}</Heading>
+          <Heading level={2} className={style.text}>{tierName(data.tier)}</Heading>
           <p className="text-sm font-bold text-ink-soft">{t('league.endsIn', { countdown })}</p>
         </div>
 

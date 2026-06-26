@@ -8,6 +8,8 @@
     "close": "Mbyll",
     "continue": "Vazhdo",
     "avatarAlt": "Avatar",
+    "confirm": "Konfirmo",
+    "cancel": "Anulo",
     "error": {
       "generic": "Ndodhi një gabim.",
       "network": "Nuk mund të lidhet me serverin."
@@ -315,6 +317,27 @@
   "themeToggle": {
     "toLight": "Aktivizo dritën",
     "toDark": "Aktivizo errësirën"
+  },
+  "leagueTiers": {
+    "bronxhi": "Bronxhi",
+    "argjendi": "Argjendi",
+    "ari": "Ari"
+  },
+  "purpose": {
+    "heading": "Pse Fjalingo? 🇦🇱",
+    "problemTitle": "Problemi",
+    "problemLead": "Gjuha shqipe po humbet të vërtetën e saj. Çdo ditë, më shumë fjalë të huazuara po zëvendësojnë fjalët tona autentike.",
+    "insteadOf": "në vend të",
+    "missionTitle": "Misioni Ynë",
+    "missionText": "Fjalingo është krijuar për të ndihmuar shqiptarët të zbulojnë dhe përdorin fjalët e sakta shqipe. Ne besojmë që gjuha jonë është pasuri dhe duhet ruajtur për brezat e ardhshëm.",
+    "howItWorks": "Si funksionon?",
+    "cta": "Bashkohu mijëra shqiptarëve që po ruajnë gjuhën tonë! 🦅",
+    "steps": {
+      "search": "Kërko fjalën e huazuar",
+      "reveal": "Zbulon versionin e saktë shqip",
+      "play": "Mëso duke luajtur kuize argëtuese",
+      "progress": "Ruaj progres dhe fitoje arritje"
+    }
   },
   "notifications": {
     "title": "Njoftimet",
