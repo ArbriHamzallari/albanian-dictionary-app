@@ -1,0 +1,39 @@
+{
+  "common": {
+    "loading": "Duke ngarkuar...",
+    "error": {
+      "generic": "Ndodhi një gabim.",
+      "network": "Nuk mund të lidhet me serverin."
+    },
+    "field": {
+      "email": "Email",
+      "emailPlaceholder": "email@shembull.com",
+      "password": "Fjalëkalimi"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Hyr",
+      "subtitle": "Hyr në llogarinë tënde Fjalingo",
+      "submit": "Hyr",
+      "submitLoading": "Duke hyrë...",
+      "invalidCredentials": "Email ose fjalëkalim i pasaktë.",
+      "noAccount": "Nuk ke llogari?",
+      "registerLink": "Regjistrohu"
+    },
+    "register": {
+      "title": "Regjistrohu",
+      "subtitle": "Krijo llogarinë tënde Fjalingo",
+      "usernameLabel": "Emri i përdoruesit",
+      "usernamePlaceholder": "emri_yt",
+      "ageLabel": "Mosha",
+      "countryLabel": "Shteti",
+      "minorPrivacyNote": "Profilet e fëmijëve janë private si parazgjedhje dhe renditja publike shfaq vetëm emër publik dhe avatar.",
+      "consentLabel": "Kam pëlqimin e prindit ose kujdestarit për të krijuar këtë llogari.",
+      "submit": "Regjistrohu",
+      "submitLoading": "Duke u regjistruar...",
+      "hasAccount": "Ke tashmë llogari?",
+      "loginLink": "Hyr"
+    }
+  }
+}
