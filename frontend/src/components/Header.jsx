@@ -5,6 +5,7 @@ import ThemeToggle from './ThemeToggle.jsx';
 import Avatar from './Avatar.jsx';
 import NotificationBell from './NotificationBell.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
+import { t } from '../i18n/index.js';
 
 const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -12,16 +13,16 @@ const Header = () => {
   const { isLoggedIn, isAdmin, user, logout } = useAuth();
 
   const navLinks = [
-    { to: '/', label: 'Kryefaqja' },
-    { to: '/kuizi', label: 'Kuizi' },
-    { to: '/arritjet', label: 'Arritjet' },
-    { to: '/renditja', label: 'Renditja' },
+    { to: '/', label: t('nav.home') },
+    { to: '/kuizi', label: t('nav.quiz') },
+    { to: '/arritjet', label: t('nav.achievements') },
+    { to: '/renditja', label: t('nav.leaderboard') },
     ...(isLoggedIn && !isAdmin ? [
-      { to: '/miqte', label: 'Miqtë' },
-      { to: '/bisedat', label: 'Bisedat' },
+      { to: '/miqte', label: t('nav.friends') },
+      { to: '/bisedat', label: t('nav.chats') },
     ] : []),
-    { to: '/premium', label: 'Premium' },
-    { to: '/propozo', label: 'Propozo Fjalë' },
+    { to: '/premium', label: t('nav.premium') },
+    { to: '/propozo', label: t('nav.suggest') },
   ];
 
   return (
@@ -35,7 +36,7 @@ const Header = () => {
               Fjalingo
             </h1>
             <p className="text-[10px] font-semibold text-muted dark:text-dark-muted leading-tight hidden sm:block">
-              Mëso shqipen autentike
+              {t('header.tagline')}
             </p>
           </div>
         </NavLink>
@@ -64,14 +65,14 @@ const Header = () => {
               <NavLink to={isAdmin ? '/admin/dashboard' : '/dashboard'} className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-fjalingo-green/5 transition">
                 <Avatar filename={user?.profile?.avatar_filename} size={28} />
                 <span className="text-sm font-bold text-heading dark:text-dark-text">
-                  {isAdmin ? 'Admin' : (user?.profile?.username || 'Dashboard')}
+                  {isAdmin ? t('common.admin') : (user?.profile?.username || t('header.dashboard'))}
                 </span>
               </NavLink>
               <button
                 onClick={logout}
                 className="p-2 rounded-xl hover:bg-card dark:hover:bg-dark-card transition text-muted hover:text-fjalingo-red focus:outline-none focus-visible:ring-2 focus-visible:ring-fjalingo-green"
-                title="Dil"
-                aria-label="Dil"
+                title={t('common.logout')}
+                aria-label={t('common.logout')}
               >
                 <LogOut className="w-4 h-4" />
               </button>
@@ -87,7 +88,7 @@ const Header = () => {
                 }`
               }
             >
-              Hyr
+              {t('common.login')}
             </NavLink>
           )}
 
@@ -100,7 +101,7 @@ const Header = () => {
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
             className="p-2 rounded-xl hover:bg-card dark:hover:bg-dark-card transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-fjalingo-green"
-            aria-label={mobileOpen ? 'Mbyll menunë' : 'Hap menunë'}
+            aria-label={mobileOpen ? t('header.closeMenu') : t('header.openMenu')}
             aria-expanded={mobileOpen}
           >
             {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -137,7 +138,7 @@ const Header = () => {
                   className="flex items-center gap-2 rounded-xl text-sm font-bold text-heading dark:text-dark-text hover:text-fjalingo-green"
                 >
                   <Avatar filename={user?.profile?.avatar_filename} size={24} />
-                  {isAdmin ? 'Admin Panel' : 'Dashboard'}
+                  {isAdmin ? t('header.adminPanel') : t('header.dashboard')}
                 </NavLink>
                 <NotificationBell />
               </div>
@@ -145,7 +146,7 @@ const Header = () => {
                 onClick={() => { logout(); setMobileOpen(false); }}
                 className="block w-full text-left px-4 py-3 rounded-xl text-sm font-bold text-fjalingo-red hover:bg-fjalingo-red/5"
               >
-                Dil
+                {t('common.logout')}
               </button>
             </>
           ) : (
@@ -160,7 +161,7 @@ const Header = () => {
                 }`
               }
             >
-              Hyr
+              {t('common.login')}
             </NavLink>
           )}
         </nav>

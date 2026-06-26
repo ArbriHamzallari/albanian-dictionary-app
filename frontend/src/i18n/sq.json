@@ -1,6 +1,9 @@
 {
   "common": {
     "loading": "Duke ngarkuar...",
+    "login": "Hyr",
+    "logout": "Dil",
+    "admin": "Admin",
     "error": {
       "generic": "Ndodhi një gabim.",
       "network": "Nuk mund të lidhet me serverin."
@@ -10,6 +13,39 @@
       "emailPlaceholder": "email@shembull.com",
       "password": "Fjalëkalimi"
     }
+  },
+  "nav": {
+    "home": "Kryefaqja",
+    "quiz": "Kuizi",
+    "achievements": "Arritjet",
+    "leaderboard": "Renditja",
+    "friends": "Miqtë",
+    "chats": "Bisedat",
+    "premium": "Premium",
+    "suggest": "Propozo Fjalë"
+  },
+  "header": {
+    "tagline": "Mëso shqipen autentike",
+    "dashboard": "Dashboard",
+    "adminPanel": "Admin Panel",
+    "openMenu": "Hap menunë",
+    "closeMenu": "Mbyll menunë"
+  },
+  "mobilenav": {
+    "home": "Kreu",
+    "search": "Kërko",
+    "quiz": "Kuiz",
+    "leaderboard": "Renditja",
+    "profile": "Profili"
+  },
+  "footer": {
+    "tagline": "Gjuha shqipe nuk humbet kurrë! 🦅",
+    "navHeading": "Navigimi",
+    "contactHeading": "Kontakti",
+    "copyright": "© {year} Fjalingo. Të gjitha të drejtat e rezervuara.",
+    "instagramAria": "Instagram Codrix",
+    "websiteAria": "Website Codrix",
+    "linkedinAria": "LinkedIn Codrix"
   },
   "auth": {
     "login": {
