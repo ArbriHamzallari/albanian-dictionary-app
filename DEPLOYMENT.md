@@ -1,139 +1,206 @@
-# Deploy Fjalingo (Netlify + Backend + Database)
+# Deploy Fjalingo (Vercel + Fly.io + Database)
 
-This guide gets the app running online for free so users can try all features. You will use:
+This guide gets the app running online. You will use:
 
-- **Netlify** – frontend (always available)
-- **Render** – backend API (free tier; can spin down after 15 min inactivity; optional ping to keep awake)
-- **Neon** or **ElephantSQL** – PostgreSQL (free tier, always on)
+- **Vercel** – frontend (always available)
+- **Fly.io** – backend API (always-on container; no Render free-tier cold starts)
+- **Supabase** (recommended) or **Neon** / **ElephantSQL** – PostgreSQL
 
-**Important:** Netlify only hosts static sites and serverless functions. It does **not** run a persistent Node.js server. The backend must be deployed separately (e.g. Render).
+**Important:** Vercel hosts the static frontend build (and serverless functions). It does **not** run our persistent Node.js server. The backend is deployed on Fly.io from the repo root using `fly.toml` and `backend/Dockerfile`. The frontend's SPA routing is handled by `frontend/vercel.json`.
 
 ---
 
 ## Prerequisites
 
 - A [GitHub](https://github.com) account (repo with this project)
-- Accounts (all free): [Netlify](https://netlify.com), [Render](https://render.com), [Neon](https://neon.tech) or [ElephantSQL](https://elephantsql.com)
+- [Fly.io](https://fly.io) account (credit card required; smallest VM is ~$5/mo always-on)
+- [Vercel](https://vercel.com) account
+- PostgreSQL: [Supabase](https://supabase.com) (current production path), [Neon](https://neon.tech), or [ElephantSQL](https://elephantsql.com)
+- [flyctl](https://fly.io/docs/hands-on/install-flyctl/) installed locally
 
 ---
 
-## Step 1: Create the database (Neon or ElephantSQL)
+## Step 1: Database
 
-### Option A: Neon
+Use your existing Supabase project or create a new Postgres instance.
 
-1. Go to [neon.tech](https://neon.tech) and sign up (GitHub is fine).
-2. Create a new project (e.g. `fjalingo`), choose a region close to you.
-3. After creation, open the project → **Connection details**.
-4. Copy the **connection string** (looks like `postgresql://user:pass@ep-xxx.region.aws.neon.tech/neondb?sslmode=require`).
-5. Save it somewhere safe; you will use it as `DATABASE_URL` in Step 2.
-
-### Option B: ElephantSQL
-
-1. Go to [elephantsql.com](https://elephantsql.com) and sign up.
-2. **Create New Instance** → choose **Tiny Turtle** (free).
-3. Name it (e.g. `fjalingo`) and create.
-4. Open the instance and copy the **URL** (e.g. `postgres://user:pass@hostname/dbname`).
-5. Save it as `DATABASE_URL` for Step 2.
+1. Copy the **pooled** connection string (must include `sslmode=require` for Supabase).
+2. Save it as `DATABASE_URL` for Step 2.
 
 ---
 
-## Step 2: Deploy the backend on Render
+## Step 2: Deploy the backend on Fly.io
 
-1. Go to [render.com](https://render.com) and sign in with GitHub.
-2. **New +** → **Web Service**.
-3. Connect the repo that contains this project (e.g. `albanian-dictionary-app`).
-4. Configure (this repo has the backend in a `backend/` folder):
-   - **Name:** `fjalingo-api` (or any name).
-   - **Region:** Choose closest to your DB and users.
-   - **Root Directory:** `backend` (so Render runs all commands from the backend folder).
-   - **Runtime:** Node.
-   - **Build Command:** `npm install`.
-   - **Start Command:** `npm start`.
+All commands below run from the **repo root** (`albanian-dictionary-app/`).
 
-5. **Environment** (Environment Variables). Add:
+### 2a. One-time Fly setup
 
-   | Key             | Value |
-   |-----------------|--------|
-   | `NODE_ENV`      | `production` |
-   | `PORT`          | `10000` (Render sets this; 10000 is default for free tier) |
-   | `DATABASE_URL`  | *(paste the Neon or ElephantSQL connection string)* |
-   | `JWT_SECRET`    | *(generate a long random string, e.g. `openssl rand -hex 32`)* |
-   | `ADMIN_EMAIL`   | *(your admin email – not the default one)* |
-   | `ADMIN_PASSWORD`| *(strong password – never use the default)* |
-   | `FRONTEND_URL`  | *(leave empty for now; add after Step 3)* |
+```powershell
+fly auth login
+```
 
-   Do **not** commit these values; they stay only in Render’s dashboard.
+If the name `fjalingo-api` is taken globally, pick another name and update `app = "..."` in `fly.toml`:
 
-6. Click **Create Web Service**. Wait for the first deploy to finish.
-7. Note the service URL (e.g. `https://fjalingo-api.onrender.com`). The API base URL is that + `/api` (e.g. `https://fjalingo-api.onrender.com/api`).
+```powershell
+fly apps create your-unique-app-name
+```
 
-### Run migrations and seed (one-time)
+### 2b. Set secrets (before first deploy)
 
-Render free tier does not give you a long-lived shell. Use one of these:
+Replace placeholders with your real values. Do **not** commit these.
 
-- **Render Shell (if available):** Open the service → **Shell** tab and run:
-  - `npm run migrate`
-  - `npm run seed`
-- **Local one-time run:** On your machine, create a temporary `backend/.env` with the same `DATABASE_URL` (and optionally `ADMIN_EMAIL`, `ADMIN_PASSWORD`), then run from the **backend** directory:
-  - `npm run migrate`
-  - `npm run seed`  
-  Then remove or secure the local `.env` and do not commit it.
+```powershell
+fly secrets set `
+  NODE_ENV=production `
+  DATABASE_URL="postgresql://..." `
+  JWT_SECRET="your-long-random-secret" `
+  FRONTEND_URL="https://your-app.vercel.app" `
+  PADDLE_ENVIRONMENT=sandbox `
+  PADDLE_CLIENT_TOKEN="test_..." `
+  PADDLE_PREMIUM_PRICE_ID="pri_..." `
+  PADDLE_WEBHOOK_SECRET="your_webhook_secret"
+```
 
-After this, the database has tables and initial data (including the admin user from `ADMIN_EMAIL` / `ADMIN_PASSWORD`).
+Optional secrets:
 
-### Optional: Keep free-tier backend from sleeping
+| Secret | Purpose |
+|--------|---------|
+| `ADMIN_EMAIL` | Admin account email for seed (production) |
+| `ADMIN_PASSWORD` | Admin account password for seed (production) |
+| `FRONTEND_URL_EXTRA` | Comma-separated extra CORS origins (e.g. custom domain `https://fjalingo.al`) |
+| `FRONTEND_URL_ALT` | Second primary origin if needed |
+| `PADDLE_CHECKOUT_SECRET` | Checkout signing secret (defaults to `JWT_SECRET`) |
+| `PREMIUM_ANNUAL_PRICE_EUR` | Revenue estimate for admin metrics (default 25) |
 
-Render’s free tier spins down after ~15 minutes of no traffic. To reduce cold starts:
+See the **Secrets checklist** section below for what each required secret does.
 
-- Use [UptimeRobot](https://uptimerobot.com) (free): create an HTTP monitor that hits `https://your-api.onrender.com/api/health` every 10–14 minutes.
-- Or use any similar cron/ping service that calls your `/api/health` endpoint.
+**CORS:** `FRONTEND_URL` must be your production Vercel origin exactly (`https://…`, no trailing slash). The API rejects all other browser origins — there is no allow-all fallback.
 
----
+### 2c. Deploy
 
-## Step 3: Deploy the frontend on Netlify
+```powershell
+fly deploy
+```
 
-1. Go to [app.netlify.com](https://app.netlify.com) and sign in with GitHub.
-2. **Add new site** → **Import an existing project** → choose your repo.
-3. Configure (the repo includes a `netlify.toml` that sets base = `frontend`, so Netlify may prefill these):
-   - **Branch to deploy:** `main` (or your default branch).
-   - **Base directory:** `frontend` (or leave empty if using netlify.toml).
-   - **Build command:** `npm run build`.
-   - **Publish directory:** `dist`.
-   - **Environment variables** → **Add variable** (or **Add from .env** if you use a non-committed file):
-     - `VITE_API_URL` = `https://your-api.onrender.com/api` (the URL from Step 2, **must end with `/api`**).
-     - If you omit `/api`, the frontend will request `/words/...` instead of `/api/words/...` and get 404; words will not load.
+Note your API host: `https://<fly-app-name>.fly.dev`  
+API base URL for the frontend: `https://<fly-app-name>.fly.dev/api`
 
-4. Save and deploy. Netlify will build and publish the site.
-5. Copy the site URL (e.g. `https://your-site-name.netlify.app`).
+### 2d. Run migrations and seed (one-time)
 
----
+On your machine, with the same `DATABASE_URL` in a temporary `backend/.env`:
 
-## Step 4: Connect frontend and backend
+```powershell
+cd backend
+npm run migrate
+npm run seed
+```
 
-1. **Render:** Open your web service → **Environment**.
-2. Set **FRONTEND_URL** to your Netlify site URL (e.g. `https://your-site-name.netlify.app`). No trailing slash.
-3. If you use a custom domain on Netlify later, add it too or use **FRONTEND_URL_EXTRA** (comma-separated) for multiple origins.
-4. Save. Render will redeploy; after that, the API will accept requests from your Netlify origin (CORS).
+Remove or secure the local `.env` afterward. Do not commit it.
 
----
+### 2e. Verify health (cold-start acceptance test)
 
-## Step 5: Verify
+```powershell
+curl https://<fly-app-name>.fly.dev/api/health
+```
 
-1. Open your Netlify URL. You should see the Fjalingo UI.
-2. Try: search, word of the day, opening a word, register/login, quiz, leaderboard.
-3. Admin: go to `/admin`, log in with the **ADMIN_EMAIL** and **ADMIN_PASSWORD** you set in Render (not any default from the repo).
-4. Optional: run the smoke test against the live API:
-   - `cd backend && node scripts/smoke-test.js https://your-api.onrender.com`
+Expected response (200, typically &lt;300ms):
+
+```json
+{ "status": "ok", "uptime": 42, "db": "ok" }
+```
+
+If `db` is `"fail"`, check `DATABASE_URL` and Supabase network/SSL settings.
 
 ---
 
-## Security checklist
+## Step 3: Deploy the frontend on Vercel
 
-- **Never commit** `backend/.env` or `frontend/.env` (they are in `.gitignore`).
-- **Production:** Always set `ADMIN_EMAIL` and `ADMIN_PASSWORD` in Render; the seed script refuses to create the default admin in production.
-- Use a **strong JWT_SECRET** (e.g. `openssl rand -hex 32`).
-- Keep **DATABASE_URL** and **JWT_SECRET** only in Render (and optionally in a local `.env` for one-time migrate/seed; never push them).
-- CORS is limited to **FRONTEND_URL** (and **FRONTEND_URL_ALT** / **FRONTEND_URL_EXTRA**); only your frontend origin can call the API in a browser.
+1. Go to [vercel.com](https://vercel.com) → **Add New… → Project** → import your GitHub repo.
+2. Project settings:
+   - **Root Directory:** `frontend`
+   - **Framework Preset:** Vite
+   - **Build Command:** `npm run build`
+   - **Output Directory:** `dist`
+3. **Environment variable** — add this **before the first deploy** (a missing/late
+   `VITE_API_URL` bakes an undefined API URL into the bundle even though the deploy
+   "succeeds"). Set it for **Production, Preview, and Development**:
+   - `VITE_API_URL` = `https://<backend-host>/api` (**must end with `/api`**)
+4. Deploy and copy your site URL (e.g. `https://your-app.vercel.app`).
+
+The SPA rewrite (so `/kerko`, `/kuizi`, `/admin` don't 404 on hard refresh) and the
+security headers are handled by `frontend/vercel.json` — no dashboard config needed.
+
+> **Vercel Hobby tier prohibits commercial use.** Upgrade the project to **Pro** before
+> launching the paid Paddle tier.
+
+---
+
+## Step 4: Connect frontend and backend (CORS)
+
+The backend's `FRONTEND_URL` must equal your production Vercel origin exactly (`https://…`,
+no trailing slash), or every API call from the new deploy is blocked by CORS. **Update
+`FRONTEND_URL` on the backend host whenever the frontend URL changes** (e.g. after the
+first Vercel deploy, or when you attach a custom domain):
+
+```powershell
+fly secrets set FRONTEND_URL="https://your-app.vercel.app"
+```
+
+The backend redeploys automatically. After that, browser requests from your Vercel origin
+are allowed; all others are blocked.
+
+`FRONTEND_URL_EXTRA` accepts a **comma-separated** list of additional allowed origins —
+use it for a custom domain, and during the host cutover to keep the old origin alive
+alongside the new one:
+
+```powershell
+fly secrets set FRONTEND_URL_EXTRA="https://fjalingo.al,https://your-app.netlify.app"
+```
+
+---
+
+## Step 5: Verify end-to-end
+
+1. Open your Vercel URL — Fjalingo UI loads.
+2. Search, word of the day, register/login, quiz, leaderboard.
+3. Admin: `/admin` with your `ADMIN_EMAIL` / `ADMIN_PASSWORD`.
+4. Smoke test:
+
+```powershell
+cd backend
+node scripts/smoke-test.js https://<fly-app-name>.fly.dev
+```
+
+5. In browser DevTools → Network: API calls go to `*.fly.dev/api/...` with no CORS errors.
+
+---
+
+## Secrets checklist (set on Fly before first deploy)
+
+| Secret | Required | Purpose |
+|--------|----------|---------|
+| `NODE_ENV` | Yes | Must be `production` on Fly |
+| `DATABASE_URL` | Yes | Supabase/Postgres pooled connection string (`sslmode=require`) |
+| `JWT_SECRET` | Yes | Signs auth tokens; use `openssl rand -hex 32` |
+| `FRONTEND_URL` | Yes | Production frontend (Vercel) origin for CORS (e.g. `https://your-app.vercel.app`) |
+| `PADDLE_ENVIRONMENT` | Yes | `sandbox` until live billing; `production` after Paddle verification |
+| `PADDLE_CLIENT_TOKEN` | Yes | Paddle client-side token for checkout |
+| `PADDLE_PREMIUM_PRICE_ID` | Yes | Paddle price ID for €25/year Premium |
+| `PADDLE_WEBHOOK_SECRET` | Yes | Verifies Paddle webhook signatures |
+
+Do **not** echo real values in logs, commits, or docs.
+
+---
+
+## Updating the backend
+
+After code changes on `main`:
+
+```powershell
+fly deploy
+```
+
+Fly performs rolling deploys with zero downtime when health checks pass at `/api/health`.
 
 ---
 
@@ -141,12 +208,33 @@ Render’s free tier spins down after ~15 minutes of no traffic. To reduce cold 
 
 | Issue | What to check |
 |-------|----------------|
-| Words / word of the day don’t load; 404 on `/words/...` | **VITE_API_URL** on Netlify must **end with `/api`** (e.g. `https://xxx.onrender.com/api`). Without it, requests go to `/words/...` instead of `/api/words/...`. Set it in Netlify → Environment variables, then **trigger a new deploy**. |
-| Frontend loads but API calls fail | CORS: ensure **FRONTEND_URL** on Render is exactly your Netlify URL (https, no trailing slash). Check browser Network tab for CORS errors. |
-| 404 on API routes | **VITE_API_URL** on Netlify must be the full API base (e.g. `https://xxx.onrender.com/api`). Rebuild after changing env vars. |
-| “Server not configured” or login fails | **JWT_SECRET** must be set in Render. Redeploy after adding it. |
-| DB errors on Render | **DATABASE_URL** correct; migrations run once (Step 2). For Neon, use the string with `?sslmode=require`. |
-| Backend “sleeps” | Normal on free tier. Use UptimeRobot (or similar) to ping `/api/health` every 10–14 minutes, or accept the first request after idle being slow. |
+| Words don't load; 404 on `/words/...` | Vercel `VITE_API_URL` must end with `/api`. Redeploy on Vercel after changing it (env changes need a fresh build). |
+| Hard refresh on `/kerko` or `/admin` returns 404 | `frontend/vercel.json` rewrite is missing or not deployed; redeploy. |
+| CORS errors in browser | `FRONTEND_URL` on the backend host must exactly match the Vercel origin (https, no trailing slash). |
+| Health returns `"db": "fail"` | `DATABASE_URL` correct; Supabase pooler URL with SSL; migrations run. |
+| Health slow or timeout | Fly machine region (`primary_region = "ams"` in `fly.toml`) should be near EU users and Supabase region. |
+| App name taken on Fly | Change `app` in `fly.toml`, run `fly apps create <new-name>`, deploy again. |
+
+---
+
+## Migration runbook (Netlify → Vercel)
+
+The repo changes (`frontend/vercel.json`, this doc) are already committed. These are the
+platform steps to execute the cutover — run them in order:
+
+1. Create the Vercel project, import the GitHub repo, set **Root Directory** to `frontend`
+   and **Framework Preset** to Vite.
+2. Add the `VITE_API_URL` env var on Vercel for **Production + Preview + Development**
+   **before the first deploy**.
+3. Deploy. Verify the Vercel URL loads and that a hard refresh on `/kerko` does **not** 404.
+4. Update `FRONTEND_URL` on the backend host to the new Vercel URL. Optionally set
+   `FRONTEND_URL_EXTRA` to the old Netlify URL during the cutover window.
+5. Smoke test: home, search, login, quiz, admin, and a hard refresh on a deep route.
+6. If a custom domain currently points at Netlify, repoint DNS to Vercel per Vercel's
+   instructions (DNS lives at the registrar, not in this repo).
+7. After 24–48h of clean operation: remove `frontend/netlify.toml` **and**
+   `frontend/public/_headers` in a follow-up commit, drop `FRONTEND_URL_EXTRA`, and leave
+   the Netlify site **disabled (not deleted)** for one week as a rollback.
 
 ---
 
@@ -154,8 +242,8 @@ Render’s free tier spins down after ~15 minutes of no traffic. To reduce cold 
 
 | Part | Service | Role |
 |------|---------|------|
-| Frontend | Netlify | Serves the React app; always on. |
-| Backend | Render | Node API; free tier may spin down when idle. |
-| Database | Neon or ElephantSQL | PostgreSQL; always on. |
+| Frontend | Vercel | Serves the React app; always on |
+| Backend | Fly.io | Node API; always-on container in `ams` (Amsterdam) |
+| Database | Supabase Postgres | Managed PostgreSQL; always on |
 
-After deployment, the app is publicly available. Only you (and anyone you give the admin email/password to) can access the admin panel; credentials are not in the repo or in the public docs.
+After deployment, the app is publicly available. Admin credentials live only in Fly secrets and your password manager — never in the repo.
