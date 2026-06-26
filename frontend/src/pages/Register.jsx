@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { UserPlus } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.jsx';
 import ErrorMessage from '../components/ErrorMessage.jsx';
+import { t } from '../i18n/index.js';
 
 const Register = () => {
   const [username, setUsername] = useState('');
@@ -48,9 +49,9 @@ const Register = () => {
       if (err.response?.status === 409) {
         setError(err.response.data.message);
       } else if (err.code === 'ERR_NETWORK' || !err.response) {
-        setError('Nuk mund të lidhet me serverin.');
+        setError(t('common.error.network'));
       } else {
-        setError(err.response?.data?.message || 'Ndodhi një gabim.');
+        setError(err.response?.data?.message || t('common.error.generic'));
       }
     } finally {
       setLoading(false);
@@ -67,9 +68,9 @@ const Register = () => {
         <div className="w-16 h-16 rounded-2xl bg-fjalingo-green/15 flex items-center justify-center mx-auto mb-4">
           <UserPlus className="w-8 h-8 text-fjalingo-green" />
         </div>
-        <h2 className="text-2xl font-black text-heading dark:text-dark-text">Regjistrohu</h2>
+        <h2 className="text-2xl font-black text-heading dark:text-dark-text">{t('auth.register.title')}</h2>
         <p className="text-sm text-muted dark:text-dark-muted font-semibold mt-1">
-          Krijo llogarinë tënde Fjalingo
+          {t('auth.register.subtitle')}
         </p>
       </motion.div>
 
@@ -81,7 +82,7 @@ const Register = () => {
         className="card space-y-5"
       >
         <div>
-          <label className="block text-xs font-bold text-muted dark:text-dark-muted mb-1">Emri i përdoruesit</label>
+          <label className="block text-xs font-bold text-muted dark:text-dark-muted mb-1">{t('auth.register.usernameLabel')}</label>
           <input
             type="text"
             value={username}
@@ -91,22 +92,22 @@ const Register = () => {
             maxLength={30}
             pattern="[A-Za-z0-9_-]+"
             className="input-field"
-            placeholder="emri_yt"
+            placeholder={t('auth.register.usernamePlaceholder')}
           />
         </div>
         <div>
-          <label className="block text-xs font-bold text-muted dark:text-dark-muted mb-1">Email</label>
+          <label className="block text-xs font-bold text-muted dark:text-dark-muted mb-1">{t('common.field.email')}</label>
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
             className="input-field"
-            placeholder="email@shembull.com"
+            placeholder={t('common.field.emailPlaceholder')}
           />
         </div>
         <div>
-          <label className="block text-xs font-bold text-muted dark:text-dark-muted mb-1">Fjalëkalimi</label>
+          <label className="block text-xs font-bold text-muted dark:text-dark-muted mb-1">{t('common.field.password')}</label>
           <input
             type="password"
             value={password}
@@ -119,7 +120,7 @@ const Register = () => {
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-bold text-muted dark:text-dark-muted mb-1">Mosha</label>
+            <label className="block text-xs font-bold text-muted dark:text-dark-muted mb-1">{t('auth.register.ageLabel')}</label>
             <input
               type="number"
               value={age}
@@ -132,7 +133,7 @@ const Register = () => {
             />
           </div>
           <div>
-            <label className="block text-xs font-bold text-muted dark:text-dark-muted mb-1">Shteti</label>
+            <label className="block text-xs font-bold text-muted dark:text-dark-muted mb-1">{t('auth.register.countryLabel')}</label>
             <input
               type="text"
               value={countryCode}
@@ -148,7 +149,7 @@ const Register = () => {
 
         {Number(age) > 0 && Number(age) < 18 && (
           <p className="text-xs font-semibold text-muted dark:text-dark-muted">
-            Profilet e fëmijëve janë private si parazgjedhje dhe renditja publike shfaq vetëm emër publik dhe avatar.
+            {t('auth.register.minorPrivacyNote')}
           </p>
         )}
 
@@ -161,20 +162,20 @@ const Register = () => {
               required
               className="mt-1"
             />
-            Kam pëlqimin e prindit ose kujdestarit për të krijuar këtë llogari.
+            {t('auth.register.consentLabel')}
           </label>
         )}
 
         <ErrorMessage message={error} />
 
         <button type="submit" disabled={loading} className="btn-primary w-full">
-          {loading ? 'Duke u regjistruar...' : 'Regjistrohu'}
+          {loading ? t('auth.register.submitLoading') : t('auth.register.submit')}
         </button>
 
         <p className="text-center text-sm text-muted dark:text-dark-muted font-semibold">
-          Ke tashmë llogari?{' '}
+          {t('auth.register.hasAccount')}{' '}
           <Link to="/hyr" className="text-fjalingo-green hover:underline font-bold">
-            Hyr
+            {t('auth.register.loginLink')}
           </Link>
         </p>
       </motion.form>
