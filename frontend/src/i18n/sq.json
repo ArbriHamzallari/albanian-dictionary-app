@@ -47,6 +47,79 @@
     "websiteAria": "Website Codrix",
     "linkedinAria": "LinkedIn Codrix"
   },
+  "home": {
+    "scrollHint": "Shiko ç'të pret poshtë",
+    "hero": {
+      "headline": "Fol shqipen e vërtetë, jo të huazuarën",
+      "cta": "Fillo"
+    },
+    "error": {
+      "wordsLoad": "Nuk mund të ngarkohen fjalët. Kontrolloni që backend dhe baza e të dhënave të jenë aktiv.",
+      "dataLoad": "Nuk mund të ngarkohen të dhënat tani."
+    },
+    "cards": {
+      "daily": {
+        "title": "SFIDA E DITËS",
+        "desc": "Testoje veten çdo ditë!",
+        "cta": "Fillo"
+      },
+      "quiz": {
+        "title": "KUIZI I SHPEJTË",
+        "desc": "Luaj dhe mëso fjalë të reja!",
+        "cta": "Luaj tani!"
+      },
+      "achievements": {
+        "title": "ARRITJET",
+        "desc": "Shkyç arritje dhe mbledh pikë!",
+        "cta": "Shiko"
+      }
+    },
+    "stats": {
+      "words": "Fjalë",
+      "users": "Përdorues",
+      "searches": "Kërkime"
+    },
+    "wotd": {
+      "heading": "FJALA E DITËS",
+      "empty": "Fjala e ditës nuk është vendosur ende.",
+      "borrowedLabel": "Fjala e huazuar",
+      "correctLabel": "Fjala e saktë shqipe",
+      "seeMore": "Shiko zgjedhjen e fjalës"
+    },
+    "popular": {
+      "heading": "Fjalët më të kërkuara 🔥",
+      "seeAll": "Shiko të gjitha"
+    }
+  },
+  "quiz": {
+    "error": {
+      "notEnoughWords": "Nuk ka mjaft fjalë për kuizin. Nevojiten të paktën 4 fjalë.",
+      "loadFailed": "Nuk mund të ngarkohet kuizi. Provoni përsëri.",
+      "submitFailed": "Rezultati i kuizit nuk u ruajt. Provoni përsëri."
+    },
+    "tryAgain": "Provo Përsëri",
+    "questionPrompt": "Cila është fjala e saktë për:",
+    "answerSaved": "Përgjigja u ruajt.",
+    "correctFeedback": "Saktë! +100 Pikë",
+    "wrongFeedback": "Gabim! Përgjigja:",
+    "seeResult": "Shiko Rezultatin",
+    "continue": "Vazhdo",
+    "result": {
+      "greatTitle": "Shkëlqyeshëm!",
+      "goodTitle": "Punë e mirë!",
+      "subtitle": "Rezultati yt",
+      "correctLabel": "Saktë",
+      "pointsLabel": "Pikë",
+      "timeLabel": "Koha",
+      "playAgain": "Luaj Përsëri"
+    },
+    "guestModal": {
+      "title": "Ruaje progresin!",
+      "desc": "Krijo profil dhe fito shpërblim çdo ditë për 7 ditë rresht!",
+      "createProfile": "Krijo profil",
+      "continueGuest": "Vazhdo si mysafir"
+    }
+  },
   "auth": {
     "login": {
       "title": "Hyr",
