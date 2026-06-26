@@ -10,12 +10,9 @@ import Heading from '../components/ui/Heading.jsx';
 import ConfirmDialog from '../components/ui/ConfirmDialog.jsx';
 import Avatar from '../components/Avatar.jsx';
 import Parrot from '../components/mascot/Parrot.jsx';
+import { t } from '../i18n/index.js';
 
-const TABS = [
-  { key: 'friends', label: 'Miqtë' },
-  { key: 'incoming', label: 'Të marra' },
-  { key: 'outgoing', label: 'Të dërguara' },
-];
+const TAB_KEYS = ['friends', 'incoming', 'outgoing'];
 
 // Small icon button with an accessible label and a focus ring.
 const IconButton = ({ label, onClick, children }) => (
@@ -35,12 +32,12 @@ const PremiumGate = () => {
   return (
     <div className="max-w-md mx-auto px-6 py-16 text-center">
       <div className="flex justify-center"><Parrot state="wave" size={150} /></div>
-      <Heading level={2} className="mt-4">Miqtë janë Premium</Heading>
+      <Heading level={2} className="mt-4">{t('friends.premiumGateTitle')}</Heading>
       <p className="mt-2 text-ink-soft font-semibold">
-        Shto miq, shiko progresin e tyre dhe bisedoni në mënyrë të sigurt me Premium.
+        {t('friends.premiumGateDesc')}
       </p>
       <Button variant="primary" size="lg" className="mt-6" onClick={() => navigate('/premium')}>
-        Kalo në Premium
+        {t('practiceCard.goPremium')}
       </Button>
     </div>
   );
@@ -88,10 +85,10 @@ const FriendsPage = () => {
     try {
       await api.post('/friends/request', { recipient_username: name });
       setSearchName('');
-      flash('Kërkesa u dërgua!');
+      flash(t('friends.requestSent'));
       load();
     } catch (err) {
-      flash(err?.response?.data?.message || 'Kërkesa nuk u dërgua.');
+      flash(err?.response?.data?.message || t('friends.requestFailed'));
     }
   };
 
@@ -100,7 +97,7 @@ const FriendsPage = () => {
       await api.post(`/friends/${path}`, { request_id });
       load();
     } catch (err) {
-      flash(err?.response?.data?.message || 'Veprimi dështoi.');
+      flash(err?.response?.data?.message || t('social.actionFailed'));
     }
   };
 
@@ -110,10 +107,10 @@ const FriendsPage = () => {
     try {
       if (dialog.type === 'block') {
         await api.post('/chat/block', { target_username: dialog.friend.username });
-        flash('Përdoruesi u bllokua.');
+        flash(t('friends.userBlocked'));
       } else if (dialog.type === 'remove') {
         await api.post('/friends/remove', { target_username: dialog.friend.username });
-        flash('Miku u hoq.');
+        flash(t('friends.friendRemoved'));
       } else if (dialog.type === 'report') {
         await api.post('/chat/report', {
           reported_username: dialog.friend.username,
@@ -121,13 +118,13 @@ const FriendsPage = () => {
           details: reportDetails.trim() || undefined,
           surface: 'friends',
         });
-        flash('Raporti u dërgua. Faleminderit.');
+        flash(t('social.reportSent'));
       }
       setDialog(null);
       setReportDetails('');
       load();
     } catch (err) {
-      flash(err?.response?.data?.message || 'Veprimi dështoi.');
+      flash(err?.response?.data?.message || t('social.actionFailed'));
     } finally {
       setDialogLoading(false);
     }
@@ -141,24 +138,24 @@ const FriendsPage = () => {
 
   return (
     <div className="max-w-2xl mx-auto px-6 py-10">
-      <Heading level={1} className="mb-6">Miqtë</Heading>
+      <Heading level={1} className="mb-6">{t('nav.friends')}</Heading>
 
       {/* Add friend */}
       <Card padding="md" className="mb-4">
         <form onSubmit={addFriend} className="flex gap-3">
           <div className="relative flex-1">
-            <label htmlFor="friend-search" className="sr-only">Emri i përdoruesit</label>
+            <label htmlFor="friend-search" className="sr-only">{t('auth.register.usernameLabel')}</label>
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-ink-soft" aria-hidden="true" />
             <input
               id="friend-search"
               type="text"
               value={searchName}
               onChange={(e) => setSearchName(e.target.value)}
-              placeholder="Shto mik me emrin e tij"
+              placeholder={t('friends.addPlaceholder')}
               className="w-full rounded-2xl border-2 border-line bg-paper pl-10 pr-4 h-14 font-bold text-ink focus:outline-none focus:border-brand-green"
             />
           </div>
-          <Button type="submit" variant="primary" size="lg">Shto</Button>
+          <Button type="submit" variant="primary" size="lg">{t('friends.add')}</Button>
         </form>
       </Card>
 
@@ -167,21 +164,21 @@ const FriendsPage = () => {
       )}
 
       {/* Tabs */}
-      <div role="tablist" aria-label="Miqtë dhe kërkesat" className="flex gap-2 mb-5">
-        {TABS.map((t) => {
-          const count = t.key === 'incoming' ? incoming.length : t.key === 'outgoing' ? outgoing.length : friends.length;
-          const active = tab === t.key;
+      <div role="tablist" aria-label={t('friends.tablistLabel')} className="flex gap-2 mb-5">
+        {TAB_KEYS.map((key) => {
+          const count = key === 'incoming' ? incoming.length : key === 'outgoing' ? outgoing.length : friends.length;
+          const active = tab === key;
           return (
             <button
-              key={t.key}
+              key={key}
               role="tab"
               aria-selected={active}
-              onClick={() => setTab(t.key)}
+              onClick={() => setTab(key)}
               className={`rounded-pill px-4 py-2 text-sm font-extrabold focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green ${
                 active ? 'bg-brand-green text-paper' : 'bg-paper text-ink-soft border-2 border-line'
               }`}
             >
-              {t.label}{count ? ` (${count})` : ''}
+              {t(`friends.tabs.${key}`)}{count ? ` (${count})` : ''}
             </button>
           );
         })}
@@ -192,8 +189,8 @@ const FriendsPage = () => {
         friends.length === 0 ? (
           <Card padding="lg" className="text-center">
             <div className="flex justify-center"><Parrot state="idle" size={140} /></div>
-            <Heading level={3} className="mt-3">Ende pa miq</Heading>
-            <p className="mt-1 text-ink-soft font-semibold">Shto dikë me emrin e tij më sipër për të filluar.</p>
+            <Heading level={3} className="mt-3">{t('friends.emptyTitle')}</Heading>
+            <p className="mt-1 text-ink-soft font-semibold">{t('friends.emptyDesc')}</p>
           </Card>
         ) : (
           <div className="space-y-3">
@@ -210,18 +207,18 @@ const FriendsPage = () => {
                   </div>
                   <Link
                     to={`/bisedat/${encodeURIComponent(f.username)}`}
-                    aria-label={`Bisedo me ${f.username}`}
+                    aria-label={t('friends.chatWith', { username: f.username })}
                     className="rounded-xl p-2 text-brand-green hover:bg-cloud focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green"
                   >
                     <MessageCircle className="h-5 w-5" />
                   </Link>
-                  <IconButton label={`Hiq ${f.username}`} onClick={() => setDialog({ type: 'remove', friend: f })}>
+                  <IconButton label={t('friends.removeAria', { username: f.username })} onClick={() => setDialog({ type: 'remove', friend: f })}>
                     <UserMinus className="h-5 w-5" />
                   </IconButton>
-                  <IconButton label={`Raporto ${f.username}`} onClick={() => setDialog({ type: 'report', friend: f })}>
+                  <IconButton label={t('social.reportAria', { username: f.username })} onClick={() => setDialog({ type: 'report', friend: f })}>
                     <Flag className="h-5 w-5" />
                   </IconButton>
-                  <IconButton label={`Blloko ${f.username}`} onClick={() => setDialog({ type: 'block', friend: f })}>
+                  <IconButton label={t('social.blockAria', { username: f.username })} onClick={() => setDialog({ type: 'block', friend: f })}>
                     <Ban className="h-5 w-5 text-accent-coral" />
                   </IconButton>
                 </Card>
@@ -236,7 +233,7 @@ const FriendsPage = () => {
         incoming.length === 0 ? (
           <Card padding="lg" className="text-center">
             <div className="flex justify-center"><Parrot state="idle" size={120} /></div>
-            <p className="mt-3 text-ink-soft font-semibold">Asnjë kërkesë e re.</p>
+            <p className="mt-3 text-ink-soft font-semibold">{t('friends.noIncoming')}</p>
           </Card>
         ) : (
           <div className="space-y-3">
@@ -245,9 +242,9 @@ const FriendsPage = () => {
                 <Avatar filename={r.avatar_filename} size={44} />
                 <p className="flex-1 min-w-0 font-extrabold text-ink truncate">{r.username}</p>
                 <Button variant="primary" size="md" onClick={() => respond('accept', r.id)}>
-                  <Check className="h-4 w-4" aria-hidden="true" /> Prano
+                  <Check className="h-4 w-4" aria-hidden="true" /> {t('publicProfile.accept')}
                 </Button>
-                <IconButton label={`Refuzo ${r.username}`} onClick={() => respond('decline', r.id)}>
+                <IconButton label={t('friends.declineAria', { username: r.username })} onClick={() => respond('decline', r.id)}>
                   <X className="h-5 w-5" />
                 </IconButton>
               </Card>
@@ -261,7 +258,7 @@ const FriendsPage = () => {
         outgoing.length === 0 ? (
           <Card padding="lg" className="text-center">
             <div className="flex justify-center"><Parrot state="idle" size={120} /></div>
-            <p className="mt-3 text-ink-soft font-semibold">Asnjë kërkesë në pritje.</p>
+            <p className="mt-3 text-ink-soft font-semibold">{t('friends.noOutgoing')}</p>
           </Card>
         ) : (
           <div className="space-y-3">
@@ -269,7 +266,7 @@ const FriendsPage = () => {
               <Card key={r.id} padding="sm" className="flex items-center gap-3">
                 <Avatar filename={r.avatar_filename} size={44} />
                 <p className="flex-1 min-w-0 font-extrabold text-ink truncate">{r.username}</p>
-                <Button variant="secondary" size="md" onClick={() => respond('cancel', r.id)}>Anulo</Button>
+                <Button variant="secondary" size="md" onClick={() => respond('cancel', r.id)}>{t('common.cancel')}</Button>
               </Card>
             ))}
           </div>
@@ -279,16 +276,16 @@ const FriendsPage = () => {
       <ConfirmDialog
         open={!!dialog}
         title={
-          dialog?.type === 'block' ? `Blloko ${dialog?.friend?.username}?`
-          : dialog?.type === 'remove' ? `Hiq ${dialog?.friend?.username}?`
-          : `Raporto ${dialog?.friend?.username}?`
+          dialog?.type === 'block' ? t('social.blockTitle', { username: dialog?.friend?.username })
+          : dialog?.type === 'remove' ? t('friends.removeTitle', { username: dialog?.friend?.username })
+          : t('social.reportTitle', { username: dialog?.friend?.username })
         }
         description={
-          dialog?.type === 'block' ? 'Do të hiqet nga miqtë dhe nuk do të mund t’ju kontaktojë.'
-          : dialog?.type === 'remove' ? 'Do të hiqet nga lista jote e miqve.'
-          : 'Raporti shkon te ekipi i sigurisë.'
+          dialog?.type === 'block' ? t('friends.blockDesc')
+          : dialog?.type === 'remove' ? t('friends.removeDesc')
+          : t('social.reportDesc')
         }
-        confirmLabel={dialog?.type === 'remove' ? 'Hiq' : dialog?.type === 'block' ? 'Blloko' : 'Raporto'}
+        confirmLabel={dialog?.type === 'remove' ? t('friends.remove') : dialog?.type === 'block' ? t('social.block') : t('social.report')}
         loading={dialogLoading}
         onConfirm={runDialog}
         onCancel={() => { setDialog(null); setReportDetails(''); }}
@@ -296,7 +293,7 @@ const FriendsPage = () => {
         {dialog?.type === 'report' && (
           <div className="mt-4">
             <label htmlFor="report-details" className="block text-xs font-bold text-ink-soft mb-1">
-              Detaje (opsionale)
+              {t('social.detailsLabel')}
             </label>
             <textarea
               id="report-details"
@@ -304,7 +301,7 @@ const FriendsPage = () => {
               onChange={(e) => setReportDetails(e.target.value)}
               rows={3}
               className="w-full rounded-2xl border-2 border-line bg-paper p-3 text-sm font-semibold text-ink focus:outline-none focus:border-brand-green"
-              placeholder="Çfarë ndodhi?"
+              placeholder={t('social.detailsPlaceholder')}
             />
           </div>
         )}

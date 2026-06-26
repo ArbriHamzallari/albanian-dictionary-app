@@ -526,6 +526,63 @@
     "deleteConfirmDesc": "Je i sigurt që dëshiron të fshish këtë fjalë? Ky veprim nuk kthehet mbrapsht.",
     "deleteConfirm": "Fshij"
   },
+  "social": {
+    "report": "Raporto",
+    "block": "Blloko",
+    "reportTitle": "Raporto {username}?",
+    "blockTitle": "Blloko {username}?",
+    "reportAria": "Raporto {username}",
+    "blockAria": "Blloko {username}",
+    "reportDesc": "Raporti shkon te ekipi i sigurisë.",
+    "reportSent": "Raporti u dërgua. Faleminderit.",
+    "actionFailed": "Veprimi dështoi.",
+    "detailsLabel": "Detaje (opsionale)",
+    "detailsPlaceholder": "Çfarë ndodhi?"
+  },
+  "chat": {
+    "premiumGateTitle": "Bisedat janë Premium",
+    "premiumGateDesc": "Bisedo në mënyrë të sigurt me miqtë e tu me Premium.",
+    "sendError": "Mesazhi nuk u dërgua.",
+    "noFriends": "Ende pa miq për të biseduar.",
+    "addFriends": "Shto miq",
+    "backToChats": "Kthehu te bisedat",
+    "sayHello": "Thuaj një përshëndetje 👋",
+    "sendEmoji": "Dërgo {emoji}",
+    "emoji": "Emoji",
+    "messageLabel": "Shkruaj një mesazh",
+    "messagePlaceholder": "Shkruaj një mesazh…",
+    "send": "Dërgo",
+    "minorNotice": "Për sigurinë e fëmijëve, vetëm fraza dhe emoji.",
+    "selectFriend": "Zgjidh një mik për të biseduar.",
+    "blockDesc": "Do të hiqet nga miqtë dhe biseda do të mbyllet."
+  },
+  "friends": {
+    "premiumGateTitle": "Miqtë janë Premium",
+    "premiumGateDesc": "Shto miq, shiko progresin e tyre dhe bisedoni në mënyrë të sigurt me Premium.",
+    "requestSent": "Kërkesa u dërgua!",
+    "requestFailed": "Kërkesa nuk u dërgua.",
+    "userBlocked": "Përdoruesi u bllokua.",
+    "friendRemoved": "Miku u hoq.",
+    "addPlaceholder": "Shto mik me emrin e tij",
+    "add": "Shto",
+    "tablistLabel": "Miqtë dhe kërkesat",
+    "tabs": {
+      "friends": "Miqtë",
+      "incoming": "Të marra",
+      "outgoing": "Të dërguara"
+    },
+    "emptyTitle": "Ende pa miq",
+    "emptyDesc": "Shto dikë me emrin e tij më sipër për të filluar.",
+    "chatWith": "Bisedo me {username}",
+    "removeAria": "Hiq {username}",
+    "declineAria": "Refuzo {username}",
+    "noIncoming": "Asnjë kërkesë e re.",
+    "noOutgoing": "Asnjë kërkesë në pritje.",
+    "removeTitle": "Hiq {username}?",
+    "removeDesc": "Do të hiqet nga lista jote e miqve.",
+    "remove": "Hiq",
+    "blockDesc": "Do të hiqet nga miqtë dhe nuk do të mund t’ju kontaktojë."
+  },
   "auth": {
     "login": {
       "title": "Hyr",
