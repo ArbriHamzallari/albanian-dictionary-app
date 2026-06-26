@@ -5,6 +5,7 @@ import { ArrowLeft, ArrowRight } from 'lucide-react';
 import LoadingSpinner from '../components/LoadingSpinner.jsx';
 import ErrorMessage from '../components/ErrorMessage.jsx';
 import api from '../utils/api.js';
+import { t } from '../i18n/index.js';
 
 const categoryColors = {
   'Folje': 'badge-green',
@@ -25,7 +26,7 @@ const WordDetail = () => {
         const response = await api.get(`/words/${id}`);
         setWord(response.data.word);
       } catch {
-        setError('Fjala nuk u gjet.');
+        setError(t('wordDetail.notFound'));
       } finally {
         setLoading(false);
       }
@@ -36,7 +37,7 @@ const WordDetail = () => {
   return (
     <div className="max-w-4xl mx-auto px-6 py-10">
       <Link to="/" className="inline-flex items-center gap-1 text-fjalingo-green text-sm font-bold hover:gap-2 transition-all mb-6">
-        <ArrowLeft className="w-4 h-4" /> Kthehu
+        <ArrowLeft className="w-4 h-4" /> {t('common.back')}
       </Link>
 
       {loading && <LoadingSpinner />}
@@ -68,7 +69,7 @@ const WordDetail = () => {
 
           {/* Definitions */}
           <div className="card">
-            <h3 className="text-sm font-black text-fjalingo-blue tracking-wide mb-4">📖 PËRKUFIZIMI</h3>
+            <h3 className="text-sm font-black text-fjalingo-blue tracking-wide mb-4">{t('wordDetail.definitionHeading')}</h3>
             <ul className="space-y-3">
               {word.definitions.map((def, i) => (
                 <li key={def.id} className="flex gap-3">
@@ -91,7 +92,7 @@ const WordDetail = () => {
           {/* Conjugations */}
           {word.conjugations.length > 0 && (
             <div className="card">
-              <h3 className="text-sm font-black text-fjalingo-purple tracking-wide mb-4">🔤 ZGJEDHIMI I FJALËS</h3>
+              <h3 className="text-sm font-black text-fjalingo-purple tracking-wide mb-4">{t('wordDetail.conjugationHeading')}</h3>
               <div className="grid md:grid-cols-2 gap-4">
                 {word.conjugations.map((conj) => (
                   <div key={conj.id} className="card py-4 px-4 border-fjalingo-purple/20">
@@ -106,7 +107,7 @@ const WordDetail = () => {
           {/* Examples */}
           {word.definitions.some((def) => def.example_sentence) && (
             <div className="card">
-              <h3 className="text-sm font-black text-fjalingo-yellow tracking-wide mb-4">💡 SHEMBUJ</h3>
+              <h3 className="text-sm font-black text-fjalingo-yellow tracking-wide mb-4">{t('wordDetail.examplesHeading')}</h3>
               <ul className="space-y-2">
                 {word.definitions
                   .filter((def) => def.example_sentence)

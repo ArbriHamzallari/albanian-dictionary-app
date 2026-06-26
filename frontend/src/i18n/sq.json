@@ -4,6 +4,7 @@
     "login": "Hyr",
     "logout": "Dil",
     "admin": "Admin",
+    "back": "Kthehu",
     "error": {
       "generic": "Ndodhi një gabim.",
       "network": "Nuk mund të lidhet me serverin."
@@ -119,6 +120,37 @@
       "createProfile": "Krijo profil",
       "continueGuest": "Vazhdo si mysafir"
     }
+  },
+  "search": {
+    "bar": {
+      "placeholder": "Kërko fjalë të huazuara...",
+      "aria": "Kërko fjalë",
+      "submit": "Kërko",
+      "hint": "Shembull: investigoj, marketing, weekend"
+    },
+    "results": {
+      "title": "Rezultatet",
+      "count": "({count} fjalë u gjetën)",
+      "errorNoResults": "Nuk u gjetën rezultate për këtë kërkim.",
+      "emptyTitle": "Nuk u gjetën rezultate",
+      "emptyDesc": "Provo me një fjalë tjetër ose propozo një fjalë të re.",
+      "suggestCta": "Propozo një fjalë"
+    }
+  },
+  "wordcard": {
+    "details": "Detaje"
+  },
+  "wordDetail": {
+    "notFound": "Fjala nuk u gjet.",
+    "definitionHeading": "📖 PËRKUFIZIMI",
+    "conjugationHeading": "🔤 ZGJEDHIMI I FJALËS",
+    "examplesHeading": "💡 SHEMBUJ"
+  },
+  "wordOfDay": {
+    "notFound": "Fjala e ditës nuk është gjetur.",
+    "heading": "FJALA E DITËS",
+    "definitionHeading": "📖 PËRKUFIZIMI I PLOTË",
+    "conjugationHeading": "🔤 ZGJEDHIMET"
   },
   "auth": {
     "login": {

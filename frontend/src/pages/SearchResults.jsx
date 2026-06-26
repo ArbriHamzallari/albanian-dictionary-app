@@ -10,6 +10,7 @@ import Button from '../components/ui/Button.jsx';
 import Parrot from '../components/mascot/Parrot.jsx';
 import api from '../utils/api.js';
 import { unlockAchievement } from '../utils/userService.js';
+import { t } from '../i18n/index.js';
 
 const SearchResults = () => {
   const [searchParams] = useSearchParams();
@@ -31,7 +32,7 @@ const SearchResults = () => {
         unlockAchievement('first_search');
       } catch (err) {
         setResults([]);
-        setError(err?.response?.data?.message || 'Nuk u gjetën rezultate për këtë kërkim.');
+        setError(err?.response?.data?.message || t('search.results.errorNoResults'));
       } finally {
         setLoading(false);
       }
@@ -49,10 +50,10 @@ const SearchResults = () => {
       </div>
 
       <Heading level={3} className="mb-6">
-        Rezultatet
+        {t('search.results.title')}
         {results.length > 0 && (
           <span className="text-sm font-semibold text-ink-soft ml-2">
-            ({results.length} fjalë u gjetën)
+            {t('search.results.count', { count: results.length })}
           </span>
         )}
       </Heading>
@@ -76,10 +77,10 @@ const SearchResults = () => {
       {!loading && !error && !results.length && query && (
         <div className="text-center py-16">
           <div className="flex justify-center"><Parrot state="think" size={150} /></div>
-          <Heading level={3} className="mt-4">Nuk u gjetën rezultate</Heading>
-          <p className="mt-1 text-ink-soft font-semibold">Provo me një fjalë tjetër ose propozo një fjalë të re.</p>
+          <Heading level={3} className="mt-4">{t('search.results.emptyTitle')}</Heading>
+          <p className="mt-1 text-ink-soft font-semibold">{t('search.results.emptyDesc')}</p>
           <Link to="/propozo" className="inline-block mt-5">
-            <Button variant="secondary" size="md">Propozo një fjalë</Button>
+            <Button variant="secondary" size="md">{t('search.results.suggestCta')}</Button>
           </Link>
         </div>
       )}
