@@ -1,6 +1,7 @@
 import { NavLink } from 'react-router-dom';
 import { Home, Search, Gamepad2, Trophy, User } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.jsx';
+import { t } from '../i18n/index.js';
 
 const MobileNav = () => {
   const { isLoggedIn, isAdmin } = useAuth();
@@ -8,11 +9,11 @@ const MobileNav = () => {
   const dashboardPath = isAdmin ? '/admin/dashboard' : '/dashboard';
 
   const tabs = [
-    { to: '/', icon: Home, label: 'Kreu' },
-    { to: '/kerko', icon: Search, label: 'Kërko' },
-    { to: '/kuizi', icon: Gamepad2, label: 'Kuiz' },
-    { to: '/renditja', icon: Trophy, label: 'Renditja' },
-    { to: isLoggedIn ? dashboardPath : '/hyr', icon: User, label: isAdmin ? 'Admin' : (isLoggedIn ? 'Profili' : 'Hyr') },
+    { to: '/', icon: Home, label: t('mobilenav.home') },
+    { to: '/kerko', icon: Search, label: t('mobilenav.search') },
+    { to: '/kuizi', icon: Gamepad2, label: t('mobilenav.quiz') },
+    { to: '/renditja', icon: Trophy, label: t('mobilenav.leaderboard') },
+    { to: isLoggedIn ? dashboardPath : '/hyr', icon: User, label: isAdmin ? t('common.admin') : (isLoggedIn ? t('mobilenav.profile') : t('common.login')) },
   ];
 
   return (
