@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Sun, Moon } from 'lucide-react';
 import { getTheme, setTheme } from '../utils/userService.js';
+import { t } from '../i18n/index.js';
 
 const ThemeToggle = () => {
   const [dark, setDark] = useState(false);
@@ -19,7 +20,7 @@ const ThemeToggle = () => {
     <button
       onClick={toggle}
       className="p-2 rounded-xl hover:bg-card dark:hover:bg-dark-card transition-colors"
-      aria-label={dark ? 'Aktivizo dritën' : 'Aktivizo errësirën'}
+      aria-label={dark ? t('themeToggle.toLight') : t('themeToggle.toDark')}
     >
       {dark ? (
         <Sun className="w-5 h-5 text-fjalingo-yellow" />

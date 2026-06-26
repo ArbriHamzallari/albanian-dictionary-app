@@ -265,6 +265,54 @@
     "friendsDesc": "Shto, prano dhe menaxho miqtë e tu.",
     "friendsCta": "Shiko"
   },
+  "premium": {
+    "title": "Përvoja e plotë Fjalingo",
+    "priceNote": "25 EUR në vit. Pagesa hapet me Paddle Sandbox dhe aktivizohet nga webhook-u i verifikuar në server.",
+    "active": "Premium aktiv",
+    "features": {
+      "search": "Kërkime pa kufi",
+      "quizzes": "Kuize pa kufi",
+      "leagues": "Pjesëmarrje në renditje dhe liga",
+      "social": "Miq dhe veçori sociale",
+      "progress": "Arritje dhe progres i plotë"
+    }
+  },
+  "publicProfile": {
+    "notFound": "Profili nuk u gjet.",
+    "rank": "Renditja #{rank}",
+    "noRank": "Pa renditje",
+    "friends": "Jeni miq",
+    "removeFriend": "Hiq miqësinë",
+    "requestSent": "Kërkesa u dërgua",
+    "cancelRequest": "Anulo kërkesën",
+    "addFriend": "Shto mik",
+    "accept": "Prano",
+    "decline": "Refuzo",
+    "loginToAdd": "Hyr për të shtuar mik",
+    "noBio": "Nuk ka bio ende.",
+    "favoriteLabel": "Fjala e preferuar",
+    "noFavorite": "Nuk ka fjalë të preferuar.",
+    "levelLabel": "Niveli"
+  },
+  "league": {
+    "title": "Liga javore",
+    "loadError": "Liga nuk mund të ngarkohej. Provo përsëri.",
+    "ended": "Përfundoi",
+    "countdownDH": "{d} ditë {h} orë",
+    "countdownHM": "{h} orë {m} min",
+    "countdownM": "{m} min",
+    "endsIn": "Përfundon në {countdown}",
+    "weeklyXp": "XP këtë javë",
+    "yourRank": "Renditja jote",
+    "optedOut": "Je jashtë renditjes publike. Mund ta aktivizosh te profili yt.",
+    "goldPremium": "Ari hapet vetëm me Premium.",
+    "topLabel": "Top 10 · {segment} · vetëm emër publik dhe avatar",
+    "empty": "Ende askush në këtë ligë. Përfundo një mësim për t'u futur!"
+  },
+  "themeToggle": {
+    "toLight": "Aktivizo dritën",
+    "toDark": "Aktivizo errësirën"
+  },
   "auth": {
     "login": {
       "title": "Hyr",
