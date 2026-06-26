@@ -7,6 +7,7 @@ import Card from '../components/ui/Card.jsx';
 import Button from '../components/ui/Button.jsx';
 import Heading from '../components/ui/Heading.jsx';
 import ErrorMessage from '../components/ErrorMessage.jsx';
+import { t } from '../i18n/index.js';
 
 const inputClass = 'w-full rounded-2xl border-2 border-line bg-paper px-4 h-14 font-bold text-ink focus:outline-none focus:border-brand-green';
 
@@ -26,17 +27,17 @@ const AdminLogin = () => {
     try {
       const data = await login(email, password);
       if (data.role !== 'admin') {
-        setError('Kjo faqe është vetëm për administratorët.');
+        setError(t('adminLogin.notAdmin'));
         return;
       }
       navigate('/admin/dashboard');
     } catch (err) {
       if (err.response?.status === 401) {
-        setError('Email ose fjalëkalim i pasaktë.');
+        setError(t('auth.login.invalidCredentials'));
       } else if (err.code === 'ERR_NETWORK' || !err.response) {
-        setError('Nuk mund të lidhet me serverin. Kontrolloni që backend të jetë duke u ekzekutuar.');
+        setError(t('adminLogin.networkError'));
       } else {
-        setError(err.response?.data?.message || 'Ndodhi një gabim. Provoni përsëri.');
+        setError(err.response?.data?.message || t('adminLogin.genericError'));
       }
     } finally {
       setLoading(false);
@@ -54,14 +55,14 @@ const AdminLogin = () => {
         <span className="w-16 h-16 rounded-2xl bg-brand-green/15 flex items-center justify-center mx-auto mb-4">
           <Lock className="w-8 h-8 text-brand-green" aria-hidden="true" />
         </span>
-        <Heading level={2}>Hyrje Admin</Heading>
-        <p className="text-sm text-ink-soft font-semibold mt-1">Fjalingo Admin Panel</p>
+        <Heading level={2}>{t('adminLogin.title')}</Heading>
+        <p className="text-sm text-ink-soft font-semibold mt-1">{t('adminLogin.subtitle')}</p>
       </motion.div>
 
       <Card padding="lg" as="form" onSubmit={handleSubmit}>
         <div className="space-y-5">
           <div>
-            <label htmlFor="admin-email" className="block text-xs font-bold text-ink-soft mb-1">Email</label>
+            <label htmlFor="admin-email" className="block text-xs font-bold text-ink-soft mb-1">{t('common.field.email')}</label>
             <input
               id="admin-email"
               type="email"
@@ -69,11 +70,11 @@ const AdminLogin = () => {
               onChange={(e) => setEmail(e.target.value)}
               required
               className={inputClass}
-              placeholder="email@example.com"
+              placeholder={t('adminLogin.emailPlaceholder')}
             />
           </div>
           <div>
-            <label htmlFor="admin-password" className="block text-xs font-bold text-ink-soft mb-1">Fjalëkalimi</label>
+            <label htmlFor="admin-password" className="block text-xs font-bold text-ink-soft mb-1">{t('common.field.password')}</label>
             <input
               id="admin-password"
               type="password"
@@ -88,7 +89,7 @@ const AdminLogin = () => {
           <ErrorMessage message={error} />
 
           <Button type="submit" variant="primary" size="lg" fullWidth loading={loading}>
-            Hyr
+            {t('common.login')}
           </Button>
         </div>
       </Card>

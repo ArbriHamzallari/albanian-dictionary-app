@@ -7,6 +7,7 @@
     "back": "Kthehu",
     "close": "Mbyll",
     "continue": "Vazhdo",
+    "avatarAlt": "Avatar",
     "error": {
       "generic": "Ndodhi një gabim.",
       "network": "Nuk mund të lidhet me serverin."
@@ -329,6 +330,40 @@
     "blocked": "Fitove ngjitjen në Ari!",
     "blockedDesc": "Kalo në Premium për ta zhbllokuar Arin.",
     "viewLeague": "Shiko ligën"
+  },
+  "adminLogin": {
+    "title": "Hyrje Admin",
+    "subtitle": "Fjalingo Admin Panel",
+    "notAdmin": "Kjo faqe është vetëm për administratorët.",
+    "networkError": "Nuk mund të lidhet me serverin. Kontrolloni që backend të jetë duke u ekzekutuar.",
+    "genericError": "Ndodhi një gabim. Provoni përsëri.",
+    "emailPlaceholder": "email@example.com"
+  },
+  "premiumButton": {
+    "cta": "Bëhu Premium · 25 EUR/vit",
+    "loading": "Duke hapur…",
+    "error": "Pagesa Premium nuk u hap. Provoni përsëri."
+  },
+  "lesson": {
+    "whyItMatters": "Pse ka rëndësi",
+    "spotPrompt": "Gjej fjalën e huazuar dhe trokit mbi të.",
+    "albanianLabel": "Shqip",
+    "fillPrompt": "Plotëso vendin bosh.",
+    "translationPrompt": "Zgjidh fjalën e saktë në shqip.",
+    "loadError": "Mësimi nuk mund të ngarkohej. Provoni përsëri.",
+    "saveError": "Përgjigjet nuk u ruajtën. Provoni përsëri.",
+    "emptyTitle": "S'ke gabime për të përsëritur tani",
+    "emptyDesc": "Bravo! Kthehu pasi të bësh disa mësime — gabimet shfaqen këtu kur vjen koha t'i përsëritësh.",
+    "backToDashboard": "Kthehu te paneli",
+    "limitTitle": "Mjaft për sot!",
+    "errorTitle": "Një moment",
+    "practiceFinished": "Përsëritje e mbaruar!",
+    "lessonFinished": "Mësimi u përfundua!",
+    "xpEarned": "XP të fituar",
+    "score": "{correct}/{total} saktë",
+    "lessonPassedSuffix": " · Mësim i kaluar",
+    "finishPractice": "Përfundo",
+    "nextLesson": "Mësimi tjetër"
   },
   "onboarding": {
     "ageInvalid": "Shkruaj një moshë të vlefshme.",
