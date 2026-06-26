@@ -5,6 +5,8 @@
     "logout": "Dil",
     "admin": "Admin",
     "back": "Kthehu",
+    "close": "Mbyll",
+    "continue": "Vazhdo",
     "error": {
       "generic": "Ndodhi një gabim.",
       "network": "Nuk mund të lidhet me serverin."
@@ -312,6 +314,92 @@
   "themeToggle": {
     "toLight": "Aktivizo dritën",
     "toDark": "Aktivizo errësirën"
+  },
+  "notifications": {
+    "title": "Njoftimet",
+    "empty": "Nuk ka njoftime",
+    "friendRequest": "Kërkesë miqësie",
+    "timeNow": "tani"
+  },
+  "leagueToast": {
+    "lastWeek": "Java e kaluar",
+    "stayed": "Mbete në {tier}",
+    "promoted": "U ngrite në {tier}!",
+    "demoted": "Le të kthehemi më të fortë",
+    "blocked": "Fitove ngjitjen në Ari!",
+    "blockedDesc": "Kalo në Premium për ta zhbllokuar Arin.",
+    "viewLeague": "Shiko ligën"
+  },
+  "onboarding": {
+    "ageInvalid": "Shkruaj një moshë të vlefshme.",
+    "consentCheckError": "Diçka shkoi keq. Provo përsëri.",
+    "consentRequiredError": "Kërkohet pëlqimi i prindit për këtë moshë.",
+    "registerError": "Regjistrimi dështoi. Provo përsëri.",
+    "splash": {
+      "title": "Fol shqipen e vërtetë, jo Alblish.",
+      "subtitle": "Mëso fjalët tona në vend të atyre të huazuara — pak minuta në ditë."
+    },
+    "taste": {
+      "title": "Provo një shembull",
+      "subtitle": "Trokit mbi fjalën e huazuar. S'të duhet llogari."
+    },
+    "purpose": {
+      "title": "Pse je këtu?",
+      "self": "Për veten",
+      "child": "Për fëmijën tim",
+      "curious": "Thjesht kureshtar"
+    },
+    "goal": {
+      "title": "Sa minuta në ditë?",
+      "subtitle": "Vendos qëllimin tënd ditor.",
+      "minutes": "{m} minuta"
+    },
+    "consent": {
+      "title": "Kërkohet pëlqimi i prindit",
+      "desc": "Për shkak të moshës, një prind ose kujdestar duhet të japë pëlqimin për të krijuar këtë llogari. Profili yt do të jetë privat si parazgjedhje.",
+      "checkbox": "Konfirmoj se kam pëlqimin e prindit/kujdestarit."
+    },
+    "ageCountry": {
+      "title": "Mosha dhe vendi",
+      "countryLabel": "Vendi"
+    },
+    "username": {
+      "title": "Zgjidh emrin tënd",
+      "hint": "Emër publik (jo emri yt i vërtetë). Vetëm shkronja, numra, _ ose -.",
+      "chooseAvatar": "Zgjidh avatarin"
+    },
+    "account": {
+      "title": "Krijo llogarinë",
+      "subtitle": "Ruaje progresin tënd."
+    },
+    "countries": {
+      "AL": "Shqipëri",
+      "XK": "Kosovë",
+      "MK": "Maqedonia e Veriut",
+      "ME": "Mali i Zi",
+      "US": "SHBA",
+      "GB": "Mbretëria e Bashkuar",
+      "DE": "Gjermani",
+      "IT": "Itali",
+      "CH": "Zvicër",
+      "GR": "Greqi",
+      "FR": "Francë",
+      "SE": "Suedi",
+      "BE": "Belgjikë",
+      "NL": "Holandë",
+      "AT": "Austri",
+      "CA": "Kanada"
+    },
+    "avatars": {
+      "fox": "Dhelpra",
+      "owl": "Bufi",
+      "panda": "Panda",
+      "lion": "Luani",
+      "bear": "Ariu",
+      "penguin": "Pinguini",
+      "cat": "Macja",
+      "eagle": "Shqiponja"
+    }
   },
   "auth": {
     "login": {

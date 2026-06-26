@@ -8,46 +8,51 @@ import Card from '../components/ui/Card.jsx';
 import Heading from '../components/ui/Heading.jsx';
 import Parrot from '../components/mascot/Parrot.jsx';
 import Lesson from './Lesson.jsx';
+import { t } from '../i18n/index.js';
 
 const TOTAL_STEPS = 7;
 
 // 8 preset animal avatars that already exist in /frontend/public/avatars.
+// Display names live in sq.json under onboarding.avatars.<filename-without-ext>.
 const AVATAR_CHOICES = [
-  { filename: 'fox.png', name: 'Dhelpra' },
-  { filename: 'owl.png', name: 'Bufi' },
-  { filename: 'panda.png', name: 'Panda' },
-  { filename: 'lion.png', name: 'Luani' },
-  { filename: 'bear.png', name: 'Ariu' },
-  { filename: 'penguin.png', name: 'Pinguini' },
-  { filename: 'cat.png', name: 'Macja' },
-  { filename: 'eagle.png', name: 'Shqiponja' },
+  { filename: 'fox.png' },
+  { filename: 'owl.png' },
+  { filename: 'panda.png' },
+  { filename: 'lion.png' },
+  { filename: 'bear.png' },
+  { filename: 'penguin.png' },
+  { filename: 'cat.png' },
+  { filename: 'eagle.png' },
 ];
+
+const avatarName = (filename) => t(`onboarding.avatars.${filename.replace('.png', '')}`);
 
 // Curated flag-list. Codes not in the GDPR-K table fall back to consent age 16
 // on the server; that determination is reused, never re-implemented here.
+// Country names live in sq.json under onboarding.countries.<code>.
 const COUNTRIES = [
-  { code: 'AL', flag: '🇦🇱', name: 'Shqipëri' },
-  { code: 'XK', flag: '🇽🇰', name: 'Kosovë' },
-  { code: 'MK', flag: '🇲🇰', name: 'Maqedonia e Veriut' },
-  { code: 'ME', flag: '🇲🇪', name: 'Mali i Zi' },
-  { code: 'US', flag: '🇺🇸', name: 'SHBA' },
-  { code: 'GB', flag: '🇬🇧', name: 'Mbretëria e Bashkuar' },
-  { code: 'DE', flag: '🇩🇪', name: 'Gjermani' },
-  { code: 'IT', flag: '🇮🇹', name: 'Itali' },
-  { code: 'CH', flag: '🇨🇭', name: 'Zvicër' },
-  { code: 'GR', flag: '🇬🇷', name: 'Greqi' },
-  { code: 'FR', flag: '🇫🇷', name: 'Francë' },
-  { code: 'SE', flag: '🇸🇪', name: 'Suedi' },
-  { code: 'BE', flag: '🇧🇪', name: 'Belgjikë' },
-  { code: 'NL', flag: '🇳🇱', name: 'Holandë' },
-  { code: 'AT', flag: '🇦🇹', name: 'Austri' },
-  { code: 'CA', flag: '🇨🇦', name: 'Kanada' },
+  { code: 'AL', flag: '🇦🇱' },
+  { code: 'XK', flag: '🇽🇰' },
+  { code: 'MK', flag: '🇲🇰' },
+  { code: 'ME', flag: '🇲🇪' },
+  { code: 'US', flag: '🇺🇸' },
+  { code: 'GB', flag: '🇬🇧' },
+  { code: 'DE', flag: '🇩🇪' },
+  { code: 'IT', flag: '🇮🇹' },
+  { code: 'CH', flag: '🇨🇭' },
+  { code: 'GR', flag: '🇬🇷' },
+  { code: 'FR', flag: '🇫🇷' },
+  { code: 'SE', flag: '🇸🇪' },
+  { code: 'BE', flag: '🇧🇪' },
+  { code: 'NL', flag: '🇳🇱' },
+  { code: 'AT', flag: '🇦🇹' },
+  { code: 'CA', flag: '🇨🇦' },
 ];
 
 const PURPOSES = [
-  { key: 'self', label: 'Për veten', emoji: '🙂' },
-  { key: 'child', label: 'Për fëmijën tim', emoji: '👨‍👧' },
-  { key: 'curious', label: 'Thjesht kureshtar', emoji: '✨' },
+  { key: 'self', emoji: '🙂' },
+  { key: 'child', emoji: '👨‍👧' },
+  { key: 'curious', emoji: '✨' },
 ];
 
 const MINUTE_GOALS = [5, 10, 15];
@@ -111,7 +116,7 @@ const Onboarding = () => {
     setAgeError('');
     const numericAge = Number(age);
     if (!Number.isInteger(numericAge) || numericAge < 1 || numericAge > 120) {
-      setAgeError('Shkruaj një moshë të vlefshme.');
+      setAgeError(t('onboarding.ageInvalid'));
       return;
     }
     setCheckingConsent(true);
@@ -127,7 +132,7 @@ const Onboarding = () => {
         next();
       }
     } catch (err) {
-      setAgeError(err?.response?.data?.message || 'Diçka shkoi keq. Provo përsëri.');
+      setAgeError(err?.response?.data?.message || t('onboarding.consentCheckError'));
     } finally {
       setCheckingConsent(false);
     }
@@ -166,9 +171,9 @@ const Onboarding = () => {
       if (status === 409) {
         setAccountError(err.response.data.message);
       } else if (status === 403 && err.response?.data?.code === 'PARENTAL_CONSENT_REQUIRED') {
-        setAccountError('Kërkohet pëlqimi i prindit për këtë moshë.');
+        setAccountError(t('onboarding.consentRequiredError'));
       } else {
-        setAccountError(err?.response?.data?.message || 'Regjistrimi dështoi. Provo përsëri.');
+        setAccountError(err?.response?.data?.message || t('onboarding.registerError'));
       }
       setSubmitting(false);
     }
@@ -185,12 +190,12 @@ const Onboarding = () => {
             <div className="flex justify-center">
               <Parrot state="wave" size={180} />
             </div>
-            <Heading level={1}>Fol shqipen e vërtetë, jo Alblish.</Heading>
+            <Heading level={1}>{t('onboarding.splash.title')}</Heading>
             <p className="text-ink-soft font-semibold">
-              Mëso fjalët tona në vend të atyre të huazuara — pak minuta në ditë.
+              {t('onboarding.splash.subtitle')}
             </p>
             <Button variant="primary" size="lg" fullWidth onClick={next}>
-              Fillo
+              {t('home.hero.cta')}
             </Button>
           </div>
         );
@@ -200,9 +205,9 @@ const Onboarding = () => {
         return (
           <div className="space-y-4">
             <div className="text-center">
-              <Heading level={2}>Provo një shembull</Heading>
+              <Heading level={2}>{t('onboarding.taste.title')}</Heading>
               <p className="text-ink-soft font-semibold mt-1">
-                Trokit mbi fjalën e huazuar. S'të duhet llogari.
+                {t('onboarding.taste.subtitle')}
               </p>
             </div>
             <Lesson taste onComplete={next} />
@@ -214,7 +219,7 @@ const Onboarding = () => {
         return (
           <div className="space-y-6">
             <div className="text-center">
-              <Heading level={2}>Pse je këtu?</Heading>
+              <Heading level={2}>{t('onboarding.purpose.title')}</Heading>
             </div>
             <div className="space-y-3">
               {PURPOSES.map((p) => (
@@ -228,7 +233,7 @@ const Onboarding = () => {
                     next();
                   }}
                 >
-                  <span className="mr-2">{p.emoji}</span> {p.label}
+                  <span className="mr-2">{p.emoji}</span> {t(`onboarding.purpose.${p.key}`)}
                 </Button>
               ))}
             </div>
@@ -240,8 +245,8 @@ const Onboarding = () => {
         return (
           <div className="space-y-6">
             <div className="text-center">
-              <Heading level={2}>Sa minuta në ditë?</Heading>
-              <p className="text-ink-soft font-semibold mt-1">Vendos qëllimin tënd ditor.</p>
+              <Heading level={2}>{t('onboarding.goal.title')}</Heading>
+              <p className="text-ink-soft font-semibold mt-1">{t('onboarding.goal.subtitle')}</p>
             </div>
             <div className="space-y-3">
               {MINUTE_GOALS.map((m) => (
@@ -255,7 +260,7 @@ const Onboarding = () => {
                     next();
                   }}
                 >
-                  {m} minuta
+                  {t('onboarding.goal.minutes', { m })}
                 </Button>
               ))}
             </div>
@@ -268,10 +273,9 @@ const Onboarding = () => {
           return (
             <div className="space-y-6">
               <div className="text-center">
-                <Heading level={2}>Kërkohet pëlqimi i prindit</Heading>
+                <Heading level={2}>{t('onboarding.consent.title')}</Heading>
                 <p className="text-ink-soft font-semibold mt-2">
-                  Për shkak të moshës, një prind ose kujdestar duhet të japë pëlqimin për
-                  të krijuar këtë llogari. Profili yt do të jetë privat si parazgjedhje.
+                  {t('onboarding.consent.desc')}
                 </p>
               </div>
               <Card padding="md">
@@ -282,7 +286,7 @@ const Onboarding = () => {
                     onChange={(e) => setParentalConsentGiven(e.target.checked)}
                     className="mt-1"
                   />
-                  Konfirmoj se kam pëlqimin e prindit/kujdestarit.
+                  {t('onboarding.consent.checkbox')}
                 </label>
               </Card>
               <Button
@@ -292,7 +296,7 @@ const Onboarding = () => {
                 disabled={!parentalConsentGiven}
                 onClick={next}
               >
-                Vazhdo
+                {t('common.continue')}
               </Button>
             </div>
           );
@@ -300,11 +304,11 @@ const Onboarding = () => {
         return (
           <div className="space-y-6">
             <div className="text-center">
-              <Heading level={2}>Mosha dhe vendi</Heading>
+              <Heading level={2}>{t('onboarding.ageCountry.title')}</Heading>
             </div>
             <div className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-ink-soft mb-1">Mosha</label>
+                <label className="block text-xs font-bold text-ink-soft mb-1">{t('auth.register.ageLabel')}</label>
                 <input
                   type="number"
                   min={1}
@@ -316,7 +320,7 @@ const Onboarding = () => {
                 />
               </div>
               <div>
-                <label className="block text-xs font-bold text-ink-soft mb-1">Vendi</label>
+                <label className="block text-xs font-bold text-ink-soft mb-1">{t('onboarding.ageCountry.countryLabel')}</label>
                 <select
                   value={countryCode}
                   onChange={(e) => setCountryCode(e.target.value)}
@@ -324,7 +328,7 @@ const Onboarding = () => {
                 >
                   {COUNTRIES.map((c) => (
                     <option key={c.code} value={c.code}>
-                      {c.flag} {c.name}
+                      {c.flag} {t(`onboarding.countries.${c.code}`)}
                     </option>
                   ))}
                 </select>
@@ -338,7 +342,7 @@ const Onboarding = () => {
               loading={checkingConsent}
               onClick={handleAgeContinue}
             >
-              Vazhdo
+              {t('common.continue')}
             </Button>
           </div>
         );
@@ -348,7 +352,7 @@ const Onboarding = () => {
         return (
           <div className="space-y-6">
             <div className="text-center">
-              <Heading level={2}>Zgjidh emrin tënd</Heading>
+              <Heading level={2}>{t('onboarding.username.title')}</Heading>
             </div>
             <div>
               <input
@@ -358,29 +362,32 @@ const Onboarding = () => {
                 minLength={3}
                 maxLength={30}
                 className="w-full rounded-2xl border-2 border-line bg-paper px-4 h-14 text-ink font-bold focus:outline-none focus:border-brand-green"
-                placeholder="emri_yt"
+                placeholder={t('auth.register.usernamePlaceholder')}
               />
               <p className="text-xs font-semibold text-ink-soft mt-2">
-                Emër publik (jo emri yt i vërtetë). Vetëm shkronja, numra, _ ose -.
+                {t('onboarding.username.hint')}
               </p>
             </div>
 
             <div>
-              <Heading level={3} className="mb-3">Zgjidh avatarin</Heading>
+              <Heading level={3} className="mb-3">{t('onboarding.username.chooseAvatar')}</Heading>
               <div className="grid grid-cols-4 gap-3">
-                {AVATAR_CHOICES.map((a) => (
-                  <button
-                    key={a.filename}
-                    type="button"
-                    onClick={() => setAvatar(a.filename)}
-                    aria-label={a.name}
-                    className={`aspect-square rounded-2xl border-2 p-2 bg-paper transition-colors ${
-                      avatar === a.filename ? 'border-brand-green ring-2 ring-brand-green' : 'border-line'
-                    }`}
-                  >
-                    <img src={`/avatars/${a.filename}`} alt={a.name} className="w-full h-full object-contain" />
-                  </button>
-                ))}
+                {AVATAR_CHOICES.map((a) => {
+                  const name = avatarName(a.filename);
+                  return (
+                    <button
+                      key={a.filename}
+                      type="button"
+                      onClick={() => setAvatar(a.filename)}
+                      aria-label={name}
+                      className={`aspect-square rounded-2xl border-2 p-2 bg-paper transition-colors ${
+                        avatar === a.filename ? 'border-brand-green ring-2 ring-brand-green' : 'border-line'
+                      }`}
+                    >
+                      <img src={`/avatars/${a.filename}`} alt={name} className="w-full h-full object-contain" />
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
@@ -391,7 +398,7 @@ const Onboarding = () => {
               disabled={!usernameValid || !avatar}
               onClick={next}
             >
-              Vazhdo
+              {t('common.continue')}
             </Button>
           </div>
         );
@@ -401,23 +408,23 @@ const Onboarding = () => {
         return (
           <form className="space-y-6" onSubmit={handleCreateAccount}>
             <div className="text-center">
-              <Heading level={2}>Krijo llogarinë</Heading>
-              <p className="text-ink-soft font-semibold mt-1">Ruaje progresin tënd.</p>
+              <Heading level={2}>{t('onboarding.account.title')}</Heading>
+              <p className="text-ink-soft font-semibold mt-1">{t('onboarding.account.subtitle')}</p>
             </div>
             <div className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-ink-soft mb-1">Email</label>
+                <label className="block text-xs font-bold text-ink-soft mb-1">{t('common.field.email')}</label>
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   className="w-full rounded-2xl border-2 border-line bg-paper px-4 h-14 text-ink font-bold focus:outline-none focus:border-brand-green"
-                  placeholder="email@shembull.com"
+                  placeholder={t('common.field.emailPlaceholder')}
                 />
               </div>
               <div>
-                <label className="block text-xs font-bold text-ink-soft mb-1">Fjalëkalimi</label>
+                <label className="block text-xs font-bold text-ink-soft mb-1">{t('common.field.password')}</label>
                 <input
                   type="password"
                   value={password}
@@ -431,7 +438,7 @@ const Onboarding = () => {
             </div>
             {accountError && <p className="text-sm font-bold text-accent-coral">{accountError}</p>}
             <Button type="submit" variant="primary" size="lg" fullWidth loading={submitting}>
-              Krijo llogarinë
+              {t('onboarding.account.title')}
             </Button>
           </form>
         );
