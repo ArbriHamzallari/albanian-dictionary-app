@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext.jsx';
 import Card from './ui/Card.jsx';
 import Button from './ui/Button.jsx';
 import Parrot from './mascot/Parrot.jsx';
+import { t } from '../i18n/index.js';
 
 const SPRING = { type: 'spring', stiffness: 300, damping: 22 };
 
@@ -65,7 +66,7 @@ const DashboardQuestCard = () => {
           </span>
         )}
         <div>
-          <p className="text-xs font-extrabold uppercase tracking-wide text-ink-soft">Sfida e ditës</p>
+          <p className="text-xs font-extrabold uppercase tracking-wide text-ink-soft">{t('questCard.label')}</p>
           <p className="text-base font-extrabold text-ink">{quest.title}</p>
         </div>
       </div>
@@ -85,7 +86,7 @@ const DashboardQuestCard = () => {
       </div>
 
       {quest.claimed ? (
-        <p className="text-sm font-bold text-brand-green">U mor! +{quest.xp_reward} XP ✓</p>
+        <p className="text-sm font-bold text-brand-green">{t('questCard.claimed', { xp: quest.xp_reward })}</p>
       ) : (
         <Button
           variant="primary"
@@ -95,7 +96,7 @@ const DashboardQuestCard = () => {
           loading={claiming}
           onClick={handleClaim}
         >
-          {quest.completed ? `Merr ${quest.xp_reward} XP` : 'Vazhdo mësimet'}
+          {quest.completed ? t('questCard.claim', { xp: quest.xp_reward }) : t('questCard.continueLessons')}
         </Button>
       )}
     </Card>

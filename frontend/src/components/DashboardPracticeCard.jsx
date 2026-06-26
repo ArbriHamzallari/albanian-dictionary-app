@@ -6,6 +6,7 @@ import api from '../utils/api.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import Card from './ui/Card.jsx';
 import Button from './ui/Button.jsx';
+import { t } from '../i18n/index.js';
 
 const SPRING = { type: 'spring', stiffness: 300, damping: 22 };
 
@@ -27,8 +28,8 @@ const DashboardPracticeCard = () => {
   }, []);
 
   const countText = count == null
-    ? 'Duke numëruar…'
-    : `${count} ${count === 1 ? 'fjalë' : 'fjalë'} për të përsëritur`;
+    ? t('practiceCard.counting')
+    : t('practiceCard.wordsToReview', { count });
 
   const enter = () => {
     if (isPremium) navigate('/perserit-gabimet');
@@ -55,11 +56,11 @@ const DashboardPracticeCard = () => {
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
             <p className="text-xs font-extrabold uppercase tracking-wide text-ink-soft">
-              Përsërit gabimet
+              {t('practiceCard.title')}
             </p>
             {!isPremium && (
               <span className="inline-flex items-center gap-1 rounded-pill bg-accent-purple/15 px-2 py-0.5 text-[10px] font-extrabold uppercase text-accent-purple">
-                <Lock className="h-3 w-3" /> Premium
+                <Lock className="h-3 w-3" /> {t('nav.premium')}
               </span>
             )}
           </div>
@@ -69,11 +70,11 @@ const DashboardPracticeCard = () => {
 
       {isPremium ? (
         <Button variant="primary" size="md" fullWidth disabled={count === 0} onClick={enter}>
-          {count === 0 ? 'Asgjë për të përsëritur' : 'Fillo përsëritjen'}
+          {count === 0 ? t('practiceCard.nothingToReview') : t('practiceCard.startReview')}
         </Button>
       ) : (
         <Button variant="primary" size="md" fullWidth onClick={() => navigate('/premium')}>
-          Kalo në Premium
+          {t('practiceCard.goPremium')}
         </Button>
       )}
     </Card>

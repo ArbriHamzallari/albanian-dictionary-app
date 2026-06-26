@@ -152,6 +152,73 @@
     "definitionHeading": "📖 PËRKUFIZIMI I PLOTË",
     "conjugationHeading": "🔤 ZGJEDHIMET"
   },
+  "dashboard": {
+    "userFallback": "Përdorues",
+    "level": "Niveli {level}",
+    "premiumBadge": "Premium",
+    "freeBadge": "Falas",
+    "streakDaily": "Seria ditore",
+    "streakOnFireSuffix": " — në zjarr!",
+    "stat": {
+      "streak": "Seria",
+      "quizzes": "Kuize",
+      "accuracy": "Saktësi"
+    },
+    "achievementsHeading": "ARRITJET",
+    "premiumUpsell": {
+      "title": "Zhblloko praktikë pa kufi",
+      "desc": "Premium përfshin kërkime dhe kuize pa kufi, miq dhe pjesëmarrje në renditje."
+    },
+    "actions": {
+      "playQuiz": "Luaj Kuizin",
+      "league": "Liga",
+      "editProfile": "Ndrysho Profilin"
+    }
+  },
+  "dailyChallenge": {
+    "title": "🎯 Sfida e Ditës",
+    "streakLabel": "Ditë Seria",
+    "inputPlaceholder": "Shkruaj përgjigjen...",
+    "check": "Kontrollo",
+    "correct": "Saktë!",
+    "pointsAwarded": "+100 Pikë! ⭐",
+    "wrongTitle": "Provo përsëri!",
+    "correctAnswerLabel": "Përgjigja e saktë:",
+    "tryAgain": "Provo përsëri",
+    "record": "Rekord: {days} ditë"
+  },
+  "questCard": {
+    "label": "Sfida e ditës",
+    "claimed": "U mor! +{xp} XP ✓",
+    "claim": "Merr {xp} XP",
+    "continueLessons": "Vazhdo mësimet"
+  },
+  "practiceCard": {
+    "title": "Përsërit gabimet",
+    "counting": "Duke numëruar…",
+    "wordsToReview": "{count} fjalë për të përsëritur",
+    "nothingToReview": "Asgjë për të përsëritur",
+    "startReview": "Fillo përsëritjen",
+    "goPremium": "Kalo në Premium"
+  },
+  "suggest": {
+    "title": "Propozo një Fjalë",
+    "desc": "Ndihmo të pasurohet fjalori! Propozo një fjalë të huazuar dhe zëvendësimin e saktë shqip.",
+    "successMessage": "Propozimi u dërgua me sukses! Faleminderit! 🎉",
+    "errorMessage": "Dërgimi dështoi. Kontrollo fushat dhe provo përsëri.",
+    "borrowedLabel": "Fjala e huazuar *",
+    "borrowedPlaceholder": "p.sh. marketing",
+    "correctLabel": "Fjala e saktë shqipe",
+    "correctPlaceholder": "p.sh. tregtim",
+    "definitionLabel": "Përkufizimi (opsionale)",
+    "definitionPlaceholder": "Përshkruaj kuptimin...",
+    "nameLabel": "Emri yt",
+    "namePlaceholder": "Emri...",
+    "emailLabel": "Email (opsionale)",
+    "emailPlaceholder": "email@shembull.al",
+    "submit": "Dërgo Propozimin",
+    "submitLoading": "Duke dërguar..."
+  },
   "auth": {
     "login": {
       "title": "Hyr",

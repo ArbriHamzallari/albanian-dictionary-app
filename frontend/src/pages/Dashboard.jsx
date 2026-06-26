@@ -12,6 +12,7 @@ import LeagueResultToast from '../components/LeagueResultToast.jsx';
 import Card from '../components/ui/Card.jsx';
 import Parrot from '../components/mascot/Parrot.jsx';
 import api from '../utils/api.js';
+import { t } from '../i18n/index.js';
 
 const LEVEL_POINTS = (level) => {
   // Inverse of floor(sqrt(xp/100))+1 = level → xp = (level-1)^2 * 100
@@ -78,13 +79,13 @@ const Dashboard = () => {
           <Avatar filename={profile.avatar_filename} size={80} className="mx-auto mb-4 ring-4 ring-fjalingo-green/20" />
         </Link>
         <h2 className="text-2xl font-black text-heading dark:text-dark-text">
-          {profile.username || 'Përdorues'}
+          {profile.username || t('dashboard.userFallback')}
         </h2>
         <div className="flex items-center justify-center gap-3 mt-2">
-          <span className="badge badge-green">Niveli {level}</span>
+          <span className="badge badge-green">{t('dashboard.level', { level })}</span>
           {rank && <span className="badge badge-blue">#{rank}</span>}
           <span className={isPremium ? 'badge badge-yellow' : 'badge badge-blue'}>
-            {isPremium ? 'Premium' : 'Falas'}
+            {isPremium ? t('dashboard.premiumBadge') : t('dashboard.freeBadge')}
           </span>
         </div>
       </motion.div>
@@ -98,7 +99,7 @@ const Dashboard = () => {
       >
         <div className="flex items-center justify-between mb-2">
           <span className="text-sm font-bold text-heading dark:text-dark-text">
-            Niveli {level}
+            {t('dashboard.level', { level })}
           </span>
           <span className="text-sm font-bold text-muted dark:text-dark-muted">
             {xp} / {nextLevelXp} XP
@@ -129,7 +130,7 @@ const Dashboard = () => {
               {streak} <span className="text-xl">🔥</span>
             </p>
             <p className="text-xs font-bold text-ink-soft">
-              Seria ditore{streak >= 7 ? ' — në zjarr!' : ''}
+              {t('dashboard.streakDaily')}{streak >= 7 ? t('dashboard.streakOnFireSuffix') : ''}
             </p>
           </div>
         </Card>
@@ -156,7 +157,7 @@ const Dashboard = () => {
         <div className="card text-center py-5">
           <Flame className="w-6 h-6 mx-auto mb-2 text-fjalingo-orange" />
           <p className="text-2xl font-black text-heading dark:text-dark-text">{streak}</p>
-          <p className="text-xs font-bold text-muted dark:text-dark-muted">Seria</p>
+          <p className="text-xs font-bold text-muted dark:text-dark-muted">{t('dashboard.stat.streak')}</p>
         </div>
         <div className="card text-center py-5">
           <Star className="w-6 h-6 mx-auto mb-2 text-fjalingo-yellow fill-fjalingo-yellow" />
@@ -166,12 +167,12 @@ const Dashboard = () => {
         <div className="card text-center py-5">
           <BarChart3 className="w-6 h-6 mx-auto mb-2 text-fjalingo-blue" />
           <p className="text-2xl font-black text-heading dark:text-dark-text">{totalQuizzes}</p>
-          <p className="text-xs font-bold text-muted dark:text-dark-muted">Kuize</p>
+          <p className="text-xs font-bold text-muted dark:text-dark-muted">{t('dashboard.stat.quizzes')}</p>
         </div>
         <div className="card text-center py-5">
           <Target className="w-6 h-6 mx-auto mb-2 text-fjalingo-purple" />
           <p className="text-2xl font-black text-heading dark:text-dark-text">{accuracy}%</p>
-          <p className="text-xs font-bold text-muted dark:text-dark-muted">Saktësi</p>
+          <p className="text-xs font-bold text-muted dark:text-dark-muted">{t('dashboard.stat.accuracy')}</p>
         </div>
       </motion.div>
 
@@ -184,7 +185,7 @@ const Dashboard = () => {
           className="card mb-8"
         >
           <h3 className="text-sm font-black text-heading dark:text-dark-text mb-4">
-            <Trophy className="w-4 h-4 inline mr-1" /> ARRITJET ({achievements.length})
+            <Trophy className="w-4 h-4 inline mr-1" /> {t('dashboard.achievementsHeading')} ({achievements.length})
           </h3>
           <div className="flex flex-wrap gap-2">
             {achievements.map((ach) => (
@@ -205,10 +206,10 @@ const Dashboard = () => {
           className="card mb-6 text-center"
         >
           <h3 className="text-lg font-black text-heading dark:text-dark-text mb-2">
-            Zhblloko praktikë pa kufi
+            {t('dashboard.premiumUpsell.title')}
           </h3>
           <p className="text-sm font-semibold text-muted dark:text-dark-muted mb-4">
-            Premium përfshin kërkime dhe kuize pa kufi, miq dhe pjesëmarrje në renditje.
+            {t('dashboard.premiumUpsell.desc')}
           </p>
           <PremiumCheckoutButton />
         </motion.div>
@@ -222,16 +223,16 @@ const Dashboard = () => {
         className="flex flex-col sm:flex-row gap-3"
       >
         <Link to="/kuizi" className="btn-primary flex-1 text-center">
-          Luaj Kuizin
+          {t('dashboard.actions.playQuiz')}
         </Link>
         <Link to="/liga" className="btn-outline flex-1 text-center">
-          Liga
+          {t('dashboard.actions.league')}
         </Link>
         <Link to="/renditja" className="btn-outline flex-1 text-center">
-          Renditja
+          {t('nav.leaderboard')}
         </Link>
         <Link to="/profili" className="btn-outline flex-1 text-center">
-          Ndrysho Profilin
+          {t('dashboard.actions.editProfile')}
         </Link>
       </motion.div>
     </div>
