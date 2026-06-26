@@ -7,6 +7,7 @@ import Avatar from '../components/Avatar.jsx';
 import LoadingSpinner from '../components/LoadingSpinner.jsx';
 import ErrorMessage from '../components/ErrorMessage.jsx';
 import api from '../utils/api.js';
+import { t } from '../i18n/index.js';
 
 const PublicProfile = () => {
   const { uuid } = useParams();
@@ -34,7 +35,7 @@ const PublicProfile = () => {
       })
       .catch((err) => {
         if (!isActive) return;
-        setError(err.response?.data?.message || 'Profili nuk u gjet.');
+        setError(err.response?.data?.message || t('publicProfile.notFound'));
       })
       .finally(() => {
         if (!isActive) return;
@@ -170,7 +171,7 @@ const PublicProfile = () => {
   if (error || !profileData?.profile) {
     return (
       <div className="max-w-2xl mx-auto px-6 py-16">
-        <ErrorMessage message={error || 'Profili nuk u gjet.'} />
+        <ErrorMessage message={error || t('publicProfile.notFound')} />
       </div>
     );
   }
@@ -188,13 +189,13 @@ const PublicProfile = () => {
         <h2 className="text-2xl font-black text-heading dark:text-dark-text">{profile.username}</h2>
         <div className="flex items-center justify-center gap-2 mt-2 text-sm font-semibold text-muted dark:text-dark-muted">
           <Trophy className="w-4 h-4" />
-          {rank ? `Renditja #${rank}` : 'Pa renditje'}
+          {rank ? t('publicProfile.rank', { rank }) : t('publicProfile.noRank')}
         </div>
 
         {isSelf && (
           <div className="mt-4">
             <Link to="/profili" className="btn-outline inline-flex items-center gap-2">
-              Ndrysho Profilin
+              {t('profile.title')}
             </Link>
           </div>
         )}
@@ -204,26 +205,26 @@ const PublicProfile = () => {
             {friendStatus === 'friends' && (
               <>
                 <span className="badge badge-green inline-flex items-center gap-1">
-                  <Check className="w-4 h-4" /> Jeni miq
+                  <Check className="w-4 h-4" /> {t('publicProfile.friends')}
                 </span>
                 <button
                   onClick={removeFriend}
                   disabled={actionLoading}
                   className="btn-outline inline-flex items-center gap-2"
                 >
-                  Hiq miqësinë
+                  {t('publicProfile.removeFriend')}
                 </button>
               </>
             )}
             {friendStatus === 'outgoing' && (
               <>
-                <span className="badge badge-blue">Kërkesa u dërgua</span>
+                <span className="badge badge-blue">{t('publicProfile.requestSent')}</span>
                 <button
                   onClick={cancelRequest}
                   disabled={actionLoading}
                   className="btn-outline inline-flex items-center gap-2"
                 >
-                  Anulo kërkesën
+                  {t('publicProfile.cancelRequest')}
                 </button>
               </>
             )}
@@ -234,7 +235,7 @@ const PublicProfile = () => {
                 className="btn-primary inline-flex items-center gap-2"
               >
                 <UserPlus className="w-4 h-4" />
-                Shto mik
+                {t('publicProfile.addFriend')}
               </button>
             )}
             {friendStatus === 'incoming' && (
@@ -245,7 +246,7 @@ const PublicProfile = () => {
                   className="btn-primary inline-flex items-center gap-2"
                 >
                   <Check className="w-4 h-4" />
-                  Prano
+                  {t('publicProfile.accept')}
                 </button>
                 <button
                   onClick={declineRequest}
@@ -253,7 +254,7 @@ const PublicProfile = () => {
                   className="btn-outline inline-flex items-center gap-2"
                 >
                   <X className="w-4 h-4" />
-                  Refuzo
+                  {t('publicProfile.decline')}
                 </button>
               </>
             )}
@@ -264,7 +265,7 @@ const PublicProfile = () => {
           <div className="mt-4 flex items-center justify-center">
             <Link to="/hyr" className="btn-primary inline-flex items-center gap-2">
               <UserPlus className="w-4 h-4" />
-              Hyr për të shtuar mik
+              {t('publicProfile.loginToAdd')}
             </Link>
           </div>
         )}
@@ -272,15 +273,15 @@ const PublicProfile = () => {
 
       <div className="card mb-6 space-y-4">
         <div>
-          <p className="text-xs font-bold text-muted dark:text-dark-muted mb-1">Biografia</p>
+          <p className="text-xs font-bold text-muted dark:text-dark-muted mb-1">{t('profile.bioLabel')}</p>
           <p className="font-semibold text-heading dark:text-dark-text">
-            {profile.bio || 'Nuk ka bio ende.'}
+            {profile.bio || t('publicProfile.noBio')}
           </p>
         </div>
         <div>
-          <p className="text-xs font-bold text-muted dark:text-dark-muted mb-1">Fjala e preferuar</p>
+          <p className="text-xs font-bold text-muted dark:text-dark-muted mb-1">{t('publicProfile.favoriteLabel')}</p>
           <p className="font-semibold text-heading dark:text-dark-text">
-            {profile.favorite_word || 'Nuk ka fjalë të preferuar.'}
+            {profile.favorite_word || t('publicProfile.noFavorite')}
           </p>
         </div>
       </div>
@@ -294,12 +295,12 @@ const PublicProfile = () => {
         <div className="card text-center py-5">
           <Flame className="w-6 h-6 mx-auto mb-2 text-fjalingo-orange" />
           <p className="text-2xl font-black text-heading dark:text-dark-text">{stats?.streak ?? 0}</p>
-          <p className="text-xs font-bold text-muted dark:text-dark-muted">Seria</p>
+          <p className="text-xs font-bold text-muted dark:text-dark-muted">{t('dashboard.stat.streak')}</p>
         </div>
         <div className="card text-center py-5">
           <Trophy className="w-6 h-6 mx-auto mb-2 text-fjalingo-green" />
           <p className="text-2xl font-black text-heading dark:text-dark-text">{stats?.level ?? 1}</p>
-          <p className="text-xs font-bold text-muted dark:text-dark-muted">Niveli</p>
+          <p className="text-xs font-bold text-muted dark:text-dark-muted">{t('publicProfile.levelLabel')}</p>
         </div>
       </div>
     </div>

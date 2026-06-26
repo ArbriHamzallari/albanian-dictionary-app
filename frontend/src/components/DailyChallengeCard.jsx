@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import api from '../utils/api.js';
 import { updateStreak, awardPoints, getStreak } from '../utils/userService.js';
+import { t } from '../i18n/index.js';
 
 const DailyChallengeCard = () => {
   const [word, setWord] = useState(null);
@@ -56,13 +57,13 @@ const DailyChallengeCard = () => {
     >
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-black text-heading dark:text-dark-text">
-          🎯 Sfida e Ditës
+          {t('dailyChallenge.title')}
         </h3>
         <div className="flex items-center gap-2">
           <span className="text-2xl animate-flame-flicker">🔥</span>
           <div className="text-right">
             <p className="text-xl font-black text-fjalingo-orange leading-none">{streak.current_streak}</p>
-            <p className="text-[10px] font-bold text-muted dark:text-dark-muted">Ditë Seria</p>
+            <p className="text-[10px] font-bold text-muted dark:text-dark-muted">{t('dailyChallenge.streakLabel')}</p>
           </div>
         </div>
       </div>
@@ -70,7 +71,7 @@ const DailyChallengeCard = () => {
       {status === 'idle' && (
         <>
           <p className="text-sm font-semibold text-muted dark:text-dark-muted mb-1">
-            Cila është fjala e saktë për:
+            {t('quiz.questionPrompt')}
           </p>
           <p className="text-2xl font-black text-heading dark:text-dark-text mb-4">
             {word.borrowed_word}
@@ -80,11 +81,11 @@ const DailyChallengeCard = () => {
               value={answer}
               onChange={(e) => setAnswer(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && checkAnswer()}
-              placeholder="Shkruaj përgjigjen..."
+              placeholder={t('dailyChallenge.inputPlaceholder')}
               className="input-field flex-1"
             />
             <button onClick={checkAnswer} className="btn-primary whitespace-nowrap">
-              Kontrollo
+              {t('dailyChallenge.check')}
             </button>
           </div>
         </>
@@ -97,11 +98,11 @@ const DailyChallengeCard = () => {
           className="text-center py-4"
         >
           <p className="text-4xl mb-2">🎉</p>
-          <p className="text-xl font-black text-fjalingo-green">Saktë!</p>
+          <p className="text-xl font-black text-fjalingo-green">{t('dailyChallenge.correct')}</p>
           <p className="text-lg font-bold text-heading dark:text-dark-text mt-1">
             {word.borrowed_word} → <span className="text-fjalingo-green">{word.correct_albanian}</span>
           </p>
-          <p className="text-sm font-bold text-fjalingo-green mt-2">+100 Pikë! ⭐</p>
+          <p className="text-sm font-bold text-fjalingo-green mt-2">{t('dailyChallenge.pointsAwarded')}</p>
         </motion.div>
       )}
 
@@ -111,22 +112,22 @@ const DailyChallengeCard = () => {
           animate={{ x: 0 }}
           className="text-center py-4"
         >
-          <p className="text-xl font-black text-fjalingo-red mb-2">Provo përsëri!</p>
+          <p className="text-xl font-black text-fjalingo-red mb-2">{t('dailyChallenge.wrongTitle')}</p>
           <p className="text-sm text-muted dark:text-dark-muted mb-3">
-            Përgjigja e saktë: <strong className="text-fjalingo-green">{word.correct_albanian}</strong>
+            {t('dailyChallenge.correctAnswerLabel')} <strong className="text-fjalingo-green">{word.correct_albanian}</strong>
           </p>
           <button
             onClick={() => { setStatus('idle'); setAnswer(''); }}
             className="btn-outline text-sm py-2 px-4"
           >
-            Provo përsëri
+            {t('dailyChallenge.tryAgain')}
           </button>
         </motion.div>
       )}
 
       {streak.longest_streak > 0 && (
         <p className="text-xs font-semibold text-muted dark:text-dark-muted mt-3 text-right">
-          Rekord: {streak.longest_streak} ditë
+          {t('dailyChallenge.record', { days: streak.longest_streak })}
         </p>
       )}
     </motion.div>

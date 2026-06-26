@@ -1,11 +1,22 @@
+import { Fragment } from 'react';
 import { motion } from 'framer-motion';
 import { Search, Lightbulb, Gamepad2, Trophy } from 'lucide-react';
+import { t } from '../i18n/index.js';
 
 const steps = [
-  { icon: Search, text: 'Kërko fjalën e huazuar', color: 'text-fjalingo-blue' },
-  { icon: Lightbulb, text: 'Zbulon versionin e saktë shqip', color: 'text-fjalingo-yellow' },
-  { icon: Gamepad2, text: 'Mëso duke luajtur kuize argëtuese', color: 'text-fjalingo-green' },
-  { icon: Trophy, text: 'Ruaj progres dhe fitoje arritje', color: 'text-fjalingo-purple' },
+  { icon: Search, key: 'search', color: 'text-fjalingo-blue' },
+  { icon: Lightbulb, key: 'reveal', color: 'text-fjalingo-yellow' },
+  { icon: Gamepad2, key: 'play', color: 'text-fjalingo-green' },
+  { icon: Trophy, key: 'progress', color: 'text-fjalingo-purple' },
+];
+
+// Loanword → authentic-Albanian pairs shown bold in the problem statement.
+// These are taught-content word pairs (the loanwords are foreign by design),
+// kept here rather than in sq.json; the surrounding prose lives in purpose.*.
+const EXAMPLES = [
+  { loan: 'Marketing', correct: 'tregtim' },
+  { loan: 'manager', correct: 'drejtues' },
+  { loan: 'weekend', correct: 'fundjavë' },
 ];
 
 const PurposeSection = () => {
@@ -22,7 +33,7 @@ const PurposeSection = () => {
           className="text-center mb-12"
         >
           <h2 className="text-3xl md:text-4xl font-black text-heading dark:text-dark-text mb-4">
-            Pse Fjalingo? 🇦🇱
+            {t('purpose.heading')}
           </h2>
         </motion.div>
 
@@ -35,12 +46,15 @@ const PurposeSection = () => {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="card"
           >
-            <h3 className="text-lg font-bold text-fjalingo-red mb-3">Problemi</h3>
+            <h3 className="text-lg font-bold text-fjalingo-red mb-3">{t('purpose.problemTitle')}</h3>
             <p className="text-body dark:text-dark-muted leading-relaxed">
-              Gjuha shqipe po humbet të vërtetën e saj. Çdo ditë, më shumë fjalë të huazuara
-              po zëvendësojnë fjalët tona autentike. <strong>"Marketing"</strong> në vend të <strong>"tregtim"</strong>,
-              <strong> "manager"</strong> në vend të <strong>"drejtues"</strong>,
-              <strong> "weekend"</strong> në vend të <strong>"fundjavë"</strong>.
+              {t('purpose.problemLead')}{' '}
+              {EXAMPLES.map((ex, i) => (
+                <Fragment key={ex.loan}>
+                  <strong>"{ex.loan}"</strong> {t('purpose.insteadOf')} <strong>"{ex.correct}"</strong>
+                  {i < EXAMPLES.length - 1 ? ', ' : '.'}
+                </Fragment>
+              ))}
             </p>
           </motion.div>
 
@@ -52,11 +66,9 @@ const PurposeSection = () => {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="card border-fjalingo-green/30"
           >
-            <h3 className="text-lg font-bold text-fjalingo-green mb-3">Misioni Ynë</h3>
+            <h3 className="text-lg font-bold text-fjalingo-green mb-3">{t('purpose.missionTitle')}</h3>
             <p className="text-body dark:text-dark-muted leading-relaxed">
-              Fjalingo është krijuar për të ndihmuar shqiptarët të zbulojnë dhe përdorin
-              fjalët e sakta shqipe. Ne besojmë që gjuha jonë është pasuri dhe duhet ruajtur
-              për brezat e ardhshëm.
+              {t('purpose.missionText')}
             </p>
           </motion.div>
         </div>
@@ -70,7 +82,7 @@ const PurposeSection = () => {
           className="mt-12"
         >
           <h3 className="text-center text-lg font-bold text-heading dark:text-dark-text mb-8">
-            Si funksionon?
+            {t('purpose.howItWorks')}
           </h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {steps.map((step, i) => (
@@ -83,7 +95,7 @@ const PurposeSection = () => {
                 className="card text-center py-6"
               >
                 <step.icon className={`w-8 h-8 mx-auto mb-3 ${step.color}`} />
-                <p className="text-sm font-bold text-heading dark:text-dark-text">{step.text}</p>
+                <p className="text-sm font-bold text-heading dark:text-dark-text">{t(`purpose.steps.${step.key}`)}</p>
               </motion.div>
             ))}
           </div>
@@ -97,7 +109,7 @@ const PurposeSection = () => {
           transition={{ duration: 0.5, delay: 0.6 }}
           className="text-center mt-10 text-lg font-bold text-heading dark:text-dark-text"
         >
-          Bashkohu mijëra shqiptarëve që po ruajnë gjuhën tonë! 🦅
+          {t('purpose.cta')}
         </motion.p>
       </div>
     </section>

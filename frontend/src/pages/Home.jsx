@@ -12,6 +12,7 @@ import Button from '../components/ui/Button.jsx';
 import Heading from '../components/ui/Heading.jsx';
 import Parrot from '../components/mascot/Parrot.jsx';
 import api from '../utils/api.js';
+import { t } from '../i18n/index.js';
 
 const fadeUp = {
   initial: { opacity: 0, y: 24 },
@@ -24,14 +25,14 @@ const SPRING = { type: 'spring', stiffness: 300, damping: 22 };
 const ScrollHint = ({ reduceMotion }) => (
   <motion.a
     href="#me-teper"
-    aria-label="Shiko ç'të pret poshtë"
+    aria-label={t('home.scrollHint')}
     initial={{ opacity: 0 }}
     animate={{ opacity: 1 }}
     transition={{ delay: 0.45, duration: 0.2 }}
     className="group mt-6 flex flex-col items-center gap-2 sm:mt-8"
   >
     <span className="rounded-full border-2 border-brand-green/20 bg-paper px-4 py-1.5 text-sm font-extrabold text-brand-green shadow-[0_3px_0_0_var(--brand-green-dark)] transition-transform group-hover:-translate-y-0.5 group-active:translate-y-0.5 group-active:shadow-none sm:text-base">
-      Shiko ç&apos;të pret poshtë
+      {t('home.scrollHint')}
     </span>
     <motion.span
       aria-hidden="true"
@@ -80,10 +81,10 @@ const Home = () => {
         if (popularResponse.status === 'fulfilled') {
           setPopularWords(popularResponse.value.data.words || []);
         } else if (popularResponse.status === 'rejected') {
-          setError('Nuk mund të ngarkohen fjalët. Kontrolloni që backend dhe baza e të dhënave të jenë aktiv.');
+          setError(t('home.error.wordsLoad'));
         }
       } catch {
-        setError('Nuk mund të ngarkohen të dhënat tani.');
+        setError(t('home.error.dataLoad'));
       } finally {
         setLoading(false);
       }
@@ -136,24 +137,24 @@ const Home = () => {
           {[
             {
               emoji: '🎯',
-              title: 'SFIDA E DITËS',
-              desc: 'Testoje veten çdo ditë!',
+              title: t('home.cards.daily.title'),
+              desc: t('home.cards.daily.desc'),
               link: '/fjala-e-dites',
-              cta: 'Fillo',
+              cta: t('home.cards.daily.cta'),
             },
             {
               emoji: '🎮',
-              title: 'KUIZI I SHPEJTË',
-              desc: 'Luaj dhe mëso fjalë të reja!',
+              title: t('home.cards.quiz.title'),
+              desc: t('home.cards.quiz.desc'),
               link: '/kuizi',
-              cta: 'Luaj tani!',
+              cta: t('home.cards.quiz.cta'),
             },
             {
               emoji: '🏆',
-              title: 'ARRITJET',
-              desc: 'Shkyç arritje dhe mbledh pikë!',
+              title: t('home.cards.achievements.title'),
+              desc: t('home.cards.achievements.desc'),
               link: '/arritjet',
-              cta: 'Shiko',
+              cta: t('home.cards.achievements.cta'),
             },
           ].map((card, i) => (
             <motion.div
@@ -185,9 +186,9 @@ const Home = () => {
       <section className="mx-auto max-w-6xl px-4 pb-12 sm:px-6">
         <div className="grid grid-cols-3 gap-2 sm:gap-4 md:gap-6">
           {[
-            { label: 'Fjalë', value: '500+', emoji: '📚' },
-            { label: 'Përdorues', value: '150+', emoji: '👥' },
-            { label: 'Kërkime', value: '1,200+', emoji: '🔍' },
+            { label: t('home.stats.words'), value: '500+', emoji: '📚' },
+            { label: t('home.stats.users'), value: '150+', emoji: '👥' },
+            { label: t('home.stats.searches'), value: '1,200+', emoji: '🔍' },
           ].map((stat, i) => (
             <motion.div
               key={stat.label}
@@ -208,21 +209,21 @@ const Home = () => {
       <section className="mx-auto max-w-6xl px-4 pb-12 sm:px-6">
         <div className="card border-fjalingo-yellow/30 bg-gradient-to-br from-fjalingo-yellow/5 to-transparent dark:from-fjalingo-yellow/3">
           <h3 className="text-sm font-black text-fjalingo-yellow tracking-wide flex items-center gap-2 mb-4">
-            <Star className="w-4 h-4 fill-fjalingo-yellow text-fjalingo-yellow" /> FJALA E DITËS
+            <Star className="w-4 h-4 fill-fjalingo-yellow text-fjalingo-yellow" /> {t('home.wotd.heading')}
           </h3>
           {loading && <LoadingSpinner />}
           {!loading && <ErrorMessage message={error} />}
           {!loading && !wordOfDay && !error && (
             <p className="text-muted dark:text-dark-muted font-semibold">
-              Fjala e ditës nuk është vendosur ende.
+              {t('home.wotd.empty')}
             </p>
           )}
           {!loading && wordOfDay && (
             <div className="grid md:grid-cols-2 gap-6 items-center">
               <div>
-                <p className="text-sm font-semibold text-muted dark:text-dark-muted">Fjala e huazuar</p>
+                <p className="text-sm font-semibold text-muted dark:text-dark-muted">{t('home.wotd.borrowedLabel')}</p>
                 <h4 className="text-2xl font-black text-heading dark:text-dark-text">{wordOfDay.borrowed_word}</h4>
-                <p className="text-sm font-semibold text-muted dark:text-dark-muted mt-3">Fjala e saktë shqipe</p>
+                <p className="text-sm font-semibold text-muted dark:text-dark-muted mt-3">{t('home.wotd.correctLabel')}</p>
                 <p className="text-xl font-bold text-fjalingo-green">{wordOfDay.correct_albanian}</p>
               </div>
               <div>
@@ -233,7 +234,7 @@ const Home = () => {
                   to={`/fjala/${wordOfDay.id}`}
                   className="inline-flex items-center gap-1 mt-4 text-fjalingo-green font-bold hover:gap-2 transition-all"
                 >
-                  Shiko zgjedhjen e fjalës <ArrowRight className="w-4 h-4" />
+                  {t('home.wotd.seeMore')} <ArrowRight className="w-4 h-4" />
                 </Link>
               </div>
             </div>
@@ -246,10 +247,10 @@ const Home = () => {
       <section className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
         <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <h3 className="text-base font-black text-heading dark:text-dark-text sm:text-lg">
-            Fjalët më të kërkuara 🔥
+            {t('home.popular.heading')}
           </h3>
           <Link to="/kerko?q=investigoj" className="inline-flex items-center gap-1 text-sm font-bold text-fjalingo-green transition-all hover:gap-2">
-            Shiko të gjitha <ArrowRight className="h-4 w-4" />
+            {t('home.popular.seeAll')} <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
         <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-3">

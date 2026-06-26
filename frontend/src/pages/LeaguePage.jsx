@@ -7,7 +7,8 @@ import Button from '../components/ui/Button.jsx';
 import Heading from '../components/ui/Heading.jsx';
 import Avatar from '../components/Avatar.jsx';
 import Parrot from '../components/mascot/Parrot.jsx';
-import { TIER_STYLE } from '../constants/leagues.js';
+import { TIER_STYLE, tierName } from '../constants/leagues.js';
+import { t } from '../i18n/index.js';
 
 const SPRING = { type: 'spring', stiffness: 300, damping: 18 };
 
@@ -19,13 +20,13 @@ function useCountdown(endsAt) {
   }, []);
   if (!endsAt) return '';
   const diff = new Date(endsAt).getTime() - now;
-  if (diff <= 0) return 'Përfundoi';
+  if (diff <= 0) return t('league.ended');
   const d = Math.floor(diff / 86400000);
   const h = Math.floor((diff % 86400000) / 3600000);
   const m = Math.floor((diff % 3600000) / 60000);
-  if (d > 0) return `${d} ditë ${h} orë`;
-  if (h > 0) return `${h} orë ${m} min`;
-  return `${m} min`;
+  if (d > 0) return t('league.countdownDH', { d, h });
+  if (h > 0) return t('league.countdownHM', { h, m });
+  return t('league.countdownM', { m });
 }
 
 const LeaguePage = () => {
@@ -56,7 +57,7 @@ const LeaguePage = () => {
     return (
       <div className="max-w-2xl mx-auto px-6 py-16 text-center">
         <Parrot state="think" size={120} />
-        <p className="mt-4 text-ink-soft font-semibold">Liga nuk mund të ngarkohej. Provo përsëri.</p>
+        <p className="mt-4 text-ink-soft font-semibold">{t('league.loadError')}</p>
       </div>
     );
   }
@@ -68,7 +69,7 @@ const LeaguePage = () => {
   return (
     <div className="max-w-2xl mx-auto px-6 py-10">
       <div className="text-center mb-6">
-        <Heading level={1}>Liga javore</Heading>
+        <Heading level={1}>{t('league.title')}</Heading>
       </div>
 
       {/* Tier header */}
@@ -82,8 +83,8 @@ const LeaguePage = () => {
           >
             {style.medal}
           </motion.div>
-          <Heading level={2} className={style.text}>{style.name}</Heading>
-          <p className="text-sm font-bold text-ink-soft">Përfundon në {countdown}</p>
+          <Heading level={2} className={style.text}>{tierName(data.tier)}</Heading>
+          <p className="text-sm font-bold text-ink-soft">{t('league.endsIn', { countdown })}</p>
         </div>
 
         <div className="mt-4 flex justify-center">
@@ -93,11 +94,11 @@ const LeaguePage = () => {
         <div className="mt-2 grid grid-cols-2 gap-4">
           <div>
             <p className="text-2xl font-black text-ink">{data.weekly_xp}</p>
-            <p className="text-xs font-bold text-ink-soft">XP këtë javë</p>
+            <p className="text-xs font-bold text-ink-soft">{t('league.weeklyXp')}</p>
           </div>
           <div>
             <p className="text-2xl font-black text-ink">{data.rank ? `#${data.rank}` : '—'}</p>
-            <p className="text-xs font-bold text-ink-soft">Renditja jote</p>
+            <p className="text-xs font-bold text-ink-soft">{t('league.yourRank')}</p>
           </div>
         </div>
       </Card>
@@ -105,23 +106,23 @@ const LeaguePage = () => {
       {data.opted_out && (
         <Card padding="md" className="mb-6">
           <p className="text-sm font-semibold text-ink-soft">
-            Je jashtë renditjes publike. Mund ta aktivizosh te profili yt.
+            {t('league.optedOut')}
           </p>
         </Card>
       )}
 
       {!data.is_premium && data.tier === 'argjendi' && (
         <Card padding="md" className="mb-6 text-center">
-          <p className="text-sm font-bold text-ink mb-3">Ari hapet vetëm me Premium.</p>
+          <p className="text-sm font-bold text-ink mb-3">{t('league.goldPremium')}</p>
           <Button variant="primary" size="md" onClick={() => navigate('/premium')}>
-            Kalo në Premium
+            {t('practiceCard.goPremium')}
           </Button>
         </Card>
       )}
 
       {/* Top 10 of my tier (pseudonymous) */}
       <p className="text-xs font-bold text-ink-soft mb-3">
-        Top 10 · {data.segment === 'kids' ? 'fëmijë' : 'të rritur'} · vetëm emër publik dhe avatar
+        {t('league.topLabel', { segment: data.segment === 'kids' ? t('leaderboard.segmentKids') : t('leaderboard.segmentAdults') })}
       </p>
       <div className="space-y-3">
         {data.top.map((entry, i) => {
@@ -147,7 +148,7 @@ const LeaguePage = () => {
                 <Avatar filename={entry.avatar_filename} size={40} />
                 <p className={`flex-1 min-w-0 truncate font-bold ${isMe ? 'text-brand-green' : 'text-ink'}`}>
                   {entry.username}
-                  {isMe && <span className="text-xs ml-1 text-brand-green">(ti)</span>}
+                  {isMe && <span className="text-xs ml-1 text-brand-green">{t('leaderboard.you')}</span>}
                 </p>
                 <span className="text-sm font-black text-ink whitespace-nowrap">{entry.weekly_xp} XP</span>
               </Card>
@@ -157,7 +158,7 @@ const LeaguePage = () => {
         {data.top.length === 0 && (
           <Card padding="md" className="text-center">
             <p className="text-sm font-semibold text-ink-soft">
-              Ende askush në këtë ligë. Përfundo një mësim për t'u futur!
+              {t('league.empty')}
             </p>
           </Card>
         )}

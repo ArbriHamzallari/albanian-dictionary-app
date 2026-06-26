@@ -6,6 +6,7 @@ import Card from '../components/ui/Card.jsx';
 import Heading from '../components/ui/Heading.jsx';
 import Parrot from '../components/mascot/Parrot.jsx';
 import api from '../utils/api.js';
+import { t } from '../i18n/index.js';
 
 const SPRING = { type: 'spring', stiffness: 300, damping: 24 };
 
@@ -39,14 +40,14 @@ const Leaderboard = () => {
     <div className="max-w-2xl mx-auto px-6 py-10">
       <div className="text-center mb-8">
         <Trophy className="w-12 h-12 mx-auto mb-3 text-accent-yellow" aria-hidden="true" />
-        <Heading level={1}>Renditja</Heading>
-        <p className="text-ink-soft font-semibold mt-1">Top 10 lojtarët Premium</p>
+        <Heading level={1}>{t('leaderboard.title')}</Heading>
+        <p className="text-ink-soft font-semibold mt-1">{t('leaderboard.subtitle')}</p>
         <p className="text-xs text-ink-soft font-semibold mt-1">
-          Segmenti: {segment === 'kids' ? 'fëmijë' : 'të rritur'} · vetëm emër publik dhe avatar
+          {t('leaderboard.segmentInfo', { segment: segment === 'kids' ? t('leaderboard.segmentKids') : t('leaderboard.segmentAdults') })}
         </p>
         {!viewer.canParticipate && (
           <p className="text-sm text-ink-soft font-semibold mt-3">
-            Plani falas mund ta shohë renditjen, por pjesëmarrja kërkon Premium.
+            {t('leaderboard.freeNote')}
           </p>
         )}
       </div>
@@ -54,7 +55,7 @@ const Leaderboard = () => {
       {leaderboard.length === 0 ? (
         <Card padding="lg" className="text-center">
           <div className="flex justify-center"><Parrot state="idle" size={130} /></div>
-          <p className="mt-3 text-ink-soft font-semibold">Ende askush në renditje. Bëhu i pari!</p>
+          <p className="mt-3 text-ink-soft font-semibold">{t('leaderboard.empty')}</p>
         </Card>
       ) : (
         <div className="space-y-3">
@@ -81,9 +82,9 @@ const Leaderboard = () => {
                   <div className="flex-1 min-w-0">
                     <p className={`font-bold truncate ${isMe ? 'text-brand-green' : 'text-ink'}`}>
                       {entry.username}
-                      {isMe && <span className="text-xs ml-1 text-brand-green">(ti)</span>}
+                      {isMe && <span className="text-xs ml-1 text-brand-green">{t('leaderboard.you')}</span>}
                     </p>
-                    <p className="text-xs font-semibold text-ink-soft">Niveli {entry.level}</p>
+                    <p className="text-xs font-semibold text-ink-soft">{t('dashboard.level', { level: entry.level })}</p>
                   </div>
 
                   <div className="flex items-center gap-4 flex-shrink-0">

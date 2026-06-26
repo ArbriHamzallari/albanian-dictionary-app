@@ -7,6 +7,7 @@ import Card from '../components/ui/Card.jsx';
 import Heading from '../components/ui/Heading.jsx';
 import Parrot from '../components/mascot/Parrot.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
+import { t } from '../i18n/index.js';
 
 const SPRING = { type: 'spring', stiffness: 300, damping: 22 };
 
@@ -37,7 +38,7 @@ const WhyCard = ({ text }) => {
     >
       <Card padding="md" className="border-accent-yellow bg-accent-yellow/10">
         <p className="text-xs font-extrabold uppercase tracking-wide text-ink-soft mb-1">
-          Pse ka rëndësi
+          {t('lesson.whyItMatters')}
         </p>
         <p className="text-base font-semibold text-ink">{text}</p>
       </Card>
@@ -53,7 +54,7 @@ const SpotAlblish = ({ exercise, reveal, selectedIndex, onSelect }) => {
 
   return (
     <div className="space-y-6">
-      <p className="text-sm font-bold text-ink-soft">Gjej fjalën e huazuar dhe trokit mbi të.</p>
+      <p className="text-sm font-bold text-ink-soft">{t('lesson.spotPrompt')}</p>
 
       <div className="flex flex-wrap gap-x-2 gap-y-3 text-2xl md:text-3xl font-extrabold leading-relaxed">
         {tokens.map((token, i) => {
@@ -99,7 +100,7 @@ const SpotAlblish = ({ exercise, reveal, selectedIndex, onSelect }) => {
         >
           <Card padding="md" className="border-brand-green bg-brand-green/5">
             <p className="text-xs font-extrabold uppercase tracking-wide text-ink-soft mb-1">
-              Shqip
+              {t('lesson.albanianLabel')}
             </p>
             <p className="text-xl font-extrabold text-ink">{reveal.answer.corrected_sentence}</p>
           </Card>
@@ -136,14 +137,14 @@ const ChoiceExercise = ({ exercise, reveal, selectedValue, onSelect }) => {
     <div className="space-y-6">
       {isFill ? (
         <>
-          <p className="text-sm font-bold text-ink-soft">Plotëso vendin bosh.</p>
+          <p className="text-sm font-bold text-ink-soft">{t('lesson.fillPrompt')}</p>
           <p className="text-2xl md:text-3xl font-extrabold text-ink leading-relaxed">
             {renderFillSentence()}
           </p>
         </>
       ) : (
         <>
-          <p className="text-sm font-bold text-ink-soft">Zgjidh fjalën e saktë në shqip.</p>
+          <p className="text-sm font-bold text-ink-soft">{t('lesson.translationPrompt')}</p>
           {sentence ? (
             <p className="text-xl font-semibold text-ink">{sentence}</p>
           ) : null}
@@ -223,7 +224,7 @@ const Lesson = ({ taste = false, onComplete }) => {
       if (taste) {
         const res = await api.get('/lessons/sample');
         setExercises(res.data.exercise ? [res.data.exercise] : []);
-        setMeta({ title: 'Provo një shembull' });
+        setMeta({ title: t('onboarding.taste.title') });
       } else if (isPractice) {
         const res = await api.get('/lessons/practice-mistakes');
         const list = res.data.exercises || [];
@@ -232,7 +233,7 @@ const Lesson = ({ taste = false, onComplete }) => {
           return;
         }
         setExercises(list);
-        setMeta({ title: 'Përsërit gabimet' });
+        setMeta({ title: t('practiceCard.title') });
       } else {
         const res = await api.get(`/lessons/${lessonId}`);
         const list = res.data.exercises || [];
@@ -247,7 +248,7 @@ const Lesson = ({ taste = false, onComplete }) => {
     } catch (err) {
       const data = err?.response?.data;
       setErrorInfo({
-        message: data?.message || 'Mësimi nuk mund të ngarkohej. Provoni përsëri.',
+        message: data?.message || t('lesson.loadError'),
         code: data?.code || null,
       });
       setStatus('error');
@@ -298,7 +299,7 @@ const Lesson = ({ taste = false, onComplete }) => {
       loadUser();
     } catch (err) {
       setErrorInfo({
-        message: err?.response?.data?.message || 'Përgjigjet nuk u ruajtën. Provoni përsëri.',
+        message: err?.response?.data?.message || t('lesson.saveError'),
         code: err?.response?.data?.code || null,
       });
       setStatus('error');
@@ -332,7 +333,7 @@ const Lesson = ({ taste = false, onComplete }) => {
         <Parrot state="think" size={100} />
         <p className="text-ink-soft font-semibold max-w-sm">{errorInfo?.message}</p>
         <Button variant="secondary" size="md" onClick={load}>
-          Provo përsëri
+          {t('dailyChallenge.tryAgain')}
         </Button>
       </div>
     );
@@ -342,12 +343,12 @@ const Lesson = ({ taste = false, onComplete }) => {
     return (
       <div className="min-h-screen bg-cloud flex flex-col items-center justify-center px-6 text-center gap-6">
         <Parrot state="idle" size={160} />
-        <Heading level={2}>S'ke gabime për të përsëritur tani</Heading>
+        <Heading level={2}>{t('lesson.emptyTitle')}</Heading>
         <p className="text-ink-soft font-semibold max-w-md">
-          Bravo! Kthehu pasi të bësh disa mësime — gabimet shfaqen këtu kur vjen koha t'i përsëritësh.
+          {t('lesson.emptyDesc')}
         </p>
         <Button variant="primary" size="lg" onClick={() => navigate('/dashboard')}>
-          Kthehu te paneli
+          {t('lesson.backToDashboard')}
         </Button>
       </div>
     );
@@ -359,16 +360,16 @@ const Lesson = ({ taste = false, onComplete }) => {
     return (
       <div className="min-h-screen bg-cloud flex flex-col items-center justify-center px-6 text-center gap-6">
         <Parrot state="think" size={150} />
-        <Heading level={2}>{isLimitBlock ? 'Mjaft për sot!' : 'Një moment'}</Heading>
+        <Heading level={2}>{isLimitBlock ? t('lesson.limitTitle') : t('lesson.errorTitle')}</Heading>
         <p className="text-ink-soft font-semibold max-w-md">{errorInfo?.message}</p>
         <div className="flex flex-col sm:flex-row gap-3">
           {(isPremiumBlock || isLimitBlock) && (
             <Button variant="primary" size="lg" onClick={() => navigate('/premium')}>
-              Kalo në Premium
+              {t('practiceCard.goPremium')}
             </Button>
           )}
           <Button variant="secondary" size="lg" onClick={() => navigate('/dashboard')}>
-            Kthehu te paneli
+            {t('lesson.backToDashboard')}
           </Button>
         </div>
       </div>
@@ -386,31 +387,31 @@ const Lesson = ({ taste = false, onComplete }) => {
         className="min-h-screen bg-cloud flex flex-col items-center justify-center px-6 text-center gap-6"
       >
         <Parrot state="celebrate-big" size={200} />
-        <Heading level={1}>{isPractice ? 'Përsëritje e mbaruar!' : 'Mësimi u përfundua!'}</Heading>
+        <Heading level={1}>{isPractice ? t('lesson.practiceFinished') : t('lesson.lessonFinished')}</Heading>
 
         <div className="grid grid-cols-2 gap-4 w-full max-w-sm">
           <Card padding="md" className="text-center">
             <p className="text-3xl font-black text-brand-green">+{xp}</p>
-            <p className="text-xs font-bold text-ink-soft mt-1">XP të fituar</p>
+            <p className="text-xs font-bold text-ink-soft mt-1">{t('lesson.xpEarned')}</p>
           </Card>
           <Card padding="md" className="text-center">
             <p className="text-3xl font-black text-accent-yellow">
               {streak ?? '–'} {streak >= 7 ? '🔥' : ''}
             </p>
-            <p className="text-xs font-bold text-ink-soft mt-1">Seria ditore</p>
+            <p className="text-xs font-bold text-ink-soft mt-1">{t('dashboard.streakDaily')}</p>
           </Card>
         </div>
 
         {!isPractice && (
           <p className="text-ink-soft font-semibold">
-            {finalResult.correctCount}/{finalResult.total} saktë
-            {finalResult.completed ? ' · Mësim i kaluar' : ''}
+            {t('lesson.score', { correct: finalResult.correctCount, total: finalResult.total })}
+            {finalResult.completed ? t('lesson.lessonPassedSuffix') : ''}
           </p>
         )}
 
         <div className="flex flex-col sm:flex-row gap-3">
           <Button variant="primary" size="lg" onClick={() => navigate('/dashboard')}>
-            {isPractice ? 'Përfundo' : 'Mësimi tjetër'}
+            {isPractice ? t('lesson.finishPractice') : t('lesson.nextLesson')}
           </Button>
         </div>
       </motion.div>
@@ -478,7 +479,7 @@ const Lesson = ({ taste = false, onComplete }) => {
           loading={checking}
           onClick={handleContinue}
         >
-          Vazhdo
+          {t('common.continue')}
         </Button>
       </div>
     </div>

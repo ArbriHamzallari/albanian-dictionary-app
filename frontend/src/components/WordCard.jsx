@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight, Star } from 'lucide-react';
+import { t } from '../i18n/index.js';
 
 const categoryColors = {
   'Folje': 'badge-green',
@@ -48,7 +49,7 @@ const WordCard = ({ word }) => {
             className="inline-flex items-center gap-1 text-fjalingo-green text-sm font-bold
                        hover:gap-2 transition-all"
           >
-            Detaje <ArrowRight className="w-4 h-4" />
+            {t('wordcard.details')} <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
       </div>

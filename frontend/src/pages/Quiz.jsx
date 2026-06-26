@@ -7,6 +7,7 @@ import api from '../utils/api.js';
 import LoadingSpinner from '../components/LoadingSpinner.jsx';
 import ErrorMessage from '../components/ErrorMessage.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
+import { t } from '../i18n/index.js';
 
 const TOTAL_QUESTIONS = 10;
 
@@ -68,7 +69,7 @@ const Quiz = () => {
       const words = res.data.words || [];
 
       if (words.length < 4) {
-        setError('Nuk ka mjaft fjalë për kuizin. Nevojiten të paktën 4 fjalë.');
+        setError(t('quiz.error.notEnoughWords'));
         return;
       }
 
@@ -100,7 +101,7 @@ const Quiz = () => {
       setTimer(0);
       setStatus('playing');
     } catch (err) {
-      setError(err?.response?.data?.message || 'Nuk mund të ngarkohet kuizi. Provoni përsëri.');
+      setError(err?.response?.data?.message || t('quiz.error.loadFailed'));
     }
   }, [isLoggedIn]);
 
@@ -153,7 +154,7 @@ const Quiz = () => {
     } catch (err) {
       console.error('Quiz submit failed:', err);
       setResultConfirmed(false);
-      setSubmitError('Rezultati nuk u ruajt në server. Provo ta ruash përsëri.');
+      setSubmitError(t('quiz.result.submitRetry'));
     }
   };
 
@@ -198,7 +199,7 @@ const Quiz = () => {
         <p className="text-4xl mb-4">😔</p>
         <p className="text-lg font-bold text-heading dark:text-dark-text mb-4">{error}</p>
         <button onClick={buildQuestions} className="btn-primary">
-          Provo Përsëri
+          {t('quiz.tryAgain')}
         </button>
       </div>
     );
@@ -228,10 +229,10 @@ const Quiz = () => {
             {!resultsKnown ? '⚠️' : percentage >= 70 ? '🎉' : '💪'}
           </span>
           <h2 className="text-3xl font-black text-heading dark:text-dark-text mb-2">
-            {!resultsKnown ? 'Kuizi përfundoi' : percentage >= 70 ? 'Shkëlqyeshëm!' : 'Punë e mirë!'}
+            {!resultsKnown ? t('quiz.result.unknownTitle') : percentage >= 70 ? t('quiz.result.greatTitle') : t('quiz.result.goodTitle')}
           </h2>
           <p className="text-lg font-semibold text-muted dark:text-dark-muted mb-6">
-            Rezultati yt
+            {t('quiz.result.subtitle')}
           </p>
 
           {submitError && (
@@ -243,7 +244,7 @@ const Quiz = () => {
                 onClick={submitResults}
                 className="btn-outline inline-flex items-center gap-2 text-sm"
               >
-                <RotateCcw className="w-4 h-4" /> Provo ta ruash përsëri
+                <RotateCcw className="w-4 h-4" /> {t('quiz.result.retryButton')}
               </button>
             </div>
           )}
@@ -252,25 +253,25 @@ const Quiz = () => {
             <div className="grid grid-cols-3 gap-4">
               <div className="text-center">
                 <p className="text-3xl font-black text-fjalingo-green">{resultsKnown ? correct : '—'}</p>
-                <p className="text-xs font-bold text-muted dark:text-dark-muted">Saktë</p>
+                <p className="text-xs font-bold text-muted dark:text-dark-muted">{t('quiz.result.correctLabel')}</p>
               </div>
               <div className="text-center">
                 <p className="text-3xl font-black text-fjalingo-blue">{resultsKnown ? score : '—'}</p>
-                <p className="text-xs font-bold text-muted dark:text-dark-muted">Pikë</p>
+                <p className="text-xs font-bold text-muted dark:text-dark-muted">{t('quiz.result.pointsLabel')}</p>
               </div>
               <div className="text-center">
                 <p className="text-3xl font-black text-fjalingo-yellow">{formatTime(timer)}</p>
-                <p className="text-xs font-bold text-muted dark:text-dark-muted">Koha</p>
+                <p className="text-xs font-bold text-muted dark:text-dark-muted">{t('quiz.result.timeLabel')}</p>
               </div>
             </div>
           </div>
 
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <button onClick={buildQuestions} className="btn-primary inline-flex items-center gap-2">
-              <RotateCcw className="w-4 h-4" /> Luaj Përsëri
+              <RotateCcw className="w-4 h-4" /> {t('quiz.result.playAgain')}
             </button>
             <Link to="/arritjet" className="btn-outline inline-flex items-center gap-2">
-              <Trophy className="w-4 h-4" /> Arritjet
+              <Trophy className="w-4 h-4" /> {t('nav.achievements')}
             </Link>
           </div>
         </motion.div>
@@ -300,10 +301,10 @@ const Quiz = () => {
                 </button>
                 <span className="text-5xl block mb-4">🔥</span>
                 <h3 className="text-xl font-black text-heading dark:text-dark-text mb-2">
-                  Ruaje progresin!
+                  {t('quiz.guestModal.title')}
                 </h3>
                 <p className="text-sm text-muted dark:text-dark-muted font-semibold mb-6">
-                  Krijo profil dhe fito shpërblim çdo ditë për 7 ditë rresht!
+                  {t('quiz.guestModal.desc')}
                 </p>
                 <div className="flex flex-col gap-3">
                   <button
@@ -313,13 +314,13 @@ const Quiz = () => {
                     }}
                     className="btn-primary w-full"
                   >
-                    Krijo profil
+                    {t('quiz.guestModal.createProfile')}
                   </button>
                   <button
                     onClick={() => setShowGuestModal(false)}
                     className="btn-outline w-full"
                   >
-                    Vazhdo si mysafir
+                    {t('quiz.guestModal.continueGuest')}
                   </button>
                 </div>
               </motion.div>
@@ -367,7 +368,7 @@ const Quiz = () => {
         >
           <div className="card mb-6">
             <p className="text-sm font-semibold text-muted dark:text-dark-muted mb-2">
-              Cila është fjala e saktë për:
+              {t('quiz.questionPrompt')}
             </p>
             <h3 className="text-3xl font-black text-heading dark:text-dark-text">
               "{question.borrowed_word}"
@@ -421,19 +422,19 @@ const Quiz = () => {
             >
               {sessionId ? (
                 <p className="text-lg font-black text-heading dark:text-dark-text mb-3">
-                  Përgjigja u ruajt.
+                  {t('quiz.answerSaved')}
                 </p>
               ) : isCorrectAnswer(selected) ? (
                 <p className="text-lg font-black text-fjalingo-green mb-3">
-                  Saktë! +100 Pikë
+                  {t('quiz.correctFeedback')}
                 </p>
               ) : (
                 <p className="text-lg font-black text-fjalingo-red mb-3">
-                  Gabim! Përgjigja: <span className="text-fjalingo-green">{question.correct_answer}</span>
+                  {t('quiz.wrongFeedback')} <span className="text-fjalingo-green">{question.correct_answer}</span>
                 </p>
               )}
               <button onClick={nextQuestion} className="btn-primary inline-flex items-center gap-2">
-                {current + 1 >= questions.length ? 'Shiko Rezultatin' : 'Vazhdo'} <ArrowRight className="w-4 h-4" />
+                {current + 1 >= questions.length ? t('quiz.seeResult') : t('quiz.continue')} <ArrowRight className="w-4 h-4" />
               </button>
             </motion.div>
           )}

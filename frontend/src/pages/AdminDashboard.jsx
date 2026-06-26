@@ -9,6 +9,7 @@ import LoadingSpinner from '../components/LoadingSpinner.jsx';
 import Button from '../components/ui/Button.jsx';
 import Heading from '../components/ui/Heading.jsx';
 import ConfirmDialog from '../components/ui/ConfirmDialog.jsx';
+import { t } from '../i18n/index.js';
 
 const CATEGORIES = ['Folje', 'Emër', 'Mbiemër', 'Ndajfolje'];
 
@@ -67,7 +68,7 @@ const AdminDashboard = () => {
     if (authLoading) return;
 
     if (!isLoggedIn || !isAdmin) {
-      setError('Duhet të hyni si admin për të parë këtë faqe.');
+      setError(t('admin.notAdminError'));
       setLoading(false);
       if (!isLoggedIn) {
         navigate('/admin', { replace: true });
@@ -93,7 +94,7 @@ const AdminDashboard = () => {
       setTopSearches(searchRes.data.top_searches || []);
       setWords(wordsRes.data.words || []);
     } catch {
-      setError('Nuk mund të ngarkohen të dhënat e adminit.');
+      setError(t('admin.loadError'));
     } finally {
       setLoading(false);
     }
@@ -103,9 +104,9 @@ const AdminDashboard = () => {
     try {
       await api.put(`/suggestions/${id}/${action}`, null, { headers });
       setSuggestions((prev) => prev.filter((s) => s.id !== id));
-      flash('Propozimi u përditësua!');
+      flash(t('admin.suggestionUpdated'));
     } catch {
-      setError('Gabim gjatë përditësimit.');
+      setError(t('admin.updateError'));
     }
   };
 
@@ -141,12 +142,12 @@ const AdminDashboard = () => {
 
   const saveWord = async () => {
     if (!formData.borrowed_word.trim() || !formData.correct_albanian.trim()) {
-      setError('Plotëso fushat e nevojshme.');
+      setError(t('admin.fillRequired'));
       return;
     }
     const defs = formData.definitions.filter((d) => d.definition_text.trim());
     if (!defs.length) {
-      setError('Shto të paktën një përkufizim.');
+      setError(t('admin.addAtLeastOneDef'));
       return;
     }
 
@@ -162,15 +163,15 @@ const AdminDashboard = () => {
     try {
       if (editingId) {
         await api.put(`/admin/words/${editingId}`, payload, { headers });
-        flash('Fjala u përditësua me sukses! ✅');
+        flash(t('admin.wordUpdated'));
       } else {
         await api.post('/admin/words', payload, { headers });
-        flash('Fjala u shtua me sukses! ✅');
+        flash(t('admin.wordAdded'));
       }
       setShowForm(false);
       fetchAll();
     } catch (err) {
-      setError(err.response?.data?.message || 'Gabim gjatë ruajtjes.');
+      setError(err.response?.data?.message || t('profile.saveError'));
     } finally {
       setFormLoading(false);
     }
@@ -182,12 +183,12 @@ const AdminDashboard = () => {
       await api.delete(`/admin/words/${deleteId}`, { headers });
       setWords((prev) => prev.filter((w) => w.id !== deleteId));
       setDeleteId(null);
-      flash('Fjala u fshi me sukses!');
+      flash(t('admin.wordDeleted'));
     } catch (err) {
       // Surface the specific server reason (e.g. a real FK conflict) rather
       // than always showing a generic catch-all.
       const detail = err?.response?.data?.detail;
-      const message = err?.response?.data?.message || 'Gabim gjatë fshirjes.';
+      const message = err?.response?.data?.message || t('admin.deleteError');
       setError(detail ? `${message} (${detail})` : message);
     }
   };
@@ -245,7 +246,7 @@ const AdminDashboard = () => {
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-10">
-      <Heading level={2} className="mb-6">ADMIN PANEL – Fjalingo</Heading>
+      <Heading level={2} className="mb-6">{t('admin.panelTitle')}</Heading>
 
       <ErrorMessage message={error} />
       {success && (
@@ -261,7 +262,7 @@ const AdminDashboard = () => {
 
       {/* ── Platform Statistics ───────────────────────────── */}
       <div className="card mb-8">
-        <h3 className="text-sm font-black text-fjalingo-blue mb-5">📊 STATISTIKAT E PLATFORMËS</h3>
+        <h3 className="text-sm font-black text-fjalingo-blue mb-5">{t('admin.statsHeading')}</h3>
         {metricsLoading ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
             {Array.from({ length: 13 }).map((_, i) => (
@@ -273,23 +274,23 @@ const AdminDashboard = () => {
           </div>
         ) : metrics ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-            <MetricCard icon={Users} label="Përdorues" value={metrics.totalUsers} color="blue" />
-            <MetricCard icon={UserPlus} label="Të Rinj Sot" value={metrics.newUsersToday} color="green" />
-            <MetricCard icon={Activity} label="DAU" value={metrics.activeUsersToday} color="purple" />
-            <MetricCard icon={Radio} label="Online Tani" value={metrics.usersOnlineNow} color="green" />
-            <MetricCard icon={CalendarDays} label="WAU" value={metrics.activeUsers7d} color="orange" />
-            <MetricCard icon={CalendarRange} label="MAU" value={metrics.activeUsers30d} color="blue" />
-            <MetricCard icon={BarChart3} label="Mbajtja %" value={`${metrics.retentionRate}%`} color="green" />
-            <MetricCard icon={Target} label="Saktësia %" value={`${metrics.avgAccuracy}%`} color="purple" />
-            <MetricCard icon={Gamepad2} label="Kuiz/Përdorues" value={metrics.avgQuizzesPerUser} color="orange" />
-            <MetricCard icon={Flame} label="Seria Top" value={metrics.topStreak} color="red" suffix="🔥" />
-            <MetricCard icon={Trophy} label="Kuize Totale" value={metrics.totalQuizzesPlayed} color="blue" />
-            <MetricCard icon={Crown} label="Premium Aktiv" value={metrics.activeSubscribers} color="purple" />
-            <MetricCard icon={Crown} label="Premium Total" value={metrics.premiumTotal} color="orange" />
-            <MetricCard icon={Euro} label="Të Ardhura/vit" value={`${metrics.estimatedAnnualRevenue} ${metrics.revenueCurrency || 'EUR'}`} color="green" />
+            <MetricCard icon={Users} label={t('admin.metrics.users')} value={metrics.totalUsers} color="blue" />
+            <MetricCard icon={UserPlus} label={t('admin.metrics.newToday')} value={metrics.newUsersToday} color="green" />
+            <MetricCard icon={Activity} label={t('admin.metrics.dau')} value={metrics.activeUsersToday} color="purple" />
+            <MetricCard icon={Radio} label={t('admin.metrics.onlineNow')} value={metrics.usersOnlineNow} color="green" />
+            <MetricCard icon={CalendarDays} label={t('admin.metrics.wau')} value={metrics.activeUsers7d} color="orange" />
+            <MetricCard icon={CalendarRange} label={t('admin.metrics.mau')} value={metrics.activeUsers30d} color="blue" />
+            <MetricCard icon={BarChart3} label={t('admin.metrics.retention')} value={`${metrics.retentionRate}%`} color="green" />
+            <MetricCard icon={Target} label={t('admin.metrics.accuracy')} value={`${metrics.avgAccuracy}%`} color="purple" />
+            <MetricCard icon={Gamepad2} label={t('admin.metrics.quizzesPerUser')} value={metrics.avgQuizzesPerUser} color="orange" />
+            <MetricCard icon={Flame} label={t('admin.metrics.topStreak')} value={metrics.topStreak} color="red" suffix="🔥" />
+            <MetricCard icon={Trophy} label={t('admin.metrics.totalQuizzes')} value={metrics.totalQuizzesPlayed} color="blue" />
+            <MetricCard icon={Crown} label={t('admin.metrics.premiumActive')} value={metrics.activeSubscribers} color="purple" />
+            <MetricCard icon={Crown} label={t('admin.metrics.premiumTotal')} value={metrics.premiumTotal} color="orange" />
+            <MetricCard icon={Euro} label={t('admin.metrics.revenue')} value={`${metrics.estimatedAnnualRevenue} ${metrics.revenueCurrency || 'EUR'}`} color="green" />
           </div>
         ) : (
-          <p className="text-sm text-muted dark:text-dark-muted">Nuk mund të ngarkohen metrikat.</p>
+          <p className="text-sm text-muted dark:text-dark-muted">{t('admin.metricsError')}</p>
         )}
       </div>
 
@@ -297,7 +298,7 @@ const AdminDashboard = () => {
       <div className="grid md:grid-cols-2 gap-6 mb-8">
         {/* Top Searches */}
         <div className="card">
-          <h3 className="text-sm font-black text-fjalingo-blue mb-4">🔍 KËRKIMET MË TË SHPESHTA</h3>
+          <h3 className="text-sm font-black text-fjalingo-blue mb-4">{t('admin.topSearchesHeading')}</h3>
           <div className="space-y-2">
             {topSearches.map((s, i) => (
               <div key={s.search_term} className="flex items-center justify-between py-1">
@@ -307,14 +308,14 @@ const AdminDashboard = () => {
                 <span className="badge badge-blue">{s.total}</span>
               </div>
             ))}
-            {!topSearches.length && <p className="text-sm text-muted">Nuk ka të dhëna ende.</p>}
+            {!topSearches.length && <p className="text-sm text-muted">{t('admin.noDataYet')}</p>}
           </div>
         </div>
 
         {/* Suggestions */}
         <div className="card">
           <button onClick={() => setShowSuggestions(!showSuggestions)} className="flex items-center justify-between w-full mb-4">
-            <h3 className="text-sm font-black text-fjalingo-purple">💡 PROPOZIME ({suggestions.filter((s) => s.status === 'pending').length})</h3>
+            <h3 className="text-sm font-black text-fjalingo-purple">{t('admin.suggestionsHeading')} ({suggestions.filter((s) => s.status === 'pending').length})</h3>
             {showSuggestions ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
           </button>
           {showSuggestions && (
@@ -322,17 +323,17 @@ const AdminDashboard = () => {
               {suggestions.filter((s) => s.status === 'pending').map((s) => (
                 <div key={s.id} className="card py-3 px-4">
                   <p className="font-bold text-heading dark:text-dark-text text-sm">
-                    "{s.borrowed_word}" → {s.suggested_albanian || 'Pa sugjerim'}
+                    "{s.borrowed_word}" → {s.suggested_albanian || t('admin.noSuggestion')}
                   </p>
                   {s.suggested_definition && <p className="text-xs text-muted mt-1">{s.suggested_definition}</p>}
                   <div className="flex gap-2 mt-2">
-                    <button onClick={() => handleSuggestion(s.id, 'approve')} className="text-xs font-bold text-fjalingo-green hover:underline">Aprovo</button>
-                    <button onClick={() => handleSuggestion(s.id, 'reject')} className="text-xs font-bold text-fjalingo-red hover:underline">Refuzo</button>
+                    <button onClick={() => handleSuggestion(s.id, 'approve')} className="text-xs font-bold text-fjalingo-green hover:underline">{t('admin.approve')}</button>
+                    <button onClick={() => handleSuggestion(s.id, 'reject')} className="text-xs font-bold text-fjalingo-red hover:underline">{t('publicProfile.decline')}</button>
                   </div>
                 </div>
               ))}
               {!suggestions.filter((s) => s.status === 'pending').length && (
-                <p className="text-sm text-muted">Nuk ka propozime të pashqyrtuara.</p>
+                <p className="text-sm text-muted">{t('admin.noPendingSuggestions')}</p>
               )}
             </div>
           )}
@@ -343,22 +344,22 @@ const AdminDashboard = () => {
       <div className="card mb-8">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
           <h3 className="text-sm font-black text-heading dark:text-dark-text">
-            📚 TË GJITHA FJALËT ({words.length})
+            {t('admin.allWordsHeading')} ({words.length})
           </h3>
           <div className="flex gap-2 w-full sm:w-auto">
             <div className="flex items-center bg-white dark:bg-dark-bg border-2 border-border dark:border-dark-border rounded-xl px-3 flex-1 sm:flex-initial">
               <Search className="w-4 h-4 text-muted" aria-hidden="true" />
-              <label htmlFor="admin-word-search" className="sr-only">Kërko fjalë</label>
+              <label htmlFor="admin-word-search" className="sr-only">{t('search.bar.aria')}</label>
               <input
                 id="admin-word-search"
                 value={searchQ}
                 onChange={(e) => setSearchQ(e.target.value)}
-                placeholder="Kërko..."
+                placeholder={t('admin.searchPlaceholder')}
                 className="py-2 px-2 text-sm font-semibold bg-transparent text-heading dark:text-dark-text focus:outline-none w-full sm:w-40"
               />
             </div>
             <Button onClick={openAddForm} variant="primary" size="md">
-              <Plus className="w-4 h-4" aria-hidden="true" /> Shto
+              <Plus className="w-4 h-4" aria-hidden="true" /> {t('admin.add')}
             </Button>
           </div>
         </div>
@@ -368,10 +369,10 @@ const AdminDashboard = () => {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b-2 border-border dark:border-dark-border">
-                <th className="text-left py-3 px-2 font-bold text-muted dark:text-dark-muted">Huazuar</th>
-                <th className="text-left py-3 px-2 font-bold text-muted dark:text-dark-muted">Shqipe</th>
-                <th className="text-left py-3 px-2 font-bold text-muted dark:text-dark-muted hidden sm:table-cell">Kategoria</th>
-                <th className="text-right py-3 px-2 font-bold text-muted dark:text-dark-muted">Veprime</th>
+                <th className="text-left py-3 px-2 font-bold text-muted dark:text-dark-muted">{t('admin.colBorrowed')}</th>
+                <th className="text-left py-3 px-2 font-bold text-muted dark:text-dark-muted">{t('admin.colAlbanian')}</th>
+                <th className="text-left py-3 px-2 font-bold text-muted dark:text-dark-muted hidden sm:table-cell">{t('admin.category')}</th>
+                <th className="text-right py-3 px-2 font-bold text-muted dark:text-dark-muted">{t('admin.colActions')}</th>
               </tr>
             </thead>
             <tbody>
@@ -383,10 +384,10 @@ const AdminDashboard = () => {
                     <span className="badge badge-blue">{w.category || '—'}</span>
                   </td>
                   <td className="py-3 px-2 text-right">
-                    <button onClick={() => openEditForm(w)} aria-label={`Ndrysho ${w.borrowed_word}`} className="p-1.5 rounded-lg hover:bg-brand-green/10 text-brand-green transition mr-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green">
+                    <button onClick={() => openEditForm(w)} aria-label={t('admin.editAria', { word: w.borrowed_word })} className="p-1.5 rounded-lg hover:bg-brand-green/10 text-brand-green transition mr-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green">
                       <Pencil className="w-4 h-4" aria-hidden="true" />
                     </button>
-                    <button onClick={() => setDeleteId(w.id)} aria-label={`Fshij ${w.borrowed_word}`} className="p-1.5 rounded-lg hover:bg-accent-coral/10 text-accent-coral transition focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-coral">
+                    <button onClick={() => setDeleteId(w.id)} aria-label={t('admin.deleteAria', { word: w.borrowed_word })} className="p-1.5 rounded-lg hover:bg-accent-coral/10 text-accent-coral transition focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-coral">
                       <Trash2 className="w-4 h-4" aria-hidden="true" />
                     </button>
                   </td>
@@ -395,7 +396,7 @@ const AdminDashboard = () => {
             </tbody>
           </table>
           {!filteredWords.length && (
-            <p className="text-center text-muted py-8">Nuk u gjetën fjalë.</p>
+            <p className="text-center text-muted py-8">{t('admin.noWordsFound')}</p>
           )}
         </div>
       </div>
@@ -419,7 +420,7 @@ const AdminDashboard = () => {
             >
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-lg font-black text-heading dark:text-dark-text">
-                  {editingId ? '✏️ Ndrysho Fjalën' : '➕ Shto Fjalë të Re'}
+                  {editingId ? t('admin.editWord') : t('admin.addWord')}
                 </h3>
                 <button onClick={() => setShowForm(false)} className="p-2 hover:bg-card dark:hover:bg-dark-card rounded-xl transition">
                   <X className="w-5 h-5" />
@@ -429,17 +430,17 @@ const AdminDashboard = () => {
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-bold text-muted dark:text-dark-muted mb-1">Fjala e huazuar *</label>
+                    <label className="block text-xs font-bold text-muted dark:text-dark-muted mb-1">{t('suggest.borrowedLabel')}</label>
                     <input value={formData.borrowed_word} onChange={(e) => setFormData((p) => ({ ...p, borrowed_word: e.target.value }))} className="input-field" required />
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-muted dark:text-dark-muted mb-1">Fjala e saktë shqipe *</label>
+                    <label className="block text-xs font-bold text-muted dark:text-dark-muted mb-1">{t('admin.correctLabel')}</label>
                     <input value={formData.correct_albanian} onChange={(e) => setFormData((p) => ({ ...p, correct_albanian: e.target.value }))} className="input-field" required />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-muted dark:text-dark-muted mb-1">Kategoria</label>
+                  <label className="block text-xs font-bold text-muted dark:text-dark-muted mb-1">{t('admin.category')}</label>
                   <select value={formData.category} onChange={(e) => setFormData((p) => ({ ...p, category: e.target.value }))} className="input-field">
                     {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
                   </select>
@@ -448,29 +449,29 @@ const AdminDashboard = () => {
                 {/* Definitions */}
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <label className="text-xs font-bold text-muted dark:text-dark-muted">Përkufizimet *</label>
+                    <label className="text-xs font-bold text-muted dark:text-dark-muted">{t('admin.definitionsLabel')}</label>
                     <button type="button" onClick={addDefinition} className="text-xs font-bold text-fjalingo-green hover:underline">
-                      + Shto përkufizim
+                      {t('admin.addDefinition')}
                     </button>
                   </div>
                   {formData.definitions.map((d, i) => (
                     <div key={i} className="card py-3 px-4 mb-2">
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs font-bold text-muted">Përkufizimi {i + 1}</span>
+                        <span className="text-xs font-bold text-muted">{t('admin.definitionN', { n: i + 1 })}</span>
                         {formData.definitions.length > 1 && (
-                          <button onClick={() => removeDef(i)} className="text-xs text-fjalingo-red hover:underline">Hiq</button>
+                          <button onClick={() => removeDef(i)} className="text-xs text-fjalingo-red hover:underline">{t('admin.remove')}</button>
                         )}
                       </div>
                       <input
                         value={d.definition_text}
                         onChange={(e) => updateDef(i, 'definition_text', e.target.value)}
-                        placeholder="Përkufizimi..."
+                        placeholder={t('admin.definitionPlaceholder')}
                         className="input-field mb-2"
                       />
                       <input
                         value={d.example_sentence}
                         onChange={(e) => updateDef(i, 'example_sentence', e.target.value)}
-                        placeholder="Shembulli (opsional)..."
+                        placeholder={t('admin.examplePlaceholder')}
                         className="input-field"
                       />
                     </div>
@@ -480,23 +481,23 @@ const AdminDashboard = () => {
                 {/* Conjugations */}
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <label className="text-xs font-bold text-muted dark:text-dark-muted">Zgjedhimet (opsional)</label>
+                    <label className="text-xs font-bold text-muted dark:text-dark-muted">{t('admin.conjugationsLabel')}</label>
                     <button type="button" onClick={addConjugation} className="text-xs font-bold text-fjalingo-green hover:underline">
-                      + Shto zgjedhim
+                      {t('admin.addConjugation')}
                     </button>
                   </div>
                   {formData.conjugations.map((c, i) => (
                     <div key={i} className="card py-3 px-4 mb-2">
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs font-bold text-muted">Zgjedhimi {i + 1}</span>
-                        <button onClick={() => removeConj(i)} className="text-xs text-fjalingo-red hover:underline">Hiq</button>
+                        <span className="text-xs font-bold text-muted">{t('admin.conjugationN', { n: i + 1 })}</span>
+                        <button onClick={() => removeConj(i)} className="text-xs text-fjalingo-red hover:underline">{t('admin.remove')}</button>
                       </div>
                       <select
                         value={c.conjugation_type}
                         onChange={(e) => updateConj(i, 'conjugation_type', e.target.value)}
                         className="input-field mb-2"
                       >
-                        <option value="">Zgjidh llojin...</option>
+                        <option value="">{t('admin.chooseType')}</option>
                         <option value="E tashmja">E tashmja</option>
                         <option value="E kryer">E kryer</option>
                         <option value="E ardhmja">E ardhmja</option>
@@ -505,7 +506,7 @@ const AdminDashboard = () => {
                       <input
                         value={c.conjugation_text}
                         onChange={(e) => updateConj(i, 'conjugation_text', e.target.value)}
-                        placeholder="Zgjedhimi..."
+                        placeholder={t('admin.conjugationPlaceholder')}
                         className="input-field"
                       />
                     </div>
@@ -514,10 +515,10 @@ const AdminDashboard = () => {
 
                 <div className="flex gap-3 pt-4">
                   <Button onClick={saveWord} variant="primary" size="md" fullWidth loading={formLoading}>
-                    {editingId ? 'Përditëso Fjalën' : 'Ruaj Fjalën'}
+                    {editingId ? t('admin.updateWord') : t('admin.saveWord')}
                   </Button>
                   <Button onClick={() => setShowForm(false)} variant="secondary" size="md" fullWidth>
-                    Anulo
+                    {t('admin.cancel')}
                   </Button>
                 </div>
               </div>
@@ -529,9 +530,9 @@ const AdminDashboard = () => {
       {/* Delete Confirmation */}
       <ConfirmDialog
         open={!!deleteId}
-        title="Fshi Fjalën?"
-        description="Je i sigurt që dëshiron të fshish këtë fjalë? Ky veprim nuk kthehet mbrapsht."
-        confirmLabel="Fshij"
+        title={t('admin.deleteConfirmTitle')}
+        description={t('admin.deleteConfirmDesc')}
+        confirmLabel={t('admin.deleteConfirm')}
         variant="danger"
         onConfirm={deleteWord}
         onCancel={() => setDeleteId(null)}

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search } from 'lucide-react';
+import { t } from '../i18n/index.js';
 
 const SearchBar = ({ initialValue = '', showHint = false }) => {
   const [query, setQuery] = useState(initialValue);
@@ -22,23 +23,23 @@ const SearchBar = ({ initialValue = '', showHint = false }) => {
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Kërko fjalë të huazuara..."
+            placeholder={t('search.bar.placeholder')}
             className="flex-1 py-4 px-3 text-base font-semibold text-heading dark:text-dark-text
                        bg-transparent placeholder:text-muted dark:placeholder:text-dark-muted focus:outline-none"
-            aria-label="Kërko fjalë"
+            aria-label={t('search.bar.aria')}
           />
           <button
             type="submit"
             className="bg-fjalingo-green text-white px-6 sm:px-8 py-4 text-sm font-bold
                        hover:bg-fjalingo-green-dark transition-colors whitespace-nowrap"
           >
-            Kërko
+            {t('search.bar.submit')}
           </button>
         </div>
       </form>
       {showHint && (
         <p className="text-center text-sm font-semibold text-muted dark:text-dark-muted mt-3">
-          Shembull: investigoj, marketing, weekend
+          {t('search.bar.hint')}
         </p>
       )}
     </div>

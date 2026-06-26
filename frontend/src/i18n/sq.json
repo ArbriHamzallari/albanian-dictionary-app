@@ -4,6 +4,12 @@
     "login": "Hyr",
     "logout": "Dil",
     "admin": "Admin",
+    "back": "Kthehu",
+    "close": "Mbyll",
+    "continue": "Vazhdo",
+    "avatarAlt": "Avatar",
+    "confirm": "Konfirmo",
+    "cancel": "Anulo",
     "error": {
       "generic": "Ndodhi një gabim.",
       "network": "Nuk mund të lidhet me serverin."
@@ -46,6 +52,539 @@
     "instagramAria": "Instagram Codrix",
     "websiteAria": "Website Codrix",
     "linkedinAria": "LinkedIn Codrix"
+  },
+  "home": {
+    "scrollHint": "Shiko ç'të pret poshtë",
+    "hero": {
+      "headline": "Fol shqipen e vërtetë, jo të huazuarën",
+      "cta": "Fillo"
+    },
+    "error": {
+      "wordsLoad": "Nuk mund të ngarkohen fjalët. Kontrolloni që backend dhe baza e të dhënave të jenë aktiv.",
+      "dataLoad": "Nuk mund të ngarkohen të dhënat tani."
+    },
+    "cards": {
+      "daily": {
+        "title": "SFIDA E DITËS",
+        "desc": "Testoje veten çdo ditë!",
+        "cta": "Fillo"
+      },
+      "quiz": {
+        "title": "KUIZI I SHPEJTË",
+        "desc": "Luaj dhe mëso fjalë të reja!",
+        "cta": "Luaj tani!"
+      },
+      "achievements": {
+        "title": "ARRITJET",
+        "desc": "Shkyç arritje dhe mbledh pikë!",
+        "cta": "Shiko"
+      }
+    },
+    "stats": {
+      "words": "Fjalë",
+      "users": "Përdorues",
+      "searches": "Kërkime"
+    },
+    "wotd": {
+      "heading": "FJALA E DITËS",
+      "empty": "Fjala e ditës nuk është vendosur ende.",
+      "borrowedLabel": "Fjala e huazuar",
+      "correctLabel": "Fjala e saktë shqipe",
+      "seeMore": "Shiko zgjedhjen e fjalës"
+    },
+    "popular": {
+      "heading": "Fjalët më të kërkuara 🔥",
+      "seeAll": "Shiko të gjitha"
+    }
+  },
+  "quiz": {
+    "error": {
+      "notEnoughWords": "Nuk ka mjaft fjalë për kuizin. Nevojiten të paktën 4 fjalë.",
+      "loadFailed": "Nuk mund të ngarkohet kuizi. Provoni përsëri.",
+      "submitFailed": "Rezultati i kuizit nuk u ruajt. Provoni përsëri."
+    },
+    "tryAgain": "Provo Përsëri",
+    "questionPrompt": "Cila është fjala e saktë për:",
+    "answerSaved": "Përgjigja u ruajt.",
+    "correctFeedback": "Saktë! +100 Pikë",
+    "wrongFeedback": "Gabim! Përgjigja:",
+    "seeResult": "Shiko Rezultatin",
+    "continue": "Vazhdo",
+    "result": {
+      "greatTitle": "Shkëlqyeshëm!",
+      "goodTitle": "Punë e mirë!",
+      "unknownTitle": "Kuizi përfundoi",
+      "subtitle": "Rezultati yt",
+      "correctLabel": "Saktë",
+      "pointsLabel": "Pikë",
+      "timeLabel": "Koha",
+      "playAgain": "Luaj Përsëri",
+      "submitRetry": "Rezultati nuk u ruajt në server. Provo ta ruash përsëri.",
+      "retryButton": "Provo ta ruash përsëri"
+    },
+    "guestModal": {
+      "title": "Ruaje progresin!",
+      "desc": "Krijo profil dhe fito shpërblim çdo ditë për 7 ditë rresht!",
+      "createProfile": "Krijo profil",
+      "continueGuest": "Vazhdo si mysafir"
+    }
+  },
+  "search": {
+    "bar": {
+      "placeholder": "Kërko fjalë të huazuara...",
+      "aria": "Kërko fjalë",
+      "submit": "Kërko",
+      "hint": "Shembull: investigoj, marketing, weekend"
+    },
+    "results": {
+      "title": "Rezultatet",
+      "count": "({count} fjalë u gjetën)",
+      "errorNoResults": "Nuk u gjetën rezultate për këtë kërkim.",
+      "emptyTitle": "Nuk u gjetën rezultate",
+      "emptyDesc": "Provo me një fjalë tjetër ose propozo një fjalë të re.",
+      "suggestCta": "Propozo një fjalë"
+    }
+  },
+  "wordcard": {
+    "details": "Detaje"
+  },
+  "wordDetail": {
+    "notFound": "Fjala nuk u gjet.",
+    "definitionHeading": "📖 PËRKUFIZIMI",
+    "conjugationHeading": "🔤 ZGJEDHIMI I FJALËS",
+    "examplesHeading": "💡 SHEMBUJ"
+  },
+  "wordOfDay": {
+    "notFound": "Fjala e ditës nuk është gjetur.",
+    "heading": "FJALA E DITËS",
+    "definitionHeading": "📖 PËRKUFIZIMI I PLOTË",
+    "conjugationHeading": "🔤 ZGJEDHIMET"
+  },
+  "dashboard": {
+    "userFallback": "Përdorues",
+    "level": "Niveli {level}",
+    "premiumBadge": "Premium",
+    "freeBadge": "Falas",
+    "streakDaily": "Seria ditore",
+    "streakOnFireSuffix": " — në zjarr!",
+    "stat": {
+      "streak": "Seria",
+      "quizzes": "Kuize",
+      "accuracy": "Saktësi"
+    },
+    "achievementsHeading": "ARRITJET",
+    "premiumUpsell": {
+      "title": "Zhblloko praktikë pa kufi",
+      "desc": "Premium përfshin kërkime dhe kuize pa kufi, miq dhe pjesëmarrje në renditje."
+    },
+    "actions": {
+      "playQuiz": "Luaj Kuizin",
+      "league": "Liga",
+      "editProfile": "Ndrysho Profilin"
+    }
+  },
+  "dailyChallenge": {
+    "title": "🎯 Sfida e Ditës",
+    "streakLabel": "Ditë Seria",
+    "inputPlaceholder": "Shkruaj përgjigjen...",
+    "check": "Kontrollo",
+    "correct": "Saktë!",
+    "pointsAwarded": "+100 Pikë! ⭐",
+    "wrongTitle": "Provo përsëri!",
+    "correctAnswerLabel": "Përgjigja e saktë:",
+    "tryAgain": "Provo përsëri",
+    "record": "Rekord: {days} ditë"
+  },
+  "questCard": {
+    "label": "Sfida e ditës",
+    "claimed": "U mor! +{xp} XP ✓",
+    "claim": "Merr {xp} XP",
+    "continueLessons": "Vazhdo mësimet"
+  },
+  "practiceCard": {
+    "title": "Përsërit gabimet",
+    "counting": "Duke numëruar…",
+    "wordsToReview": "{count} fjalë për të përsëritur",
+    "nothingToReview": "Asgjë për të përsëritur",
+    "startReview": "Fillo përsëritjen",
+    "goPremium": "Kalo në Premium"
+  },
+  "suggest": {
+    "title": "Propozo një Fjalë",
+    "desc": "Ndihmo të pasurohet fjalori! Propozo një fjalë të huazuar dhe zëvendësimin e saktë shqip.",
+    "successMessage": "Propozimi u dërgua me sukses! Faleminderit! 🎉",
+    "errorMessage": "Dërgimi dështoi. Kontrollo fushat dhe provo përsëri.",
+    "borrowedLabel": "Fjala e huazuar *",
+    "borrowedPlaceholder": "p.sh. marketing",
+    "correctLabel": "Fjala e saktë shqipe",
+    "correctPlaceholder": "p.sh. tregtim",
+    "definitionLabel": "Përkufizimi (opsionale)",
+    "definitionPlaceholder": "Përshkruaj kuptimin...",
+    "nameLabel": "Emri yt",
+    "namePlaceholder": "Emri...",
+    "emailLabel": "Email (opsionale)",
+    "emailPlaceholder": "email@shembull.al",
+    "submit": "Dërgo Propozimin",
+    "submitLoading": "Duke dërguar..."
+  },
+  "achievements": {
+    "title": "Arritjet",
+    "progress": "{unlocked} nga {total} shkyçur",
+    "items": {
+      "first_search": { "name": "Kërkim i Parë", "description": "Kërko fjalën e parë" },
+      "first_quiz": { "name": "Kuizier", "description": "Përfundo kuizin e parë" },
+      "quiz_master": { "name": "Mjeshtër Kuizi", "description": "Përfundo 10 kuize" },
+      "perfect_quiz": { "name": "Perfekt!", "description": "Merr 10/10 në kuiz" },
+      "streak_3": { "name": "Seria 3", "description": "Arrit serinë 3-ditore" },
+      "7_day_streak": { "name": "Seria 7-Ditore", "description": "Luaj kuizin 7 ditë rresht" },
+      "streak_30": { "name": "Seria 30", "description": "Arrit serinë 30-ditore" },
+      "points_500": { "name": "Grumbullues", "description": "Merr 500 pikë" },
+      "points_1000": { "name": "Ekspert", "description": "Merr 1000 pikë" },
+      "points_5000": { "name": "Legjendë", "description": "Merr 5000 pikë" },
+      "word_explorer": { "name": "Eksplorues", "description": "Shiko 20 fjalë" },
+      "suggester": { "name": "Kontributor", "description": "Propozo një fjalë" }
+    }
+  },
+  "leaderboard": {
+    "title": "Renditja",
+    "subtitle": "Top 10 lojtarët Premium",
+    "segmentInfo": "Segmenti: {segment} · vetëm emër publik dhe avatar",
+    "segmentKids": "fëmijë",
+    "segmentAdults": "të rritur",
+    "freeNote": "Plani falas mund ta shohë renditjen, por pjesëmarrja kërkon Premium.",
+    "empty": "Ende askush në renditje. Bëhu i pari!",
+    "you": "(ti)"
+  },
+  "profile": {
+    "title": "Ndrysho Profilin",
+    "savedProfile": "Profili u përditësua!",
+    "saveError": "Gabim gjatë ruajtjes.",
+    "savedAvatar": "Avatari u ndryshua!",
+    "avatarError": "Gabim gjatë ndryshimit të avatarit.",
+    "chooseAvatar": "Zgjidh Avatarin",
+    "chooseAvatarAria": "Zgjidh avatarin {name}",
+    "usernameLabel": "Emri i përdoruesit",
+    "bioLabel": "Biografia",
+    "bioPlaceholder": "Shkruaj diçka për veten…",
+    "favoriteLabel": "Fjala ime e preferuar",
+    "favoritePlaceholder": "p.sh. shqiponjë",
+    "optOutLabel": "Mos më shfaq në renditjen publike botërore.",
+    "save": "Ruaj Ndryshimet",
+    "friendsDesc": "Shto, prano dhe menaxho miqtë e tu.",
+    "friendsCta": "Shiko"
+  },
+  "premium": {
+    "title": "Përvoja e plotë Fjalingo",
+    "priceNote": "25 EUR në vit. Pagesa hapet me Paddle Sandbox dhe aktivizohet nga webhook-u i verifikuar në server.",
+    "active": "Premium aktiv",
+    "features": {
+      "search": "Kërkime pa kufi",
+      "quizzes": "Kuize pa kufi",
+      "leagues": "Pjesëmarrje në renditje dhe liga",
+      "social": "Miq dhe veçori sociale",
+      "progress": "Arritje dhe progres i plotë"
+    }
+  },
+  "publicProfile": {
+    "notFound": "Profili nuk u gjet.",
+    "rank": "Renditja #{rank}",
+    "noRank": "Pa renditje",
+    "friends": "Jeni miq",
+    "removeFriend": "Hiq miqësinë",
+    "requestSent": "Kërkesa u dërgua",
+    "cancelRequest": "Anulo kërkesën",
+    "addFriend": "Shto mik",
+    "accept": "Prano",
+    "decline": "Refuzo",
+    "loginToAdd": "Hyr për të shtuar mik",
+    "noBio": "Nuk ka bio ende.",
+    "favoriteLabel": "Fjala e preferuar",
+    "noFavorite": "Nuk ka fjalë të preferuar.",
+    "levelLabel": "Niveli"
+  },
+  "league": {
+    "title": "Liga javore",
+    "loadError": "Liga nuk mund të ngarkohej. Provo përsëri.",
+    "ended": "Përfundoi",
+    "countdownDH": "{d} ditë {h} orë",
+    "countdownHM": "{h} orë {m} min",
+    "countdownM": "{m} min",
+    "endsIn": "Përfundon në {countdown}",
+    "weeklyXp": "XP këtë javë",
+    "yourRank": "Renditja jote",
+    "optedOut": "Je jashtë renditjes publike. Mund ta aktivizosh te profili yt.",
+    "goldPremium": "Ari hapet vetëm me Premium.",
+    "topLabel": "Top 10 · {segment} · vetëm emër publik dhe avatar",
+    "empty": "Ende askush në këtë ligë. Përfundo një mësim për t'u futur!"
+  },
+  "themeToggle": {
+    "toLight": "Aktivizo dritën",
+    "toDark": "Aktivizo errësirën"
+  },
+  "leagueTiers": {
+    "bronxhi": "Bronxhi",
+    "argjendi": "Argjendi",
+    "ari": "Ari"
+  },
+  "purpose": {
+    "heading": "Pse Fjalingo? 🇦🇱",
+    "problemTitle": "Problemi",
+    "problemLead": "Gjuha shqipe po humbet të vërtetën e saj. Çdo ditë, më shumë fjalë të huazuara po zëvendësojnë fjalët tona autentike.",
+    "insteadOf": "në vend të",
+    "missionTitle": "Misioni Ynë",
+    "missionText": "Fjalingo është krijuar për të ndihmuar shqiptarët të zbulojnë dhe përdorin fjalët e sakta shqipe. Ne besojmë që gjuha jonë është pasuri dhe duhet ruajtur për brezat e ardhshëm.",
+    "howItWorks": "Si funksionon?",
+    "cta": "Bashkohu mijëra shqiptarëve që po ruajnë gjuhën tonë! 🦅",
+    "steps": {
+      "search": "Kërko fjalën e huazuar",
+      "reveal": "Zbulon versionin e saktë shqip",
+      "play": "Mëso duke luajtur kuize argëtuese",
+      "progress": "Ruaj progres dhe fitoje arritje"
+    }
+  },
+  "notifications": {
+    "title": "Njoftimet",
+    "empty": "Nuk ka njoftime",
+    "friendRequest": "Kërkesë miqësie",
+    "timeNow": "tani"
+  },
+  "leagueToast": {
+    "lastWeek": "Java e kaluar",
+    "stayed": "Mbete në {tier}",
+    "promoted": "U ngrite në {tier}!",
+    "demoted": "Le të kthehemi më të fortë",
+    "blocked": "Fitove ngjitjen në Ari!",
+    "blockedDesc": "Kalo në Premium për ta zhbllokuar Arin.",
+    "viewLeague": "Shiko ligën"
+  },
+  "adminLogin": {
+    "title": "Hyrje Admin",
+    "subtitle": "Fjalingo Admin Panel",
+    "notAdmin": "Kjo faqe është vetëm për administratorët.",
+    "networkError": "Nuk mund të lidhet me serverin. Kontrolloni që backend të jetë duke u ekzekutuar.",
+    "genericError": "Ndodhi një gabim. Provoni përsëri.",
+    "emailPlaceholder": "email@example.com"
+  },
+  "premiumButton": {
+    "cta": "Bëhu Premium · 25 EUR/vit",
+    "loading": "Duke hapur…",
+    "error": "Pagesa Premium nuk u hap. Provoni përsëri."
+  },
+  "lesson": {
+    "whyItMatters": "Pse ka rëndësi",
+    "spotPrompt": "Gjej fjalën e huazuar dhe trokit mbi të.",
+    "albanianLabel": "Shqip",
+    "fillPrompt": "Plotëso vendin bosh.",
+    "translationPrompt": "Zgjidh fjalën e saktë në shqip.",
+    "loadError": "Mësimi nuk mund të ngarkohej. Provoni përsëri.",
+    "saveError": "Përgjigjet nuk u ruajtën. Provoni përsëri.",
+    "emptyTitle": "S'ke gabime për të përsëritur tani",
+    "emptyDesc": "Bravo! Kthehu pasi të bësh disa mësime — gabimet shfaqen këtu kur vjen koha t'i përsëritësh.",
+    "backToDashboard": "Kthehu te paneli",
+    "limitTitle": "Mjaft për sot!",
+    "errorTitle": "Një moment",
+    "practiceFinished": "Përsëritje e mbaruar!",
+    "lessonFinished": "Mësimi u përfundua!",
+    "xpEarned": "XP të fituar",
+    "score": "{correct}/{total} saktë",
+    "lessonPassedSuffix": " · Mësim i kaluar",
+    "finishPractice": "Përfundo",
+    "nextLesson": "Mësimi tjetër"
+  },
+  "onboarding": {
+    "ageInvalid": "Shkruaj një moshë të vlefshme.",
+    "consentCheckError": "Diçka shkoi keq. Provo përsëri.",
+    "consentRequiredError": "Kërkohet pëlqimi i prindit për këtë moshë.",
+    "registerError": "Regjistrimi dështoi. Provo përsëri.",
+    "splash": {
+      "title": "Fol shqipen e vërtetë, jo Alblish.",
+      "subtitle": "Mëso fjalët tona në vend të atyre të huazuara — pak minuta në ditë."
+    },
+    "taste": {
+      "title": "Provo një shembull",
+      "subtitle": "Trokit mbi fjalën e huazuar. S'të duhet llogari."
+    },
+    "purpose": {
+      "title": "Pse je këtu?",
+      "self": "Për veten",
+      "child": "Për fëmijën tim",
+      "curious": "Thjesht kureshtar"
+    },
+    "goal": {
+      "title": "Sa minuta në ditë?",
+      "subtitle": "Vendos qëllimin tënd ditor.",
+      "minutes": "{m} minuta"
+    },
+    "consent": {
+      "title": "Kërkohet pëlqimi i prindit",
+      "desc": "Për shkak të moshës, një prind ose kujdestar duhet të japë pëlqimin për të krijuar këtë llogari. Profili yt do të jetë privat si parazgjedhje.",
+      "checkbox": "Konfirmoj se kam pëlqimin e prindit/kujdestarit."
+    },
+    "ageCountry": {
+      "title": "Mosha dhe vendi",
+      "countryLabel": "Vendi"
+    },
+    "username": {
+      "title": "Zgjidh emrin tënd",
+      "hint": "Emër publik (jo emri yt i vërtetë). Vetëm shkronja, numra, _ ose -.",
+      "chooseAvatar": "Zgjidh avatarin"
+    },
+    "account": {
+      "title": "Krijo llogarinë",
+      "subtitle": "Ruaje progresin tënd."
+    },
+    "countries": {
+      "AL": "Shqipëri",
+      "XK": "Kosovë",
+      "MK": "Maqedonia e Veriut",
+      "ME": "Mali i Zi",
+      "US": "SHBA",
+      "GB": "Mbretëria e Bashkuar",
+      "DE": "Gjermani",
+      "IT": "Itali",
+      "CH": "Zvicër",
+      "GR": "Greqi",
+      "FR": "Francë",
+      "SE": "Suedi",
+      "BE": "Belgjikë",
+      "NL": "Holandë",
+      "AT": "Austri",
+      "CA": "Kanada"
+    },
+    "avatars": {
+      "fox": "Dhelpra",
+      "owl": "Bufi",
+      "panda": "Panda",
+      "lion": "Luani",
+      "bear": "Ariu",
+      "penguin": "Pinguini",
+      "cat": "Macja",
+      "eagle": "Shqiponja"
+    }
+  },
+  "admin": {
+    "panelTitle": "ADMIN PANEL – Fjalingo",
+    "notAdminError": "Duhet të hyni si admin për të parë këtë faqe.",
+    "loadError": "Nuk mund të ngarkohen të dhënat e adminit.",
+    "suggestionUpdated": "Propozimi u përditësua!",
+    "updateError": "Gabim gjatë përditësimit.",
+    "fillRequired": "Plotëso fushat e nevojshme.",
+    "addAtLeastOneDef": "Shto të paktën një përkufizim.",
+    "wordUpdated": "Fjala u përditësua me sukses! ✅",
+    "wordAdded": "Fjala u shtua me sukses! ✅",
+    "wordDeleted": "Fjala u fshi me sukses!",
+    "deleteError": "Gabim gjatë fshirjes.",
+    "statsHeading": "📊 STATISTIKAT E PLATFORMËS",
+    "metricsError": "Nuk mund të ngarkohen metrikat.",
+    "metrics": {
+      "users": "Përdorues",
+      "newToday": "Të Rinj Sot",
+      "dau": "DAU",
+      "onlineNow": "Online Tani",
+      "wau": "WAU",
+      "mau": "MAU",
+      "retention": "Mbajtja %",
+      "accuracy": "Saktësia %",
+      "quizzesPerUser": "Kuiz/Përdorues",
+      "topStreak": "Seria Top",
+      "totalQuizzes": "Kuize Totale",
+      "premiumActive": "Premium Aktiv",
+      "premiumTotal": "Premium Total",
+      "revenue": "Të Ardhura/vit"
+    },
+    "topSearchesHeading": "🔍 KËRKIMET MË TË SHPESHTA",
+    "noDataYet": "Nuk ka të dhëna ende.",
+    "suggestionsHeading": "💡 PROPOZIME",
+    "noSuggestion": "Pa sugjerim",
+    "approve": "Aprovo",
+    "noPendingSuggestions": "Nuk ka propozime të pashqyrtuara.",
+    "allWordsHeading": "📚 TË GJITHA FJALËT",
+    "searchPlaceholder": "Kërko...",
+    "add": "Shto",
+    "colBorrowed": "Huazuar",
+    "colAlbanian": "Shqipe",
+    "category": "Kategoria",
+    "colActions": "Veprime",
+    "editAria": "Ndrysho {word}",
+    "deleteAria": "Fshij {word}",
+    "noWordsFound": "Nuk u gjetën fjalë.",
+    "editWord": "✏️ Ndrysho Fjalën",
+    "addWord": "➕ Shto Fjalë të Re",
+    "correctLabel": "Fjala e saktë shqipe *",
+    "definitionsLabel": "Përkufizimet *",
+    "addDefinition": "+ Shto përkufizim",
+    "definitionN": "Përkufizimi {n}",
+    "remove": "Hiq",
+    "definitionPlaceholder": "Përkufizimi...",
+    "examplePlaceholder": "Shembulli (opsional)...",
+    "conjugationsLabel": "Zgjedhimet (opsional)",
+    "addConjugation": "+ Shto zgjedhim",
+    "conjugationN": "Zgjedhimi {n}",
+    "chooseType": "Zgjidh llojin...",
+    "conjugationPlaceholder": "Zgjedhimi...",
+    "updateWord": "Përditëso Fjalën",
+    "saveWord": "Ruaj Fjalën",
+    "cancel": "Anulo",
+    "deleteConfirmTitle": "Fshi Fjalën?",
+    "deleteConfirmDesc": "Je i sigurt që dëshiron të fshish këtë fjalë? Ky veprim nuk kthehet mbrapsht.",
+    "deleteConfirm": "Fshij"
+  },
+  "social": {
+    "report": "Raporto",
+    "block": "Blloko",
+    "reportTitle": "Raporto {username}?",
+    "blockTitle": "Blloko {username}?",
+    "reportAria": "Raporto {username}",
+    "blockAria": "Blloko {username}",
+    "reportDesc": "Raporti shkon te ekipi i sigurisë.",
+    "reportSent": "Raporti u dërgua. Faleminderit.",
+    "actionFailed": "Veprimi dështoi.",
+    "detailsLabel": "Detaje (opsionale)",
+    "detailsPlaceholder": "Çfarë ndodhi?"
+  },
+  "chat": {
+    "premiumGateTitle": "Bisedat janë Premium",
+    "premiumGateDesc": "Bisedo në mënyrë të sigurt me miqtë e tu me Premium.",
+    "sendError": "Mesazhi nuk u dërgua.",
+    "noFriends": "Ende pa miq për të biseduar.",
+    "addFriends": "Shto miq",
+    "backToChats": "Kthehu te bisedat",
+    "sayHello": "Thuaj një përshëndetje 👋",
+    "sendEmoji": "Dërgo {emoji}",
+    "emoji": "Emoji",
+    "messageLabel": "Shkruaj një mesazh",
+    "messagePlaceholder": "Shkruaj një mesazh…",
+    "send": "Dërgo",
+    "minorNotice": "Për sigurinë e fëmijëve, vetëm fraza dhe emoji.",
+    "selectFriend": "Zgjidh një mik për të biseduar.",
+    "blockDesc": "Do të hiqet nga miqtë dhe biseda do të mbyllet."
+  },
+  "friends": {
+    "premiumGateTitle": "Miqtë janë Premium",
+    "premiumGateDesc": "Shto miq, shiko progresin e tyre dhe bisedoni në mënyrë të sigurt me Premium.",
+    "requestSent": "Kërkesa u dërgua!",
+    "requestFailed": "Kërkesa nuk u dërgua.",
+    "userBlocked": "Përdoruesi u bllokua.",
+    "friendRemoved": "Miku u hoq.",
+    "addPlaceholder": "Shto mik me emrin e tij",
+    "add": "Shto",
+    "tablistLabel": "Miqtë dhe kërkesat",
+    "tabs": {
+      "friends": "Miqtë",
+      "incoming": "Të marra",
+      "outgoing": "Të dërguara"
+    },
+    "emptyTitle": "Ende pa miq",
+    "emptyDesc": "Shto dikë me emrin e tij më sipër për të filluar.",
+    "chatWith": "Bisedo me {username}",
+    "removeAria": "Hiq {username}",
+    "declineAria": "Refuzo {username}",
+    "noIncoming": "Asnjë kërkesë e re.",
+    "noOutgoing": "Asnjë kërkesë në pritje.",
+    "removeTitle": "Hiq {username}?",
+    "removeDesc": "Do të hiqet nga lista jote e miqve.",
+    "remove": "Hiq",
+    "blockDesc": "Do të hiqet nga miqtë dhe nuk do të mund t’ju kontaktojë."
   },
   "auth": {
     "login": {

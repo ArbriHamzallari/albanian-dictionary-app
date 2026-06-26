@@ -6,6 +6,7 @@ import api from '../utils/api.js';
 import Button from './ui/Button.jsx';
 import Parrot from './mascot/Parrot.jsx';
 import { tierName } from '../constants/leagues.js';
+import { t } from '../i18n/index.js';
 
 // "Last week's result" toast, shown once after the season rolls over.
 const LeagueResultToast = () => {
@@ -30,16 +31,16 @@ const LeagueResultToast = () => {
 
   const blocked = result.result === 'promotion_blocked';
   let parrot = 'idle';
-  let title = `Mbete në ${tierName(result.tier)}`;
+  let title = t('leagueToast.stayed', { tier: tierName(result.tier) });
   if (result.result === 'promoted') {
     parrot = 'celebrate-big';
-    title = `U ngrite në ${tierName(result.tier)}!`;
+    title = t('leagueToast.promoted', { tier: tierName(result.tier) });
   } else if (result.result === 'demoted') {
     parrot = 'think';
-    title = 'Le të kthehemi më të fortë';
+    title = t('leagueToast.demoted');
   } else if (blocked) {
     parrot = 'celebrate-big';
-    title = 'Fitove ngjitjen në Ari!';
+    title = t('leagueToast.blocked');
   }
 
   return (
@@ -64,7 +65,7 @@ const LeagueResultToast = () => {
             <button
               type="button"
               onClick={() => setOpen(false)}
-              aria-label="Mbyll"
+              aria-label={t('common.close')}
               className="absolute right-3 top-3 rounded-xl p-1 hover:bg-cloud"
             >
               <X className="h-5 w-5 text-ink-soft" />
@@ -74,20 +75,20 @@ const LeagueResultToast = () => {
               <Parrot state={parrot} size={150} />
             </div>
             <p className="mt-2 text-xs font-extrabold uppercase tracking-wide text-ink-soft">
-              Java e kaluar
+              {t('leagueToast.lastWeek')}
             </p>
             <h3 className="mt-1 text-2xl font-black text-ink">{title}</h3>
 
             {blocked && (
               <p className="mt-2 text-sm font-semibold text-ink-soft">
-                Kalo në Premium për ta zhbllokuar Arin.
+                {t('leagueToast.blockedDesc')}
               </p>
             )}
 
             <div className="mt-5 flex flex-col gap-3">
               {blocked && (
                 <Button variant="primary" size="md" fullWidth onClick={() => navigate('/premium')}>
-                  Kalo në Premium
+                  {t('practiceCard.goPremium')}
                 </Button>
               )}
               <Button
@@ -96,7 +97,7 @@ const LeagueResultToast = () => {
                 fullWidth
                 onClick={() => { setOpen(false); navigate('/liga'); }}
               >
-                Shiko ligën
+                {t('leagueToast.viewLeague')}
               </Button>
             </div>
           </motion.div>

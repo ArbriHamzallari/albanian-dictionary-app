@@ -3,6 +3,7 @@ import { Bell, Check, X } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import api from '../utils/api.js';
 import Avatar from './Avatar.jsx';
+import { t } from '../i18n/index.js';
 
 const POLL_INTERVAL = 20_000; // 20 seconds
 
@@ -70,7 +71,7 @@ const NotificationBell = () => {
   const timeAgo = (dateStr) => {
     const diff = Date.now() - new Date(dateStr).getTime();
     const mins = Math.floor(diff / 60000);
-    if (mins < 1) return 'tani';
+    if (mins < 1) return t('notifications.timeNow');
     if (mins < 60) return `${mins}m`;
     const hrs = Math.floor(mins / 60);
     if (hrs < 24) return `${hrs}h`;
@@ -84,7 +85,7 @@ const NotificationBell = () => {
       <button
         onClick={() => setOpen((prev) => !prev)}
         className="relative p-2 rounded-xl hover:bg-card dark:hover:bg-dark-card transition-colors"
-        title="Njoftimet"
+        title={t('notifications.title')}
       >
         <Bell className="w-5 h-5 text-heading dark:text-dark-text" />
         {unreadCount > 0 && (
@@ -107,7 +108,7 @@ const NotificationBell = () => {
             {/* Header */}
             <div className="px-4 py-3 border-b-2 border-border dark:border-dark-border">
               <h4 className="text-sm font-black text-heading dark:text-dark-text">
-                Njoftimet
+                {t('notifications.title')}
               </h4>
             </div>
 
@@ -116,7 +117,7 @@ const NotificationBell = () => {
               <div className="px-4 py-8 text-center">
                 <Bell className="w-8 h-8 text-muted dark:text-dark-muted mx-auto mb-2 opacity-40" />
                 <p className="text-sm font-semibold text-muted dark:text-dark-muted">
-                  Nuk ka njoftime
+                  {t('notifications.empty')}
                 </p>
               </div>
             ) : (
@@ -133,7 +134,7 @@ const NotificationBell = () => {
                           {n.senderUsername}
                         </p>
                         <p className="text-xs text-muted dark:text-dark-muted">
-                          Kërkesë miqësie &middot; {timeAgo(n.createdAt)}
+                          {t('notifications.friendRequest')} &middot; {timeAgo(n.createdAt)}
                         </p>
                       </div>
                     </div>
@@ -146,7 +147,7 @@ const NotificationBell = () => {
                         className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold bg-fjalingo-green/10 text-fjalingo-green hover:bg-fjalingo-green/20 transition disabled:opacity-50"
                       >
                         <Check className="w-3.5 h-3.5" />
-                        Prano
+                        {t('publicProfile.accept')}
                       </button>
                       <button
                         onClick={() => handleDecline(n.requestId)}
@@ -154,7 +155,7 @@ const NotificationBell = () => {
                         className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold bg-fjalingo-red/10 text-fjalingo-red hover:bg-fjalingo-red/20 transition disabled:opacity-50"
                       >
                         <X className="w-3.5 h-3.5" />
-                        Refuzo
+                        {t('publicProfile.decline')}
                       </button>
                     </div>
                   </div>

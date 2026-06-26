@@ -5,6 +5,7 @@ import LoadingSpinner from '../components/LoadingSpinner.jsx';
 import ErrorMessage from '../components/ErrorMessage.jsx';
 import WordCard from '../components/WordCard.jsx';
 import api from '../utils/api.js';
+import { t } from '../i18n/index.js';
 
 const WordOfTheDay = () => {
   const [word, setWord] = useState(null);
@@ -17,7 +18,7 @@ const WordOfTheDay = () => {
         const response = await api.get('/words/word-of-the-day');
         setWord(response.data.word);
       } catch {
-        setError('Fjala e ditës nuk është gjetur.');
+        setError(t('wordOfDay.notFound'));
       } finally {
         setLoading(false);
       }
@@ -34,7 +35,7 @@ const WordOfTheDay = () => {
       >
         <Star className="w-10 h-10 mx-auto mb-3 text-fjalingo-yellow fill-fjalingo-yellow" />
         <h2 className="text-3xl font-black text-heading dark:text-dark-text">
-          FJALA E DITËS
+          {t('wordOfDay.heading')}
         </h2>
       </motion.div>
 
@@ -51,7 +52,7 @@ const WordOfTheDay = () => {
           <WordCard word={word} />
 
           <div className="card">
-            <h3 className="text-sm font-black text-fjalingo-blue tracking-wide mb-4">📖 PËRKUFIZIMI I PLOTË</h3>
+            <h3 className="text-sm font-black text-fjalingo-blue tracking-wide mb-4">{t('wordOfDay.definitionHeading')}</h3>
             <ul className="space-y-3">
               {word.definitions.map((def, i) => (
                 <li key={def.id} className="flex gap-3">
@@ -71,7 +72,7 @@ const WordOfTheDay = () => {
 
           {word.conjugations.length > 0 && (
             <div className="card">
-              <h3 className="text-sm font-black text-fjalingo-purple tracking-wide mb-4">🔤 ZGJEDHIMET</h3>
+              <h3 className="text-sm font-black text-fjalingo-purple tracking-wide mb-4">{t('wordOfDay.conjugationHeading')}</h3>
               <div className="grid md:grid-cols-2 gap-4">
                 {word.conjugations.map((conj) => (
                   <div key={conj.id} className="card py-4 px-4 border-fjalingo-purple/20">
