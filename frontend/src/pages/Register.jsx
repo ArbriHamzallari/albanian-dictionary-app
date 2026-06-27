@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { UserPlus } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.jsx';
 import ErrorMessage from '../components/ErrorMessage.jsx';
+import PasswordInput from '../components/PasswordInput.jsx';
 import { t } from '../i18n/index.js';
 
 const Register = () => {
@@ -108,8 +109,7 @@ const Register = () => {
         </div>
         <div>
           <label className="block text-xs font-bold text-muted dark:text-dark-muted mb-1">{t('common.field.password')}</label>
-          <input
-            type="password"
+          <PasswordInput
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required

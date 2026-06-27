@@ -17,7 +17,9 @@
     "field": {
       "email": "Email",
       "emailPlaceholder": "email@shembull.com",
-      "password": "Fjalëkalimi"
+      "password": "Fjalëkalimi",
+      "showPassword": "Trego fjalëkalimin",
+      "hidePassword": "Fshih fjalëkalimin"
     }
   },
   "nav": {

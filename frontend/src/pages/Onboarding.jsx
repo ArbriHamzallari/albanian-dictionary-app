@@ -7,6 +7,7 @@ import Button from '../components/ui/Button.jsx';
 import Card from '../components/ui/Card.jsx';
 import Heading from '../components/ui/Heading.jsx';
 import Parrot from '../components/mascot/Parrot.jsx';
+import PasswordInput from '../components/PasswordInput.jsx';
 import Lesson from './Lesson.jsx';
 import { t } from '../i18n/index.js';
 
@@ -425,8 +426,7 @@ const Onboarding = () => {
               </div>
               <div>
                 <label className="block text-xs font-bold text-ink-soft mb-1">{t('common.field.password')}</label>
-                <input
-                  type="password"
+                <PasswordInput
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
