@@ -1,6 +1,6 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { Menu, X, LogOut } from 'lucide-react';
-import { useState } from 'react';
+import { Menu, X, LogOut, ChevronDown } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
 import ThemeToggle from './ThemeToggle.jsx';
 import Avatar from './Avatar.jsx';
 import NotificationBell from './NotificationBell.jsx';
@@ -9,8 +9,27 @@ import { t } from '../i18n/index.js';
 
 const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [accountOpen, setAccountOpen] = useState(false);
+  const accountRef = useRef(null);
   const location = useLocation();
   const { isLoggedIn, isAdmin, user, logout } = useAuth();
+
+  // Close the account dropdown on outside-click, Esc, or route change.
+  useEffect(() => {
+    if (!accountOpen) return undefined;
+    const onPointer = (e) => {
+      if (accountRef.current && !accountRef.current.contains(e.target)) setAccountOpen(false);
+    };
+    const onKey = (e) => { if (e.key === 'Escape') setAccountOpen(false); };
+    document.addEventListener('mousedown', onPointer);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onPointer);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [accountOpen]);
+
+  useEffect(() => { setAccountOpen(false); }, [location]);
 
   const navLinks = [
     { to: '/', label: t('nav.home') },
@@ -62,34 +81,63 @@ const Header = () => {
           {isLoggedIn ? (
             <div className="flex items-center gap-2 ml-2">
               <NotificationBell />
-              <NavLink to={isAdmin ? '/admin/dashboard' : '/dashboard'} className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-fjalingo-green/5 transition">
-                <Avatar filename={user?.profile?.avatar_filename} size={28} />
-                <span className="text-sm font-bold text-heading dark:text-dark-text">
-                  {isAdmin ? t('common.admin') : (user?.profile?.username || t('header.dashboard'))}
-                </span>
-              </NavLink>
-              <button
-                onClick={logout}
-                className="p-2 rounded-xl hover:bg-card dark:hover:bg-dark-card transition text-muted hover:text-fjalingo-red focus:outline-none focus-visible:ring-2 focus-visible:ring-fjalingo-green"
-                title={t('common.logout')}
-                aria-label={t('common.logout')}
-              >
-                <LogOut className="w-4 h-4" />
-              </button>
+              <div className="relative" ref={accountRef}>
+                <button
+                  onClick={() => setAccountOpen((o) => !o)}
+                  className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-fjalingo-green/5 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-fjalingo-green"
+                  aria-haspopup="menu"
+                  aria-expanded={accountOpen}
+                  aria-label={t('header.accountMenu')}
+                >
+                  <Avatar filename={user?.profile?.avatar_filename} size={28} />
+                  <span className="text-sm font-bold text-heading dark:text-dark-text">
+                    {isAdmin ? t('common.admin') : (user?.profile?.username || t('header.dashboard'))}
+                  </span>
+                  <ChevronDown className={`w-4 h-4 text-muted transition-transform ${accountOpen ? 'rotate-180' : ''}`} aria-hidden="true" />
+                </button>
+                {accountOpen && (
+                  <div role="menu" className="absolute right-0 mt-2 w-48 rounded-xl border-2 border-border dark:border-dark-border bg-white dark:bg-dark-bg shadow-lg py-1">
+                    {isAdmin ? (
+                      <NavLink to="/admin/dashboard" role="menuitem" className="block px-4 py-2.5 text-sm font-bold text-heading dark:text-dark-text hover:bg-fjalingo-green/5">
+                        {t('header.adminPanel')}
+                      </NavLink>
+                    ) : (
+                      <>
+                        <NavLink to="/profili" role="menuitem" className="block px-4 py-2.5 text-sm font-bold text-heading dark:text-dark-text hover:bg-fjalingo-green/5">
+                          {t('header.profile')}
+                        </NavLink>
+                        <NavLink to="/dashboard" role="menuitem" className="block px-4 py-2.5 text-sm font-bold text-heading dark:text-dark-text hover:bg-fjalingo-green/5">
+                          {t('header.dashboard')}
+                        </NavLink>
+                      </>
+                    )}
+                    <button
+                      onClick={() => { setAccountOpen(false); logout(); }}
+                      role="menuitem"
+                      className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm font-bold text-fjalingo-red hover:bg-fjalingo-red/5"
+                    >
+                      <LogOut className="w-4 h-4" aria-hidden="true" />
+                      {t('common.logout')}
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           ) : (
-            <NavLink
-              to="/hyr"
-              className={({ isActive }) =>
-                `px-4 py-2 rounded-xl text-sm font-bold transition-colors ${
-                  isActive
-                    ? 'text-fjalingo-green bg-fjalingo-green/10'
-                    : 'text-heading dark:text-dark-text hover:text-fjalingo-green hover:bg-fjalingo-green/5'
-                }`
-              }
-            >
-              {t('common.login')}
-            </NavLink>
+            <div className="flex items-center gap-2 ml-2">
+              <NavLink
+                to="/hyr"
+                className="px-4 py-2 rounded-xl text-sm font-bold border-2 border-fjalingo-green text-fjalingo-green hover:bg-fjalingo-green/5 transition-colors"
+              >
+                {t('common.login')}
+              </NavLink>
+              <NavLink
+                to="/regjistrohu"
+                className="px-4 py-2 rounded-xl text-sm font-bold bg-fjalingo-green text-white hover:opacity-90 transition-opacity"
+              >
+                {t('header.register')}
+              </NavLink>
+            </div>
           )}
 
           <ThemeToggle />
@@ -150,19 +198,28 @@ const Header = () => {
               </button>
             </>
           ) : (
-            <NavLink
-              to="/hyr"
-              onClick={() => setMobileOpen(false)}
-              className={({ isActive }) =>
-                `block px-4 py-3 rounded-xl text-sm font-bold transition-colors ${
-                  isActive
-                    ? 'text-fjalingo-green bg-fjalingo-green/10'
-                    : 'text-heading dark:text-dark-text hover:text-fjalingo-green'
-                }`
-              }
-            >
-              {t('common.login')}
-            </NavLink>
+            <>
+              <NavLink
+                to="/hyr"
+                onClick={() => setMobileOpen(false)}
+                className={({ isActive }) =>
+                  `block px-4 py-3 rounded-xl text-sm font-bold transition-colors ${
+                    isActive
+                      ? 'text-fjalingo-green bg-fjalingo-green/10'
+                      : 'text-heading dark:text-dark-text hover:text-fjalingo-green'
+                  }`
+                }
+              >
+                {t('common.login')}
+              </NavLink>
+              <NavLink
+                to="/regjistrohu"
+                onClick={() => setMobileOpen(false)}
+                className="mt-1 block px-4 py-3 rounded-xl text-sm font-bold bg-fjalingo-green text-white hover:opacity-90 transition-opacity"
+              >
+                {t('header.register')}
+              </NavLink>
+            </>
           )}
         </nav>
       )}
