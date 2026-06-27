@@ -22,6 +22,8 @@ const fadeUp = {
 
 const SPRING = { type: 'spring', stiffness: 300, damping: 22 };
 
+const numberFormat = new Intl.NumberFormat('sq-AL');
+
 const ScrollHint = ({ reduceMotion }) => (
   <motion.a
     href="#me-teper"
@@ -65,15 +67,17 @@ const Home = () => {
   const reduceMotion = useReducedMotion();
   const [wordOfDay, setWordOfDay] = useState(null);
   const [popularWords, setPopularWords] = useState([]);
+  const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [wordResponse, popularResponse] = await Promise.allSettled([
+        const [wordResponse, popularResponse, statsResponse] = await Promise.allSettled([
           api.get('/words/word-of-the-day'),
           api.get('/words/popular'),
+          api.get('/public/stats'),
         ]);
         if (wordResponse.status === 'fulfilled') {
           setWordOfDay(wordResponse.value.data.word);
@@ -82,6 +86,9 @@ const Home = () => {
           setPopularWords(popularResponse.value.data.words || []);
         } else if (popularResponse.status === 'rejected') {
           setError(t('home.error.wordsLoad'));
+        }
+        if (statsResponse.status === 'fulfilled') {
+          setStats(statsResponse.value.data);
         }
       } catch {
         setError(t('home.error.dataLoad'));
@@ -186,12 +193,12 @@ const Home = () => {
       <section className="mx-auto max-w-6xl px-4 pb-12 sm:px-6">
         <div className="grid grid-cols-3 gap-2 sm:gap-4 md:gap-6">
           {[
-            { label: t('home.stats.words'), value: '500+', emoji: '📚' },
-            { label: t('home.stats.users'), value: '150+', emoji: '👥' },
-            { label: t('home.stats.searches'), value: '1,200+', emoji: '🔍' },
+            { key: 'words', label: t('home.stats.words'), emoji: '📚' },
+            { key: 'users', label: t('home.stats.users'), emoji: '👥' },
+            { key: 'searches', label: t('home.stats.searches'), emoji: '🔍' },
           ].map((stat, i) => (
             <motion.div
-              key={stat.label}
+              key={stat.key}
               initial={{ opacity: 0, scale: 0.9 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
@@ -199,7 +206,13 @@ const Home = () => {
               className="card py-4 text-center sm:py-6"
             >
               <span className="mb-1 block text-xl sm:mb-2 sm:text-2xl">{stat.emoji}</span>
-              <p className="text-lg font-black text-heading dark:text-dark-text sm:text-2xl md:text-3xl">{stat.value}</p>
+              {stats ? (
+                <p className="text-lg font-black text-heading dark:text-dark-text sm:text-2xl md:text-3xl">
+                  {numberFormat.format(stats[stat.key])}
+                </p>
+              ) : (
+                <span className="mx-auto block h-6 w-12 animate-pulse rounded bg-line dark:bg-dark-border sm:h-8" />
+              )}
               <p className="mt-0.5 text-xs font-semibold text-muted dark:text-dark-muted sm:mt-1 sm:text-sm">{stat.label}</p>
             </motion.div>
           ))}
