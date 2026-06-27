@@ -49,11 +49,19 @@ function signRefreshToken(user) {
   return jwt.sign({ uuid: user.uuid, type: 'refresh' }, process.env.JWT_SECRET, { expiresIn: REFRESH_TTL });
 }
 
-// secure:true requires HTTPS, so it is enabled only in production. SameSite=Lax
-// requires the frontend and API to share a registrable domain in production
-// (e.g. fjalingo.al + api.fjalingo.al).
+// The frontend (Vercel) and API (Fly) sit on different registrable domains, so
+// the session cookie must be SameSite=None to be sent on cross-site API calls;
+// otherwise the browser drops it and every authenticated request 401s. None
+// requires Secure, so it is used only in production (HTTPS); dev stays Lax on
+// same-site localhost. CSRF is still covered by the double-submit token + the
+// CORS allowlist. (If the API later moves to api.fjalingo.al alongside the
+// fjalingo.al frontend, this can return to Lax.)
 function cookieBase() {
-  return { secure: isProduction, sameSite: 'lax', path: '/' };
+  return {
+    secure: isProduction,
+    sameSite: isProduction ? 'none' : 'lax',
+    path: '/',
+  };
 }
 
 // Issues access + refresh + csrf cookies and returns the access token (also sent
