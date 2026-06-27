@@ -7,6 +7,7 @@ const {
 } = require('../utils/exerciseSchemas');
 const { updateQuestProgress, longestCorrectRun, formatQuest } = require('../utils/quests');
 const { addWeeklyXp } = require('../utils/leagues');
+const { hasUnlimitedAccess } = require('../utils/access');
 
 // ─────────────────────────────────────────────────────────────
 // Lesson player: serve lessons (prompt only, no answers), grade submissions
@@ -40,11 +41,11 @@ async function countCompletedToday(client, userUuid) {
 }
 
 // Returns null if access is allowed, or { status, body } describing the block.
-// Premium users always pass. For free users: premium units are fully locked,
-// the first lesson (order_index 0) of every unit is always free, and any other
-// lesson is allowed only while under the daily limit.
-async function checkFreeAccess(client, { isPremium, lesson, userUuid }) {
-  if (isPremium) return null;
+// Users with unlimited access (admins + premium) always pass. For free users:
+// premium units are fully locked, the first lesson (order_index 0) of every unit
+// is always free, and any other lesson is allowed only while under the daily limit.
+async function checkFreeAccess(client, { hasAccess, lesson, userUuid }) {
+  if (hasAccess) return null;
 
   if (lesson.is_premium_unit) {
     return {
@@ -95,7 +96,7 @@ const getLesson = async (req, res, next) => {
     }
 
     const access = await checkFreeAccess(pool, {
-      isPremium: Boolean(req.entitlement?.isPremium),
+      hasAccess: hasUnlimitedAccess(req.user, req.entitlement?.isPremium),
       lesson,
       userUuid: req.user.uuid,
     });
@@ -297,7 +298,7 @@ const submitLesson = async (req, res, next) => {
     }
 
     const userUuid = req.user.uuid;
-    const isPremium = Boolean(req.entitlement?.isPremium);
+    const hasAccess = hasUnlimitedAccess(req.user, req.entitlement?.isPremium);
     const isPractice = req.params.lessonId === PRACTICE_LESSON_ID;
     const { answers, check } = value;
 
@@ -307,7 +308,7 @@ const submitLesson = async (req, res, next) => {
       return res.status(400).json({ message: 'Përgjigjet përmbajnë ushtrime të përsëritura.' });
     }
 
-    if (isPractice && !isPremium) {
+    if (isPractice && !hasAccess) {
       return res.status(402).json({ message: 'Përsërit gabimet kërkon Premium.', code: 'PREMIUM_REQUIRED' });
     }
 
@@ -342,7 +343,7 @@ const submitLesson = async (req, res, next) => {
           return res.status(404).json({ message: 'Mësimi nuk u gjet.' });
         }
 
-        const access = await checkFreeAccess(client, { isPremium, lesson, userUuid });
+        const access = await checkFreeAccess(client, { hasAccess, lesson, userUuid });
         if (access) {
           await client.query('ROLLBACK');
           return res.status(access.status).json(access.body);

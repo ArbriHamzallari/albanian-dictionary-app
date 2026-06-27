@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion, useReducedMotion } from 'framer-motion';
 import { RotateCcw, Lock } from 'lucide-react';
 import api from '../utils/api.js';
-import { useAuth } from '../context/AuthContext.jsx';
+import { useHasUnlimitedAccess } from '../context/AuthContext.jsx';
 import Card from './ui/Card.jsx';
 import Button from './ui/Button.jsx';
 import { t } from '../i18n/index.js';
@@ -15,8 +15,7 @@ const SPRING = { type: 'spring', stiffness: 300, damping: 22 };
 const DashboardPracticeCard = () => {
   const navigate = useNavigate();
   const reduceMotion = useReducedMotion();
-  const { user } = useAuth();
-  const isPremium = user?.entitlement?.tier === 'premium';
+  const isPremium = useHasUnlimitedAccess();
   const [count, setCount] = useState(null);
 
   useEffect(() => {

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion, useReducedMotion } from 'framer-motion';
 import { Save, Check, Users } from 'lucide-react';
-import { useAuth } from '../context/AuthContext.jsx';
+import { useAuth, useHasUnlimitedAccess } from '../context/AuthContext.jsx';
 import Avatar from '../components/Avatar.jsx';
 import Card from '../components/ui/Card.jsx';
 import Button from '../components/ui/Button.jsx';
@@ -18,7 +18,7 @@ const Profile = () => {
   const reduceMotion = useReducedMotion();
   const { user, loading: authLoading, isLoggedIn, loadUser, updateUserProfile } = useAuth();
   const navigate = useNavigate();
-  const isPremium = user?.entitlement?.tier === 'premium';
+  const isPremium = useHasUnlimitedAccess();
 
   const [username, setUsername] = useState('');
   const [bio, setBio] = useState('');
