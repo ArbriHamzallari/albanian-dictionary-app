@@ -1,4 +1,5 @@
 const pool = require('../utils/db');
+const { hasUnlimitedAccess } = require('../utils/access');
 
 const FREE_DAILY_QUIZ_LIMIT = 1;
 const FREE_DAILY_SEARCH_LIMIT = 5;
@@ -51,7 +52,7 @@ async function isPremium(req, res, next) {
 }
 
 function requirePremium(req, res, next) {
-  if (req.entitlement?.isPremium) {
+  if (hasUnlimitedAccess(req.user, req.entitlement?.isPremium)) {
     return next();
   }
 
@@ -63,7 +64,7 @@ function requirePremium(req, res, next) {
 
 async function enforceDailyQuizLimit(req, res, next) {
   try {
-    if (req.entitlement?.isPremium) {
+    if (hasUnlimitedAccess(req.user, req.entitlement?.isPremium)) {
       return next();
     }
 
@@ -90,7 +91,7 @@ async function enforceDailyQuizLimit(req, res, next) {
 
 async function enforceDailySearchLimit(req, res, next) {
   try {
-    if (req.entitlement?.isPremium) {
+    if (hasUnlimitedAccess(req.user, req.entitlement?.isPremium)) {
       return next();
     }
 

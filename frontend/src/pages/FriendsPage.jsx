@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Search, Flame, Star, Ban, Flag, UserMinus, MessageCircle, Check, X } from 'lucide-react';
 import api from '../utils/api.js';
-import { useAuth } from '../context/AuthContext.jsx';
+import { useHasUnlimitedAccess } from '../context/AuthContext.jsx';
 import Card from '../components/ui/Card.jsx';
 import Button from '../components/ui/Button.jsx';
 import Heading from '../components/ui/Heading.jsx';
@@ -44,8 +44,7 @@ const PremiumGate = () => {
 };
 
 const FriendsPage = () => {
-  const { user } = useAuth();
-  const isPremium = user?.entitlement?.tier === 'premium';
+  const isPremium = useHasUnlimitedAccess();
 
   const [tab, setTab] = useState('friends');
   const [friends, setFriends] = useState([]);

@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback, useRef } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { Smile, Send, Ban, Flag, ArrowLeft } from 'lucide-react';
 import api from '../utils/api.js';
-import { useAuth } from '../context/AuthContext.jsx';
+import { useAuth, useHasUnlimitedAccess } from '../context/AuthContext.jsx';
 import Card from '../components/ui/Card.jsx';
 import Button from '../components/ui/Button.jsx';
 import Heading from '../components/ui/Heading.jsx';
@@ -29,7 +29,7 @@ const ChatPage = () => {
   const { username: activeUsername } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const isPremium = user?.entitlement?.tier === 'premium';
+  const isPremium = useHasUnlimitedAccess();
   // Friends are always same-segment, so a minor's threads are minor-involved.
   const allowFreeText = !user?.profile?.is_minor;
 

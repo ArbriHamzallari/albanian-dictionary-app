@@ -197,3 +197,12 @@ export function useAuth() {
   if (!ctx) throw new Error('useAuth must be used within AuthProvider');
   return ctx;
 }
+
+// Single source of truth on the frontend for "may bypass free-tier limits".
+// Mirrors the backend hasUnlimitedAccess: admins always qualify, plus users with
+// an active premium entitlement. Premium-only UI should gate on this hook so
+// admins see and use every premium feature.
+export function useHasUnlimitedAccess() {
+  const { user, isAdmin } = useAuth();
+  return isAdmin || user?.entitlement?.tier === 'premium';
+}
