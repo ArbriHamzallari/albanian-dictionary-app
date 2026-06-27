@@ -35,7 +35,10 @@
     "dashboard": "Dashboard",
     "adminPanel": "Admin Panel",
     "openMenu": "Hap menunë",
-    "closeMenu": "Mbyll menunë"
+    "closeMenu": "Mbyll menunë",
+    "register": "Regjistrohu",
+    "accountMenu": "Menuja e llogarisë",
+    "profile": "Profili"
   },
   "mobilenav": {
     "home": "Kreu",
