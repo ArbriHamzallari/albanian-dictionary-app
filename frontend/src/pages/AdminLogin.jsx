@@ -7,6 +7,7 @@ import Card from '../components/ui/Card.jsx';
 import Button from '../components/ui/Button.jsx';
 import Heading from '../components/ui/Heading.jsx';
 import ErrorMessage from '../components/ErrorMessage.jsx';
+import PasswordInput from '../components/PasswordInput.jsx';
 import { t } from '../i18n/index.js';
 
 const inputClass = 'w-full rounded-2xl border-2 border-line bg-paper px-4 h-14 font-bold text-ink focus:outline-none focus:border-brand-green';
@@ -75,9 +76,8 @@ const AdminLogin = () => {
           </div>
           <div>
             <label htmlFor="admin-password" className="block text-xs font-bold text-ink-soft mb-1">{t('common.field.password')}</label>
-            <input
+            <PasswordInput
               id="admin-password"
-              type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
