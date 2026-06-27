@@ -48,6 +48,7 @@ const AdminDashboard = () => {
   // Metrics state
   const [metrics, setMetrics] = useState(null);
   const [metricsLoading, setMetricsLoading] = useState(true);
+  const [metricsUpdatedAt, setMetricsUpdatedAt] = useState(null);
 
   // Auth travels in the httpOnly session cookie (api uses credentials: include).
   const headers = {};
@@ -56,6 +57,7 @@ const AdminDashboard = () => {
     try {
       const res = await api.get('/admin/metrics');
       setMetrics(res.data);
+      setMetricsUpdatedAt(Date.now());
     } catch {
       // silently fail — main data still loads
     } finally {
@@ -76,11 +78,38 @@ const AdminDashboard = () => {
       return;
     }
     fetchAll();
-    fetchMetrics();
 
-    // Auto-refresh metrics every 30 seconds
-    const metricsInterval = setInterval(fetchMetrics, 30_000);
-    return () => clearInterval(metricsInterval);
+    // Auto-refresh metrics every 30s, but only while the tab is visible. Pause on
+    // tab-hide (no point polling a backgrounded page) and refetch immediately on
+    // return so the admin never stares at stale numbers.
+    let metricsInterval = null;
+    const startPolling = () => {
+      if (!metricsInterval) metricsInterval = setInterval(fetchMetrics, 30_000);
+    };
+    const stopPolling = () => {
+      if (metricsInterval) {
+        clearInterval(metricsInterval);
+        metricsInterval = null;
+      }
+    };
+    const onVisibilityChange = () => {
+      if (document.hidden) {
+        stopPolling();
+      } else {
+        fetchMetrics();
+        startPolling();
+      }
+    };
+
+    if (!document.hidden) {
+      fetchMetrics();
+      startPolling();
+    }
+    document.addEventListener('visibilitychange', onVisibilityChange);
+    return () => {
+      stopPolling();
+      document.removeEventListener('visibilitychange', onVisibilityChange);
+    };
   }, [authLoading, isLoggedIn, isAdmin]);
 
   const fetchAll = async () => {
@@ -292,6 +321,7 @@ const AdminDashboard = () => {
         ) : (
           <p className="text-sm text-muted dark:text-dark-muted">{t('admin.metricsError')}</p>
         )}
+        {metricsUpdatedAt && <MetricsUpdatedAgo since={metricsUpdatedAt} />}
       </div>
 
       {/* Top section: stats + suggestions */}
@@ -548,6 +578,26 @@ const COLOR_MAP = {
   purple: 'bg-fjalingo-purple/10 text-fjalingo-purple',
   orange: 'bg-fjalingo-orange/10 text-fjalingo-orange',
   red: 'bg-fjalingo-red/10 text-fjalingo-red',
+};
+
+// Shows "Përditësuar para X sekondash". Self-ticks every second so only this small
+// node re-renders, not the whole dashboard.
+const MetricsUpdatedAgo = ({ since }) => {
+  const [secondsAgo, setSecondsAgo] = useState(() => Math.floor((Date.now() - since) / 1000));
+
+  useEffect(() => {
+    setSecondsAgo(Math.floor((Date.now() - since) / 1000));
+    const id = setInterval(() => {
+      setSecondsAgo(Math.floor((Date.now() - since) / 1000));
+    }, 1000);
+    return () => clearInterval(id);
+  }, [since]);
+
+  return (
+    <p className="mt-3 text-xs font-semibold text-muted dark:text-dark-muted">
+      {t('admin.metrics.updatedAgo', { seconds: secondsAgo })}
+    </p>
+  );
 };
 
 const MetricCard = ({ icon: Icon, label, value, color = 'blue', suffix = '' }) => (
