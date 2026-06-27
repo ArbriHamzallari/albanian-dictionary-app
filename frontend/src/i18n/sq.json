@@ -490,7 +490,8 @@
       "totalQuizzes": "Kuize Totale",
       "premiumActive": "Premium Aktiv",
       "premiumTotal": "Premium Total",
-      "revenue": "Të Ardhura/vit"
+      "revenue": "Të Ardhura/vit",
+      "updatedAgo": "Përditësuar para {seconds} sekondash"
     },
     "topSearchesHeading": "🔍 KËRKIMET MË TË SHPESHTA",
     "noDataYet": "Nuk ka të dhëna ende.",
