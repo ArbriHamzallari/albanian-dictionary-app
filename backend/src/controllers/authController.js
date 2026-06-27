@@ -73,6 +73,12 @@ function setSessionCookies(res, user) {
   res.cookie(ACCESS_COOKIE, access, { ...cookieBase(), httpOnly: true, maxAge: ACCESS_MAX_AGE_MS });
   res.cookie(REFRESH_COOKIE, refresh, { ...cookieBase(), httpOnly: true, maxAge: REFRESH_MAX_AGE_MS });
   res.cookie(CSRF_COOKIE, csrf, { ...cookieBase(), httpOnly: false, maxAge: REFRESH_MAX_AGE_MS });
+  // Also expose the CSRF token to the response body. A cross-domain SPA (frontend
+  // on a different registrable domain than the API) cannot read the API's cookie
+  // via document.cookie, so it gets the token here and echoes it in the
+  // x-fjalingo-csrf header on writes. The backend still compares that header to
+  // the cookie, which the browser sends cross-site (SameSite=None).
+  res.locals.csrfToken = csrf;
   return access;
 }
 
@@ -241,6 +247,7 @@ const register = async (req, res, next) => {
         profile: profileFromRow(user),
         stats: statsResult.rows[0],
         entitlement: { tier: 'free', status: 'free', current_period_end: null },
+        csrfToken: res.locals.csrfToken,
       });
     } catch (err) {
       await client.query('ROLLBACK');
@@ -295,7 +302,7 @@ const login = async (req, res, next) => {
 
     // For admin users return token + role + profile (so frontend can detect admin immediately)
     if (user.role === 'admin') {
-      return res.json({ token, role: 'admin', profile: profileFromRow(user) });
+      return res.json({ token, role: 'admin', profile: profileFromRow(user), csrfToken: res.locals.csrfToken });
     }
 
     // For regular users return profile + stats
@@ -310,6 +317,7 @@ const login = async (req, res, next) => {
         status: entitlement?.status || 'free',
         current_period_end: entitlement?.current_period_end || null,
       },
+      csrfToken: res.locals.csrfToken,
     });
   } catch (err) {
     return next(err);
@@ -321,10 +329,15 @@ const me = async (req, res, next) => {
   try {
     const userUuid = req.user.uuid;
 
-    // Cookie-authenticated sessions need a CSRF token available to JS; issue one
-    // if it is missing (e.g. a session that predates this change).
-    if (!parseCookies(req)[CSRF_COOKIE]) {
-      res.cookie(CSRF_COOKIE, crypto.randomBytes(24).toString('hex'), {
+    // Cookie-authenticated sessions need a CSRF token to echo in the
+    // x-fjalingo-csrf header on writes. Reuse the existing cookie value, or issue
+    // one if missing (e.g. a session that predates this). It is returned in the
+    // body so a cross-domain SPA (which can't read the API's cookie) has it after
+    // a page reload.
+    let csrfToken = parseCookies(req)[CSRF_COOKIE];
+    if (!csrfToken) {
+      csrfToken = crypto.randomBytes(24).toString('hex');
+      res.cookie(CSRF_COOKIE, csrfToken, {
         ...cookieBase(),
         httpOnly: false,
         maxAge: REFRESH_MAX_AGE_MS,
@@ -363,6 +376,7 @@ const me = async (req, res, next) => {
         status: entitlement?.status || 'free',
         current_period_end: entitlement?.current_period_end || null,
       },
+      csrfToken,
     });
   } catch (err) {
     return next(err);
@@ -465,6 +479,7 @@ const guestUpgrade = async (req, res, next) => {
         profile: profileFromRow(user),
         stats: statsResult.rows[0],
         entitlement: { tier: 'free', status: 'free', current_period_end: null },
+        csrfToken: res.locals.csrfToken,
       });
     } catch (err) {
       await client.query('ROLLBACK');
@@ -544,7 +559,7 @@ const refresh = async (req, res) => {
   }
 
   setSessionCookies(res, userResult.rows[0]);
-  return res.json({ ok: true });
+  return res.json({ ok: true, csrfToken: res.locals.csrfToken });
 };
 
 // ── POST /logout ─────────────────────────────────────────────
