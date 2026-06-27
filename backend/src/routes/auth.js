@@ -1,6 +1,6 @@
 const express = require('express');
 const rateLimit = require('express-rate-limit');
-const { register, login, me, guestUpgrade, heartbeat, consentCheck, refresh, logout } = require('../controllers/authController');
+const { register, login, me, guestUpgrade, heartbeat, consentCheck, refresh, logout, googleAuth, completeProfile } = require('../controllers/authController');
 const { authenticate } = require('../middleware/auth');
 
 const router = express.Router();
@@ -16,6 +16,8 @@ const loginLimiter = rateLimit({
 router.post('/register', register);
 router.post('/consent-check', consentCheck);
 router.post('/login', loginLimiter, login);
+router.post('/google', loginLimiter, googleAuth);
+router.post('/complete-profile', authenticate, completeProfile);
 router.get('/me', authenticate, me);
 router.post('/heartbeat', authenticate, heartbeat);
 router.post('/guest-upgrade', guestUpgrade);

@@ -97,10 +97,25 @@ const quizSubmitSchema = Joi.object({
   answers: Joi.array().items(quizAnswerSchema).min(1).max(QUIZ_QUESTIONS_PER_SESSION).required(),
 });
 
+const googleAuthSchema = Joi.object({
+  credential: Joi.string().min(1).max(8192).required(),
+});
+
+// Google sign-ups provide no age/country, so a new Google user must complete the
+// age gate before full access. Same shape as the consent step + the consent flag.
+const completeProfileSchema = Joi.object({
+  age: Joi.number().integer().min(1).max(120).required(),
+  country_code: Joi.string().trim().uppercase().length(2).required(),
+  parental_consent_given: Joi.boolean().default(false),
+  timezone: Joi.string().trim().max(64).optional(),
+});
+
 module.exports = {
   searchSchema,
   suggestionSchema,
   loginSchema,
+  googleAuthSchema,
+  completeProfileSchema,
   wordSchema,
   wordOfDaySchema,
   consentCheckSchema,

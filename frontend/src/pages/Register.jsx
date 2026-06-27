@@ -1,10 +1,12 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { UserPlus } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.jsx';
 import ErrorMessage from '../components/ErrorMessage.jsx';
 import PasswordInput from '../components/PasswordInput.jsx';
+import GoogleSignInButton from '../components/GoogleSignInButton.jsx';
+import { GOOGLE_CLIENT_ID } from '../utils/google.js';
 import { t } from '../i18n/index.js';
 
 const Register = () => {
@@ -17,7 +19,22 @@ const Register = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { register } = useAuth();
+  const { register, googleLogin } = useAuth();
+
+  const handleGoogle = useCallback(async (credential) => {
+    setError('');
+    setLoading(true);
+    try {
+      const data = await googleLogin(credential);
+      if (data.needsProfileCompletion) navigate('/ploteso-profilin');
+      else if (data.role === 'admin') navigate('/admin/dashboard');
+      else navigate('/dashboard');
+    } catch (err) {
+      setError(err.response?.data?.message || t('auth.google.failed'));
+    } finally {
+      setLoading(false);
+    }
+  }, [googleLogin, navigate]);
 
   const consentRequired = useMemo(() => {
     const numericAge = Number(age);
@@ -171,6 +188,17 @@ const Register = () => {
         <button type="submit" disabled={loading} className="btn-primary w-full">
           {loading ? t('auth.register.submitLoading') : t('auth.register.submit')}
         </button>
+
+        {GOOGLE_CLIENT_ID && (
+          <>
+            <div className="flex items-center gap-3">
+              <span className="h-px flex-1 bg-border dark:bg-dark-border" />
+              <span className="text-xs font-bold text-muted dark:text-dark-muted">{t('auth.or')}</span>
+              <span className="h-px flex-1 bg-border dark:bg-dark-border" />
+            </div>
+            <GoogleSignInButton onCredential={handleGoogle} />
+          </>
+        )}
 
         <p className="text-center text-sm text-muted dark:text-dark-muted font-semibold">
           {t('auth.register.hasAccount')}{' '}
