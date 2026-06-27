@@ -8,6 +8,7 @@ if (!process.env.JWT_SECRET) {
   process.env.JWT_SECRET = 'test-jwt-secret-at-least-32-characters-long';
 }
 
+require('./db-guard'); // refuse to run against a non-local DB (see db-guard.js)
 const pool = require('../src/utils/db');
 const app = require('../server');
 
