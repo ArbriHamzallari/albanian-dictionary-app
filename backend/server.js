@@ -8,6 +8,7 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 
+const publicRoutes = require('./src/routes/public');
 const wordsRoutes = require('./src/routes/words');
 const suggestionsRoutes = require('./src/routes/suggestions');
 const authRoutes = require('./src/routes/auth');
@@ -143,6 +144,7 @@ app.get('/api/health', async (req, res) => {
   });
 });
 
+app.use('/api/public', publicRoutes);
 app.use('/api/words', wordsRoutes);
 app.use('/api/suggestions', suggestionsRoutes);
 app.use('/api/auth', authRoutes);
