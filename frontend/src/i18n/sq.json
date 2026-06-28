@@ -230,7 +230,14 @@
     "emailLabel": "Email (opsionale)",
     "emailPlaceholder": "email@shembull.al",
     "submit": "Dërgo Propozimin",
-    "submitLoading": "Duke dërguar..."
+    "submitLoading": "Duke dërguar...",
+    "authModal": {
+      "title": "Merr meritën për propozimin tënd",
+      "desc": "Krijo një llogari për të marrë meritën dhe për të ndjekur statusin e shqyrtimit të propozimit tënd.",
+      "createProfile": "Krijo profil",
+      "login": "Hyr",
+      "anonymous": "Dërgo si mysafir"
+    }
   },
   "achievements": {
     "title": "Arritjet",

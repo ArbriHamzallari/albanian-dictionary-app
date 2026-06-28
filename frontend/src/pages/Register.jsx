@@ -1,5 +1,5 @@
 import { useMemo, useState, useCallback } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { UserPlus } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.jsx';
@@ -19,7 +19,17 @@ const Register = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const { register, googleLogin } = useAuth();
+
+  // Resume a guest action (e.g. proposing a word) after sign-up instead of always
+  // landing on the dashboard.
+  const resumeAfterAuth = (role) => {
+    if (role === 'admin') { navigate('/admin/dashboard'); return; }
+    const from = location.state?.from;
+    if (from) { navigate(from, { state: { suggestion: location.state?.suggestion } }); return; }
+    navigate('/dashboard');
+  };
 
   const handleGoogle = useCallback(async (credential) => {
     setError('');
@@ -27,8 +37,7 @@ const Register = () => {
     try {
       const data = await googleLogin(credential);
       if (data.needsProfileCompletion) navigate('/ploteso-profilin');
-      else if (data.role === 'admin') navigate('/admin/dashboard');
-      else navigate('/dashboard');
+      else resumeAfterAuth(data.role);
     } catch (err) {
       setError(err.response?.data?.message || t('auth.google.failed'));
     } finally {
@@ -54,7 +63,7 @@ const Register = () => {
     setLoading(true);
 
     try {
-      await register({
+      const data = await register({
         username,
         email,
         password,
@@ -62,7 +71,7 @@ const Register = () => {
         countryCode: countryCode.toUpperCase(),
         parentalConsentGiven,
       });
-      navigate('/dashboard');
+      resumeAfterAuth(data.profile?.role);
     } catch (err) {
       if (err.response?.status === 409) {
         setError(err.response.data.message);

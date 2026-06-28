@@ -1,43 +1,85 @@
-import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Send, CheckCircle } from 'lucide-react';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Send, CheckCircle, X } from 'lucide-react';
 import api from '../utils/api.js';
+import { useAuth } from '../context/AuthContext.jsx';
 import ErrorMessage from '../components/ErrorMessage.jsx';
+import Button from '../components/ui/Button.jsx';
 import { unlockAchievement } from '../utils/userService.js';
 import { t } from '../i18n/index.js';
 
+const EMPTY_FORM = {
+  borrowed_word: '',
+  suggested_albanian: '',
+  suggested_definition: '',
+  submitter_name: '',
+  submitter_email: '',
+};
+
 const SuggestWord = () => {
-  const [formData, setFormData] = useState({
-    borrowed_word: '',
-    suggested_albanian: '',
-    suggested_definition: '',
-    submitter_name: '',
-    submitter_email: '',
-  });
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { isLoggedIn } = useAuth();
+  const [formData, setFormData] = useState(EMPTY_FORM);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const resumedRef = useRef(false);
 
   const handleChange = (e) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const doSubmit = useCallback(async (payload) => {
     setError('');
     setMessage('');
     setLoading(true);
-
     try {
-      const response = await api.post('/suggestions', formData);
+      const response = await api.post('/suggestions', payload);
       setMessage(response.data.message || t('suggest.successMessage'));
-      setFormData({ borrowed_word: '', suggested_albanian: '', suggested_definition: '', submitter_name: '', submitter_email: '' });
+      setFormData(EMPTY_FORM);
       unlockAchievement('suggester');
     } catch {
       setError(t('suggest.errorMessage'));
     } finally {
       setLoading(false);
     }
+  }, []);
+
+  // Resume after auth: Login/Register redirect back here carrying the payload in
+  // router state (in-memory, never localStorage). Prefill the form and submit it
+  // once, now attributed to the authenticated user. Clear the state immediately
+  // so a refresh can't resubmit, and guard against StrictMode's double effect.
+  useEffect(() => {
+    const resume = location.state?.suggestion;
+    if (resume && !resumedRef.current) {
+      resumedRef.current = true;
+      setFormData(resume);
+      navigate(location.pathname, { replace: true, state: {} });
+      doSubmit(resume);
+    }
+  }, [location, navigate, doSubmit]);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Word proposal is a conversion moment: nudge guests to create an account so
+    // they can track the review, but keep an anonymous path open.
+    if (!isLoggedIn) {
+      setShowAuthModal(true);
+      return;
+    }
+    doSubmit(formData);
+  };
+
+  const goAuth = (path) => {
+    navigate(path, { state: { from: '/propozo', suggestion: formData } });
+  };
+
+  const submitAnonymous = () => {
+    setShowAuthModal(false);
+    doSubmit(formData);
   };
 
   return (
@@ -104,6 +146,57 @@ const SuggestWord = () => {
           {loading ? t('suggest.submitLoading') : t('suggest.submit')}
         </button>
       </motion.form>
+
+      {/* Guest conversion prompt (UX-3) */}
+      <AnimatePresence>
+        {showAuthModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.15 }}
+            className="fixed inset-0 z-[60] flex items-center justify-center bg-ink/50 px-4"
+            role="dialog"
+            aria-modal="true"
+            aria-label={t('suggest.authModal.title')}
+            onClick={() => setShowAuthModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.94, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.94, opacity: 0 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 24 }}
+              onClick={(e) => e.stopPropagation()}
+              className="relative w-full max-w-md rounded-3xl border border-line bg-paper p-6 sm:p-8 shadow-xl"
+            >
+              <button
+                onClick={() => setShowAuthModal(false)}
+                aria-label={t('common.close')}
+                className="absolute right-4 top-4 p-1.5 rounded-xl text-ink-soft hover:bg-cloud transition"
+              >
+                <X className="h-5 w-5" aria-hidden="true" />
+              </button>
+              <span className="block text-4xl text-center mb-3">💡</span>
+              <h2 className="text-center text-xl font-black text-ink">{t('suggest.authModal.title')}</h2>
+              <p className="mt-2 text-center text-sm font-semibold text-ink-soft">{t('suggest.authModal.desc')}</p>
+              <div className="mt-6 flex flex-col gap-3">
+                <Button variant="primary" size="md" fullWidth onClick={() => goAuth('/regjistrohu')}>
+                  {t('suggest.authModal.createProfile')}
+                </Button>
+                <Button variant="secondary" size="md" fullWidth onClick={() => goAuth('/hyr')}>
+                  {t('suggest.authModal.login')}
+                </Button>
+                <button
+                  onClick={submitAnonymous}
+                  className="text-sm font-bold text-ink-soft hover:text-ink transition py-1"
+                >
+                  {t('suggest.authModal.anonymous')}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
