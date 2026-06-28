@@ -613,7 +613,30 @@
     "deleteConfirm": "Fshij",
     "tabs": {
       "content": "Fjalët",
-      "users": "Përdoruesit"
+      "users": "Përdoruesit",
+      "safety": "Siguria"
+    },
+    "safety": {
+      "heading": "🛡️ MODERIMI & SIGURIA",
+      "loadError": "Nuk mund të ngarkohen ngjarjet e moderimit.",
+      "actionError": "Veprimi dështoi.",
+      "none": "Nuk ka ngjarje moderimi.",
+      "colTime": "Koha",
+      "colSender": "Dërguesi",
+      "colRecipient": "Marrësi",
+      "colReason": "Arsyeja",
+      "colExcerpt": "Fragmenti",
+      "colActions": "Veprime",
+      "suspended": "Pezulluar",
+      "ban": "Pezullo",
+      "unban": "Hiq pezullimin",
+      "resolve": "Zgjidh",
+      "reason": {
+        "PROFANITY_DETECTED": "Fjalor i papërshtatshëm",
+        "PII_DETECTED": "Të dhëna personale",
+        "LLM_FLAGGED": "Shenjuar nga moderimi",
+        "MODERATION_UNAVAILABLE": "Moderimi i padisponueshëm"
+      }
     },
     "users": {
       "heading": "👥 PËRDORUESIT",

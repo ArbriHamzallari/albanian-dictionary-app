@@ -264,10 +264,56 @@ const grantComplimentary = async (req, res, next) => {
   }
 };
 
+// GET /api/admin/moderation-events — auto-moderation trail for Trust & Safety
+// (INF-3). Open events first, newest first. Includes the sender's suspension
+// state so the UI can show a one-click ban/unban via PATCH /users/:uuid.
+const listModerationEvents = async (req, res, next) => {
+  try {
+    const result = await pool.query(
+      `SELECT m.id, m.reason, m.excerpt, m.status, m.created_at,
+              m.sender_id, m.recipient_id,
+              s.username AS sender_username, s.is_suspended AS sender_suspended,
+              r.username AS recipient_username
+       FROM moderation_events m
+       LEFT JOIN users s ON s.uuid = m.sender_id
+       LEFT JOIN users r ON r.uuid = m.recipient_id
+       ORDER BY (m.status = 'open') DESC, m.created_at DESC
+       LIMIT 100`
+    );
+    return res.json({ events: result.rows });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+// POST /api/admin/moderation-events/:id/resolve — mark an event handled.
+const resolveModerationEvent = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const result = await pool.query(
+      `UPDATE moderation_events SET status = 'resolved' WHERE id = $1::uuid RETURNING id`,
+      [id]
+    );
+    if (!result.rows.length) {
+      return res.status(404).json({ message: 'Ngjarja nuk u gjet.' });
+    }
+    await logAdminAction(req, {
+      action: 'moderation_event.resolve',
+      targetType: 'moderation_event',
+      targetId: id,
+    });
+    return res.json({ message: 'Ngjarja u zgjidh.' });
+  } catch (err) {
+    return next(err);
+  }
+};
+
 module.exports = {
   listUsers,
   getUser,
   updateUser,
   deleteUser,
   grantComplimentary,
+  listModerationEvents,
+  resolveModerationEvent,
 };
