@@ -21,7 +21,7 @@ const PasswordInput = ({ className = '', ...props }) => {
         onClick={() => setVisible((v) => !v)}
         aria-label={visible ? t('common.field.hidePassword') : t('common.field.showPassword')}
         aria-pressed={visible}
-        className="absolute inset-y-0 right-0 flex items-center px-3 rounded-r-2xl text-muted hover:text-heading dark:text-dark-muted dark:hover:text-dark-text focus:outline-none focus-visible:ring-2 focus-visible:ring-fjalingo-green"
+        className="absolute inset-y-0 right-0 z-10 flex items-center px-3 rounded-r-2xl text-muted hover:text-heading dark:text-dark-muted dark:hover:text-dark-text focus:outline-none focus-visible:ring-2 focus-visible:ring-fjalingo-green"
       >
         {visible ? <EyeOff className="w-5 h-5" aria-hidden="true" /> : <Eye className="w-5 h-5" aria-hidden="true" />}
       </button>
