@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext.jsx';
 import ErrorMessage from '../components/ErrorMessage.jsx';
 import PasswordInput from '../components/PasswordInput.jsx';
 import GoogleSignInButton from '../components/GoogleSignInButton.jsx';
+import Seo from '../components/Seo.jsx';
 import { GOOGLE_CLIENT_ID } from '../utils/google.js';
 import { t } from '../i18n/index.js';
 
@@ -87,6 +88,11 @@ const Register = () => {
 
   return (
     <div className="max-w-md mx-auto px-6 py-16">
+      <Seo
+        title="Regjistrohu — Fjalingo"
+        description="Krijo një llogari falas në Fjalingo dhe fillo të zëvendësosh fjalët e huazuara me shqipen e vërtetë."
+        path="/regjistrohu"
+      />
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

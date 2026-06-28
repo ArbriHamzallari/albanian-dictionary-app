@@ -5,6 +5,7 @@ import Avatar from '../components/Avatar.jsx';
 import Card from '../components/ui/Card.jsx';
 import Heading from '../components/ui/Heading.jsx';
 import Parrot from '../components/mascot/Parrot.jsx';
+import Seo from '../components/Seo.jsx';
 import api from '../utils/api.js';
 import { t } from '../i18n/index.js';
 
@@ -38,6 +39,11 @@ const Leaderboard = () => {
 
   return (
     <div className="max-w-2xl mx-auto px-6 py-10">
+      <Seo
+        title="Renditja — Fjalingo"
+        description="Shiko renditjen e lojtarëve të Fjalingo dhe gareja për të mësuar shqipen e vërtetë."
+        path="/renditja"
+      />
       <div className="text-center mb-8">
         <Trophy className="w-12 h-12 mx-auto mb-3 text-accent-yellow" aria-hidden="true" />
         <Heading level={1}>{t('leaderboard.title')}</Heading>

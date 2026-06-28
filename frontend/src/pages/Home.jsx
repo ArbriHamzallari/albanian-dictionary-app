@@ -13,6 +13,7 @@ import Heading from '../components/ui/Heading.jsx';
 import Parrot from '../components/mascot/Parrot.jsx';
 import AnimatedBackground from '../components/AnimatedBackground.jsx';
 import BackgroundAnimations from '../components/BackgroundAnimations.jsx';
+import Seo from '../components/Seo.jsx';
 import api from '../utils/api.js';
 import { t } from '../i18n/index.js';
 
@@ -103,6 +104,11 @@ const Home = () => {
 
   return (
     <div className="min-h-screen bg-cloud">
+      <Seo
+        title="Fjalingo — Fol shqipen e vërtetë, jo Alblish"
+        description="Fjalingo të ndihmon t'i kthesh fjalët e huazuara (email, meeting, business) në shqipen e vërtetë — me lojë, jo me mësim."
+        path="/"
+      />
       {/* Splash hero — papagalli, slogani, CTA dhe treguesi i rrëshqitjes */}
       <section className="relative flex min-h-[100dvh] flex-col items-center justify-center overflow-hidden px-4 py-10 text-center sm:px-6 sm:py-12">
         {/* Designed hero background: brand blobs + dot-grid + falling words */}

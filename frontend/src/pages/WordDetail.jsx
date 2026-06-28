@@ -4,8 +4,25 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import LoadingSpinner from '../components/LoadingSpinner.jsx';
 import ErrorMessage from '../components/ErrorMessage.jsx';
+import Seo, { SITE_URL } from '../components/Seo.jsx';
 import api from '../utils/api.js';
 import { t } from '../i18n/index.js';
+
+// Each word page is individually indexable as a DefinedTerm (schema.org).
+const buildJsonLd = (word, id) => ({
+  '@context': 'https://schema.org',
+  '@type': 'DefinedTerm',
+  name: word.correct_albanian,
+  description:
+    word.definitions?.[0]?.definition_text || `Fjala shqipe për "${word.borrowed_word}".`,
+  inDefinedTermSet: {
+    '@type': 'DefinedTermSet',
+    name: 'Fjalori Fjalingo',
+    url: SITE_URL,
+  },
+  url: `${SITE_URL}/fjala/${id}`,
+  inLanguage: 'sq',
+});
 
 const categoryColors = {
   'Folje': 'badge-green',
@@ -36,6 +53,21 @@ const WordDetail = () => {
 
   return (
     <div className="max-w-4xl mx-auto px-6 py-10">
+      <Seo
+        title={word ? `${word.correct_albanian} (jo "${word.borrowed_word}") — Fjalingo` : 'Fjalor — Fjalingo'}
+        description={
+          word
+            ? `"${word.borrowed_word}" në shqipen e vërtetë është "${word.correct_albanian}".${word.definitions?.[0]?.definition_text ? ' ' + word.definitions[0].definition_text : ''}`
+            : undefined
+        }
+        path={`/fjala/${id}`}
+        type="article"
+      >
+        {word && (
+          <script type="application/ld+json">{JSON.stringify(buildJsonLd(word, id))}</script>
+        )}
+      </Seo>
+
       <Link to="/" className="inline-flex items-center gap-1 text-fjalingo-green text-sm font-bold hover:gap-2 transition-all mb-6">
         <ArrowLeft className="w-4 h-4" /> {t('common.back')}
       </Link>
