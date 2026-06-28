@@ -60,7 +60,10 @@ const Dashboard = () => {
   const streak = stats?.streak || 0;
   const totalQuizzes = stats?.total_quizzes || 0;
   const correctAnswers = stats?.correct_answers || 0;
-  const totalAnswers = totalQuizzes * 10; // Assuming 10 questions per quiz
+  // Server-tracked count of questions actually answered (BUG-5) — the authoritative
+  // accuracy denominator. Replaces the old "total_quizzes * 10" assumption, which
+  // over-counted whenever a quiz had fewer than 10 questions.
+  const totalAnswers = stats?.total_questions || 0;
   const accuracy = totalAnswers > 0 ? Math.round((correctAnswers / totalAnswers) * 100) : 0;
 
   const currentLevelXp = LEVEL_POINTS(level);
