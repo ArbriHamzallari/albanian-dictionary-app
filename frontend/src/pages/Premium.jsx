@@ -3,15 +3,16 @@ import { Check, Crown } from 'lucide-react';
 import PremiumCheckoutButton from '../components/PremiumCheckoutButton.jsx';
 import Card from '../components/ui/Card.jsx';
 import Heading from '../components/ui/Heading.jsx';
-import { useAuth } from '../context/AuthContext.jsx';
+import { useHasUnlimitedAccess } from '../context/AuthContext.jsx';
 import { t } from '../i18n/index.js';
 
 const FEATURE_KEYS = ['search', 'quizzes', 'leagues', 'social', 'progress'];
 
 const Premium = () => {
   const reduceMotion = useReducedMotion();
-  const { user } = useAuth();
-  const isPremium = user?.entitlement?.tier === 'premium';
+  // Single source of truth: admins and active-premium/complimentary users all
+  // pass; only genuine free users see the upsell.
+  const isPremium = useHasUnlimitedAccess();
 
   return (
     <div className="max-w-3xl mx-auto px-6 py-12">

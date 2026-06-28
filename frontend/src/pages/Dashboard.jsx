@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Star, Flame, Trophy, Target, BarChart3, Clock } from 'lucide-react';
-import { useAuth } from '../context/AuthContext.jsx';
+import { useAuth, useHasUnlimitedAccess } from '../context/AuthContext.jsx';
 import Avatar from '../components/Avatar.jsx';
 import LoadingSpinner from '../components/LoadingSpinner.jsx';
 import PremiumCheckoutButton from '../components/PremiumCheckoutButton.jsx';
@@ -21,6 +21,7 @@ const LEVEL_POINTS = (level) => {
 
 const Dashboard = () => {
   const { user, loading: authLoading, isLoggedIn, isAdmin } = useAuth();
+  const hasUnlimited = useHasUnlimitedAccess();
   const navigate = useNavigate();
   const [recentAttempts, setRecentAttempts] = useState([]);
 
@@ -51,7 +52,9 @@ const Dashboard = () => {
   }
 
   const { profile, stats, rank, achievements } = user;
-  const isPremium = user?.entitlement?.tier === 'premium';
+  // Route through the shared hook so admins/complimentary users also bypass the
+  // upsell (not just paid 'premium' tier).
+  const isPremium = hasUnlimited;
   const xp = stats?.xp || 0;
   const level = stats?.level || 1;
   const streak = stats?.streak || 0;
