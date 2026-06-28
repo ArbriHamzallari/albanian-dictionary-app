@@ -24,6 +24,7 @@ const Lesson = lazy(() => import('./pages/Lesson.jsx'));
 const Onboarding = lazy(() => import('./pages/Onboarding.jsx'));
 const Achievements = lazy(() => import('./pages/Achievements.jsx'));
 const Register = lazy(() => import('./pages/Register.jsx'));
+const CompleteProfile = lazy(() => import('./pages/CompleteProfile.jsx'));
 const Profile = lazy(() => import('./pages/Profile.jsx'));
 const Leaderboard = lazy(() => import('./pages/Leaderboard.jsx'));
 const LeaguePage = lazy(() => import('./pages/LeaguePage.jsx'));
@@ -70,6 +71,7 @@ const App = () => {
               <Route path="/arritjet" element={<Achievements />} />
               <Route path="/hyr" element={<Login />} />
               <Route path="/regjistrohu" element={<Register />} />
+              <Route path="/ploteso-profilin" element={<CompleteProfile />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/profili" element={<Profile />} />
               <Route path="/profili/:uuid" element={<PublicProfile />} />

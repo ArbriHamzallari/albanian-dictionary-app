@@ -2,7 +2,8 @@ const crypto = require('crypto');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const pool = require('../utils/db');
-const { loginSchema, registerSchema, guestUpgradeSchema, consentCheckSchema } = require('../utils/validation');
+const { OAuth2Client } = require('google-auth-library');
+const { loginSchema, registerSchema, guestUpgradeSchema, consentCheckSchema, googleAuthSchema, completeProfileSchema } = require('../utils/validation');
 const { USER_RANK_SQL } = require('../utils/rankSql');
 const { getEntitlement, entitlementIsPremium } = require('../middleware/entitlements');
 const { touchLastSeen } = require('../utils/presence');
@@ -30,6 +31,11 @@ const REFRESH_COOKIE = 'fjalingo_refresh';
 const CSRF_COOKIE = 'fjalingo_csrf';
 const BCRYPT_COST = 12;
 const isProduction = process.env.NODE_ENV === 'production';
+
+// Google sign-in. The client is created only when configured; the route returns
+// 503 otherwise so the frontend can hide the button instead of silently failing.
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+const googleClient = GOOGLE_CLIENT_ID ? new OAuth2Client(GOOGLE_CLIENT_ID) : null;
 
 function signAccessToken(user) {
   return jwt.sign(
@@ -568,4 +574,175 @@ const logout = (req, res) => {
   return res.json({ ok: true });
 };
 
-module.exports = { register, login, me, guestUpgrade, heartbeat, consentCheck, refresh, logout };
+// Pseudonymous auto-username for Google sign-ups (no real name, per child-safety
+// rules). The user can change it later from their profile.
+async function generateUniqueUsername(client) {
+  for (let i = 0; i < 10; i += 1) {
+    const candidate = `lojtar_${crypto.randomBytes(4).toString('hex')}`;
+    const exists = await client.query(
+      'SELECT 1 FROM users WHERE username_normalized = $1',
+      [candidate.toLowerCase()]
+    );
+    if (!exists.rows.length) return candidate;
+  }
+  throw new Error('Could not generate a unique username for Google sign-up');
+}
+
+// ── POST /google ─────────────────────────────────────────────
+// Verifies a Google ID token, then auto-links to an existing account by verified
+// email or creates a new (fail-closed, age-gated) account. Never trusts the
+// client: the ID token signature/audience/expiry are re-verified server-side.
+const googleAuth = async (req, res, next) => {
+  try {
+    if (!googleClient) {
+      return res.status(503).json({ message: 'Hyrja me Google nuk është e konfiguruar.', code: 'GOOGLE_NOT_CONFIGURED' });
+    }
+
+    const { error, value } = googleAuthSchema.validate(req.body);
+    if (error) {
+      return res.status(400).json({ message: 'Të dhënat janë të pavlefshme.' });
+    }
+
+    let payload;
+    try {
+      const ticket = await googleClient.verifyIdToken({ idToken: value.credential, audience: GOOGLE_CLIENT_ID });
+      payload = ticket.getPayload();
+    } catch {
+      return res.status(401).json({ message: 'Verifikimi me Google dështoi.', code: 'GOOGLE_VERIFY_FAILED' });
+    }
+
+    const email = payload?.email;
+    const googleSub = payload?.sub;
+    if (!email || !googleSub) {
+      return res.status(401).json({ message: 'Verifikimi me Google dështoi.', code: 'GOOGLE_VERIFY_FAILED' });
+    }
+    // Only auto-link/create when Google has verified the email (linking policy).
+    if (payload.email_verified !== true) {
+      return res.status(403).json({ message: 'Email-i i Google nuk është i verifikuar. Hyni me fjalëkalim.', code: 'GOOGLE_EMAIL_UNVERIFIED' });
+    }
+
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+
+      let lookup = await client.query('SELECT * FROM users WHERE google_sub = $1', [googleSub]);
+      if (!lookup.rows.length) {
+        lookup = await client.query('SELECT * FROM users WHERE LOWER(email) = LOWER($1)', [email]);
+      }
+
+      let user;
+      if (lookup.rows.length) {
+        // Existing account: link the Google sub if not yet linked, then sign in.
+        const existing = lookup.rows[0];
+        const updated = await client.query(
+          `UPDATE users
+             SET google_sub = COALESCE(google_sub, $1),
+                 email_verified = true,
+                 last_login = NOW(),
+                 last_seen = NOW()
+           WHERE id = $2
+           RETURNING *`,
+          [googleSub, existing.id]
+        );
+        user = updated.rows[0];
+      } else {
+        // Brand-new Google user: age/country stay NULL so the fail-closed
+        // child-safety defaults (minor, private, off leaderboards, consent
+        // required) apply until they complete their profile.
+        const username = await generateUniqueUsername(client);
+        const created = await client.query(
+          `INSERT INTO users (email, full_name, role, username, username_normalized, avatar_filename, google_sub, auth_provider, email_verified, last_login, last_seen)
+           VALUES ($1, $2, 'user', $3, $4, 'default.png', $5, 'google', true, NOW(), NOW())
+           RETURNING *`,
+          [email, username, username, username.toLowerCase(), googleSub]
+        );
+        user = created.rows[0];
+        await client.query(`INSERT INTO user_stats (user_id) VALUES ($1) ON CONFLICT (user_id) DO NOTHING`, [user.uuid]);
+        await client.query(`INSERT INTO entitlements (user_id, tier, status) VALUES ($1, 'free', 'free') ON CONFLICT (user_id) DO NOTHING`, [user.uuid]);
+      }
+
+      await client.query('COMMIT');
+
+      const statsResult = await pool.query('SELECT * FROM user_stats WHERE user_id = $1', [user.uuid]);
+      const entitlement = await getEntitlement(user.uuid);
+      const token = setSessionCookies(res, user);
+      return res.json({
+        token,
+        role: user.role,
+        profile: profileFromRow(user),
+        stats: statsResult.rows[0] || null,
+        entitlement: {
+          tier: entitlementIsPremium(entitlement) ? 'premium' : 'free',
+          status: entitlement?.status || 'free',
+          current_period_end: entitlement?.current_period_end || null,
+        },
+        // age IS NULL means the user hasn't passed the age gate yet.
+        needsProfileCompletion: user.age == null,
+        csrfToken: res.locals.csrfToken,
+      });
+    } catch (err) {
+      await client.query('ROLLBACK');
+      throw err;
+    } finally {
+      client.release();
+    }
+  } catch (err) {
+    return next(err);
+  }
+};
+
+// ── POST /complete-profile ───────────────────────────────────
+// Age-gates accounts that were created without age/country (Google sign-ups, and
+// legacy pre-gate accounts). Reuses the same child-safety logic as registration.
+const completeProfile = async (req, res, next) => {
+  try {
+    const { error, value } = completeProfileSchema.validate(req.body);
+    if (error) {
+      return res.status(400).json({ message: 'Mosha ose shteti janë të pavlefshme.' });
+    }
+
+    const safety = buildChildSafetyFields(value);
+    if (safety.error) {
+      return res.status(safety.error.status).json(safety.error.body);
+    }
+
+    const timezone = resolveTimezone(value.timezone);
+    const result = await pool.query(
+      `UPDATE users SET
+         age = $2,
+         country_code = $3,
+         is_minor = $4,
+         parental_consent_required = $5,
+         parental_consent_given = $6,
+         parental_consent_at = CASE WHEN $6 THEN NOW() ELSE NULL END,
+         profile_private = $7,
+         leaderboard_opt_out = $8,
+         leaderboard_segment = $9,
+         timezone = COALESCE($10, timezone)
+       WHERE uuid = $1::uuid
+       RETURNING *`,
+      [
+        req.user.uuid,
+        safety.fields.age,
+        safety.fields.countryCode,
+        safety.fields.isMinor,
+        safety.fields.parentalConsentRequired,
+        safety.fields.parentalConsentGiven,
+        safety.fields.profilePrivate,
+        safety.fields.leaderboardOptOut,
+        safety.fields.leaderboardSegment,
+        timezone,
+      ]
+    );
+
+    if (!result.rows.length) {
+      return res.status(404).json({ message: 'Përdoruesi nuk u gjet.' });
+    }
+
+    return res.json({ profile: profileFromRow(result.rows[0]) });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+module.exports = { register, login, me, guestUpgrade, heartbeat, consentCheck, refresh, logout, googleAuth, completeProfile };

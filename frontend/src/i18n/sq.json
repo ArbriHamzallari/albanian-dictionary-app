@@ -615,6 +615,17 @@
       "submitLoading": "Duke u regjistruar...",
       "hasAccount": "Ke tashmë llogari?",
       "loginLink": "Hyr"
+    },
+    "or": "ose",
+    "google": {
+      "failed": "Hyrja me Google dështoi. Provoni përsëri."
     }
+  },
+  "completeProfile": {
+    "title": "Plotëso profilin",
+    "subtitle": "Na trego moshën dhe shtetin për të vazhduar — kjo kërkohet për sigurinë e fëmijëve.",
+    "submit": "Vazhdo",
+    "submitLoading": "Duke ruajtur...",
+    "consentRequired": "Kërkohet pëlqimi i prindit/kujdestarit për këtë moshë."
   }
 }

@@ -109,6 +109,29 @@ export function AuthProvider({ children }) {
     return res.data;
   };
 
+  const googleLogin = async (credential) => {
+    const res = await api.post('/auth/google', { credential });
+    applyAuthResponse(res.data);
+    // role lets callers redirect admins; needsProfileCompletion routes brand-new
+    // Google users to the age gate before full access.
+    return {
+      ...res.data,
+      role: res.data.role || res.data.profile?.role || 'user',
+      needsProfileCompletion: Boolean(res.data.needsProfileCompletion),
+    };
+  };
+
+  const completeProfile = async ({ age, countryCode, parentalConsentGiven }) => {
+    const res = await api.post('/auth/complete-profile', {
+      age: Number(age),
+      country_code: countryCode,
+      parental_consent_given: parentalConsentGiven,
+      timezone: getBrowserTimeZone(),
+    });
+    updateUserProfile(res.data.profile);
+    return res.data;
+  };
+
   const logout = async () => {
     try {
       await api.post('/auth/logout');
@@ -179,6 +202,8 @@ export function AuthProvider({ children }) {
         isAdmin,
         login,
         register,
+        googleLogin,
+        completeProfile,
         logout,
         updateUserProfile,
         guestUpgrade,
