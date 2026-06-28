@@ -122,6 +122,31 @@
       "seeAll": "Shiko të gjitha"
     }
   },
+  "premiumHome": {
+    "greeting": "Mirëse erdhe, {name}!",
+    "premiumBadge": "Premium",
+    "heroSubtitle": "Vazhdo rrugën tënde drejt shqipes së vërtetë.",
+    "level": "Niveli {level}",
+    "continue": "Vazhdo mësimet",
+    "widgetsHeading": "Vazhdo aty ku e le",
+    "league": {
+      "title": "Liga e Artë",
+      "desc": "Gareja për në krye dhe ngjitu te ari."
+    },
+    "friends": {
+      "title": "Miqtë + bisedat",
+      "desc": "Shiko miqtë dhe bisedo në mënyrë të sigurt."
+    },
+    "family": {
+      "title": "Profilet e familjes",
+      "desc": "Menaxho profilet e fëmijëve dhe ndiq progresin."
+    },
+    "open": "Hap"
+  },
+  "adminHomeBanner": {
+    "text": "Je i kyçur si admin.",
+    "cta": "Shko te paneli i adminit"
+  },
   "quiz": {
     "error": {
       "notEnoughWords": "Nuk ka mjaft fjalë për kuizin. Nevojiten të paktën 4 fjalë.",
