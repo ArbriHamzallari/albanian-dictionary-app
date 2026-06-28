@@ -2,6 +2,22 @@
 <html lang="sq">
   <head>
     <meta charset="UTF-8" />
+    <script>
+      // Set the theme class before first paint to avoid a flash of the wrong
+      // theme (FOUC). Must mirror getTheme() in src/utils/userService.js:
+      // a stored choice wins, else system preference, else light.
+      (function () {
+        try {
+          var saved = localStorage.getItem('fjalingo_theme');
+          var dark = saved
+            ? saved === 'dark'
+            : window.matchMedia('(prefers-color-scheme: dark)').matches;
+          if (dark) document.documentElement.classList.add('dark');
+        } catch (e) {
+          // localStorage/matchMedia unavailable (privacy mode) → default light.
+        }
+      })();
+    </script>
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
