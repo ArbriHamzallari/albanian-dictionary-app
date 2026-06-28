@@ -52,6 +52,10 @@ const consentCheckSchema = Joi.object({
   country_code: Joi.string().trim().uppercase().length(2).required(),
 });
 
+// SEC-1: stripUnknown drops any field not declared here (e.g. a client-supplied
+// `role`) instead of honoring it. role is never accepted from the client — every
+// account-creation path INSERTs role = 'user' literally. Admin is set only via the
+// admin-only PATCH /api/admin/users/:uuid (or directly in the DB).
 const registerSchema = Joi.object({
   username: Joi.string().trim().pattern(/^[A-Za-z0-9_-]+$/).min(3).max(30).required(),
   email: Joi.string().email().max(255).required(),
@@ -60,7 +64,7 @@ const registerSchema = Joi.object({
   country_code: Joi.string().trim().uppercase().length(2).required(),
   parental_consent_given: Joi.boolean().default(false),
   timezone: Joi.string().trim().max(64).optional(),
-});
+}).options({ stripUnknown: true });
 
 const guestUpgradeSchema = Joi.object({
   username: Joi.string().trim().pattern(/^[A-Za-z0-9_-]+$/).min(3).max(30).required(),
@@ -76,7 +80,7 @@ const guestUpgradeSchema = Joi.object({
     correct_answers: Joi.number().integer().min(0).max(100000).default(0),
     streak: Joi.number().integer().min(0).max(365).default(0),
   }).default({}),
-});
+}).options({ stripUnknown: true });
 
 const profileUpdateSchema = Joi.object({
   username: Joi.string().trim().pattern(/^[A-Za-z0-9_-]+$/).min(3).max(30).optional(),
