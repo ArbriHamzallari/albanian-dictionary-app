@@ -1,84 +1,63 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useReducedMotion } from 'framer-motion';
-import Parrot from './mascot/Parrot.jsx';
 
-const WORDS = ['shqip', 'gjuhë', 'fjalë', 'mëso', 'argëto', 'dije', 'libër', 'shkruaj', 'lexo', 'zbulo', 'flamur', 'atdhe', 'bukur', 'dashuri', 'jetë'];
+// Alblish loanwords paired with their authentic Albanian replacements — the
+// wedge made visual. Edit this list to change the rain.
+const WORDS = [
+  'email', 'meeting', 'business', 'deadline', 'brunch', 'ok', 'feedback', 'weekend', 'online', 'update',
+  'postë elektronike', 'takim', 'biznes', 'afat', 'mëngjes i vonshëm', 'në rregull', 'kthim', 'fundjavë', 'në linjë', 'përditësim',
+];
 
-const FallingWord = ({ word, delay, left, duration, size }) => (
-  <div
-    className="absolute text-fjalingo-green/10 dark:text-fjalingo-green/5 font-black pointer-events-none select-none animate-fall"
-    style={{
-      left: `${left}%`,
-      animationDelay: `${delay}s`,
-      animationDuration: `${duration}s`,
-      fontSize: `${size}px`,
-      top: '-40px',
-    }}
-  >
-    {word}
-  </div>
-);
+const pick = () => WORDS[Math.floor(Math.random() * WORDS.length)];
 
+// Falling-words hero background. Words rain from above the hero to below it,
+// fading in near the top and out near the bottom (opacity envelope lives in the
+// `fall` keyframe). The wrapper is absolute/clipped so it never leaks out of the
+// hero or blocks clicks.
 const BackgroundAnimations = () => {
   const reduceMotion = useReducedMotion();
-  const [showBird, setShowBird] = useState(false);
-  const [birdKey, setBirdKey] = useState(0);
 
-  const fallingWords = useMemo(() => {
-    // Reduced motion: render nothing. Otherwise ~20 words on desktop, capped at
-    // 6 on mobile (acceptance), with a slow, calm fall.
-    if (reduceMotion) return [];
-    const count = window.innerWidth < 768 ? 6 : 20;
+  const words = useMemo(() => {
+    const count = window.innerWidth < 768 ? 6 : 22;
     return Array.from({ length: count }, (_, i) => ({
       id: i,
-      word: WORDS[Math.floor(Math.random() * WORDS.length)],
-      delay: Math.random() * 25,
-      left: Math.random() * 90 + 5,
-      duration: 20 + Math.random() * 15,
-      size: 14 + Math.random() * 16,
+      word: pick(),
+      left: Math.random() * 95,
+      size: 14 + Math.random() * 14, // 14–28px
+      duration: 14 + Math.random() * 8, // 14–22s
+      // Negative offset so each word starts mid-flight: the screen is full of
+      // rain from the first frame instead of building up.
+      offset: Math.random(),
+      // Used only for the static (reduced-motion) scatter.
+      top: 4 + Math.random() * 88,
     }));
   }, [reduceMotion]);
 
-  useEffect(() => {
-    // Check for reduced motion preference or mobile
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    if (window.innerWidth < 768) return;
-
-    const birdInterval = setInterval(() => {
-      setShowBird(true);
-      setBirdKey((k) => k + 1);
-      setTimeout(() => setShowBird(false), 15000);
-    }, 45000);
-
-    // Show first bird after 10 seconds
-    const firstBird = setTimeout(() => {
-      setShowBird(true);
-      setBirdKey((k) => k + 1);
-      setTimeout(() => setShowBird(false), 15000);
-    }, 10000);
-
-    return () => {
-      clearInterval(birdInterval);
-      clearTimeout(firstBird);
-    };
-  }, []);
-
   return (
-    <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
-      {/* Falling words */}
-      {fallingWords.map((fw) => (
-        <FallingWord key={fw.id} {...fw} />
-      ))}
-
-      {/* Flying mascot (the branded parrot, wings flapping via the wave state) */}
-      {showBird && (
-        <div
-          key={birdKey}
-          className="absolute animate-fly pointer-events-none"
-          style={{ top: `${15 + Math.random() * 30}%` }}
-        >
-          <Parrot state="wave" size={48} />
-        </div>
+    <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden" aria-hidden="true">
+      {words.map((w) =>
+        reduceMotion ? (
+          <span
+            key={w.id}
+            className="absolute font-black text-fjalingo-green/30 select-none"
+            style={{ left: `${w.left}%`, top: `${w.top}%`, fontSize: `${w.size}px` }}
+          >
+            {w.word}
+          </span>
+        ) : (
+          <span
+            key={w.id}
+            className="absolute top-0 font-black text-fjalingo-green/40 select-none animate-fall"
+            style={{
+              left: `${w.left}%`,
+              fontSize: `${w.size}px`,
+              animationDuration: `${w.duration}s`,
+              animationDelay: `-${(w.offset * w.duration).toFixed(2)}s`,
+            }}
+          >
+            {w.word}
+          </span>
+        )
       )}
     </div>
   );
