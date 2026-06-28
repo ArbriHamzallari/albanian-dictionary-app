@@ -167,6 +167,9 @@ function buildChildSafetyFields(value) {
 }
 
 // ── POST /register ───────────────────────────────────────────
+// SEC-1: role is hardcoded to 'user' in the INSERT below and is never read from
+// the request. Admin promotion is a manual DB action (or the admin-only PATCH
+// /api/admin/users/:uuid) — there is intentionally no self-service path to admin.
 const register = async (req, res, next) => {
   try {
     const { error, value } = registerSchema.validate(req.body);
