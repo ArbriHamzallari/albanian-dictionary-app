@@ -158,6 +158,7 @@ const submitQuiz = async (req, res, next) => {
            xp = xp + $2,
            total_quizzes = total_quizzes + 1,
            correct_answers = correct_answers + $3,
+           total_questions = total_questions + $4,
            streak = CASE
              WHEN last_quiz_date = ((now() AT TIME ZONE 'utc')::date - 1)
                THEN streak + 1
@@ -169,7 +170,7 @@ const submitQuiz = async (req, res, next) => {
            level = ${LEVEL_FORMULA_SQL}
          WHERE user_id = $1
          RETURNING *`,
-        [userUuid, xpGain, correctAnswers]
+        [userUuid, xpGain, correctAnswers, totalQuestions]
       );
 
       if (!statsResult.rows.length) {

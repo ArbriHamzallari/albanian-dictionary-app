@@ -472,9 +472,12 @@ const guestUpgrade = async (req, res, next) => {
 
       // Create stats with merged guest progress
       // Level = floor(sqrt(xp/100)) + 1, computed from the xp parameter ($2)
+      // total_questions seeds the accuracy denominator (BUG-5). Guests track quizzes,
+      // not per-quiz question counts, so use the same total_quizzes * 10 convention
+      // as the correct_answers clamp above — keeping merged accuracy <= 100%.
       await client.query(
-        `INSERT INTO user_stats (user_id, xp, level, streak, total_quizzes, correct_answers)
-         VALUES ($1, $2, floor(sqrt(($2::numeric)/100))::int + 1, $3, $4, $5)
+        `INSERT INTO user_stats (user_id, xp, level, streak, total_quizzes, correct_answers, total_questions)
+         VALUES ($1, $2, floor(sqrt(($2::numeric)/100))::int + 1, $3, $4, $5, $4 * 10)
          ON CONFLICT (user_id) DO NOTHING`,
         [user.uuid, gp.xp, gp.streak, gp.total_quizzes, gp.correct_answers]
       );
