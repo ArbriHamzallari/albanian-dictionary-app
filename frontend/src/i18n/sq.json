@@ -467,6 +467,39 @@
       "eagle": "Shqiponja"
     }
   },
+  "onboardingTour": {
+    "skip": "Kapërce",
+    "next": "Vazhdo",
+    "back": "Mbrapa",
+    "stepOf": "{current} nga {total}",
+    "step1": {
+      "title": "Çfarë është Alblishja?",
+      "body": "Alblishja është shqipja e përzier me fjalë të huaja. Pa e vënë re, themi fjalë të huazuara në vend të atyre tona.",
+      "exampleBorrowed": "email",
+      "exampleArrow": "→",
+      "exampleCorrect": "postë elektronike"
+    },
+    "step2": {
+      "title": "Si të ndihmon Fjalingo",
+      "body": "Mëson përmes tri ushtrimeve të shkurtra:",
+      "ex1": "Gjej fjalën e huazuar — trokit fjalën e huaj në një fjali.",
+      "ex2": "Zgjidh fjalën e saktë — zgjidh përkthimin e duhur shqip.",
+      "ex3": "Plotëso vendin bosh — plotëso fjalën që mungon."
+    },
+    "step3": {
+      "title": "Bëje zakon të përditshëm",
+      "body": "Mbaje serinë gjallë, ngjitu nga bronxhi te argjendi e ari, dhe shkyç arritje teksa mëson.",
+      "streak": "Seria ditore",
+      "leagues": "Bronxhi → Argjendi → Ari",
+      "achievements": "Arritjet"
+    },
+    "step4": {
+      "title": "Gati të fillosh?",
+      "body": "Krijo profilin tënd për të ruajtur progresin, ose provoje si mysafir.",
+      "createProfile": "Krijo profil",
+      "tryGuest": "Provo si mysafir"
+    }
+  },
   "admin": {
     "panelTitle": "ADMIN PANEL – Fjalingo",
     "notAdminError": "Duhet të hyni si admin për të parë këtë faqe.",

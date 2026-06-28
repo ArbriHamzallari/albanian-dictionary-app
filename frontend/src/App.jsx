@@ -1,10 +1,14 @@
-import { useEffect, lazy, Suspense } from 'react';
+import { useEffect, useState, lazy, Suspense } from 'react';
 import { Route, Routes, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import Header from './components/Header.jsx';
 import Footer from './components/Footer.jsx';
 import MobileNav from './components/MobileNav.jsx';
+import OnboardingTour from './components/Onboarding.jsx';
+import { useAuth } from './context/AuthContext.jsx';
 import { initTheme } from './utils/userService.js';
+
+const ONBOARDED_KEY = 'fjalingo_onboarded';
 
 // Eager: the common entry points (splash, login, post-login dashboard).
 import Home from './pages/Home.jsx';
@@ -42,13 +46,37 @@ const RouteFallback = () => (
 
 const App = () => {
   const location = useLocation();
+  const { isLoggedIn, loading: authLoading } = useAuth();
   const isSplash = location.pathname === '/';
   const isDesign = location.pathname === '/design';
   const isOnboarding = location.pathname === '/start';
+  const isAdminRoute = location.pathname.startsWith('/admin');
+
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
   useEffect(() => {
     initTheme();
   }, []);
+
+  // First-time tour (UX-2): show once per browser to guests only. Wait for auth
+  // to resolve so a returning logged-in user never sees a flash of it. Logging
+  // in/registering flips isLoggedIn, which marks the tour as seen for good.
+  useEffect(() => {
+    if (authLoading) return;
+    if (isLoggedIn) {
+      localStorage.setItem(ONBOARDED_KEY, 'true');
+      setShowOnboarding(false);
+      return;
+    }
+    if (localStorage.getItem(ONBOARDED_KEY) !== 'true') {
+      setShowOnboarding(true);
+    }
+  }, [authLoading, isLoggedIn]);
+
+  const dismissOnboarding = () => {
+    localStorage.setItem(ONBOARDED_KEY, 'true');
+    setShowOnboarding(false);
+  };
 
   const showChrome = !isSplash && !isDesign && !isOnboarding;
 
@@ -94,6 +122,12 @@ const App = () => {
         </div>
       )}
       {showChrome && <MobileNav />}
+
+      <AnimatePresence>
+        {showOnboarding && !isAdminRoute && !isDesign && !isOnboarding && (
+          <OnboardingTour onClose={dismissOnboarding} />
+        )}
+      </AnimatePresence>
     </div>
   );
 };
