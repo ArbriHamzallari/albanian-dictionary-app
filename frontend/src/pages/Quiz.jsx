@@ -6,6 +6,7 @@ import { ArrowRight, Timer, Star, Trophy, RotateCcw, X } from 'lucide-react';
 import api from '../utils/api.js';
 import LoadingSpinner from '../components/LoadingSpinner.jsx';
 import ErrorMessage from '../components/ErrorMessage.jsx';
+import Parrot from '../components/mascot/Parrot.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import { t } from '../i18n/index.js';
 
@@ -225,9 +226,12 @@ const Quiz = () => {
           animate={{ opacity: 1, scale: 1 }}
           className="max-w-lg mx-auto px-6 py-16 text-center"
         >
-          <span className="text-6xl block mb-4">
-            {!resultsKnown ? '⚠️' : percentage >= 70 ? '🎉' : '💪'}
-          </span>
+          <div className="flex justify-center mb-4">
+            <Parrot
+              state={!resultsKnown ? 'think' : percentage >= 70 ? 'celebrate-big' : 'cheer'}
+              size={140}
+            />
+          </div>
           <h2 className="text-3xl font-black text-heading dark:text-dark-text mb-2">
             {!resultsKnown ? t('quiz.result.unknownTitle') : percentage >= 70 ? t('quiz.result.greatTitle') : t('quiz.result.goodTitle')}
           </h2>
