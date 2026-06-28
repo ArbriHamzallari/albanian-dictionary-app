@@ -1,12 +1,13 @@
 import { useEffect, useState, lazy, Suspense } from 'react';
-import { Route, Routes, useLocation } from 'react-router-dom';
+import { Route, Routes, useLocation, Link } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import Header from './components/Header.jsx';
 import Footer from './components/Footer.jsx';
 import MobileNav from './components/MobileNav.jsx';
 import OnboardingTour from './components/Onboarding.jsx';
-import { useAuth } from './context/AuthContext.jsx';
+import { useAuth, useHasUnlimitedAccess } from './context/AuthContext.jsx';
 import { initTheme } from './utils/userService.js';
+import { t } from './i18n/index.js';
 
 const ONBOARDED_KEY = 'fjalingo_onboarded';
 
@@ -28,6 +29,7 @@ const Lesson = lazy(() => import('./pages/Lesson.jsx'));
 const Onboarding = lazy(() => import('./pages/Onboarding.jsx'));
 const Achievements = lazy(() => import('./pages/Achievements.jsx'));
 const Register = lazy(() => import('./pages/Register.jsx'));
+const PremiumHome = lazy(() => import('./pages/PremiumHome.jsx'));
 const CompleteProfile = lazy(() => import('./pages/CompleteProfile.jsx'));
 const Profile = lazy(() => import('./pages/Profile.jsx'));
 const Leaderboard = lazy(() => import('./pages/Leaderboard.jsx'));
@@ -44,10 +46,40 @@ const RouteFallback = () => (
   </div>
 );
 
+const AdminHomeBanner = () => (
+  <div className="border-b-2 border-fjalingo-purple/20 bg-fjalingo-purple/10 px-4 py-2 text-center text-sm font-bold text-fjalingo-purple">
+    {t('adminHomeBanner.text')}{' '}
+    <Link to="/admin/dashboard" className="underline">{t('adminHomeBanner.cta')} →</Link>
+  </div>
+);
+
+// "/" surface: premium (non-admin) users get the richer PremiumHome; admins get
+// the marketing Home plus a banner to their panel; everyone else gets Home.
+// Reads the access hook on mount, so a subscription change reflects next mount.
+const HomeRoute = () => {
+  const { isAdmin } = useAuth();
+  const hasUnlimited = useHasUnlimitedAccess();
+
+  if (hasUnlimited && !isAdmin) return <PremiumHome />;
+  if (isAdmin) {
+    return (
+      <>
+        <AdminHomeBanner />
+        <Home />
+      </>
+    );
+  }
+  return <Home />;
+};
+
 const App = () => {
   const location = useLocation();
-  const { isLoggedIn, loading: authLoading } = useAuth();
-  const isSplash = location.pathname === '/';
+  const { isLoggedIn, isAdmin, loading: authLoading } = useAuth();
+  const hasUnlimited = useHasUnlimitedAccess();
+  // A premium (non-admin) user on "/" sees the app-like PremiumHome, which needs
+  // the header/nav — so it is NOT the chrome-less marketing splash.
+  const isPremiumHome = location.pathname === '/' && hasUnlimited && !isAdmin;
+  const isSplash = location.pathname === '/' && !isPremiumHome;
   const isDesign = location.pathname === '/design';
   const isOnboarding = location.pathname === '/start';
   const isAdminRoute = location.pathname.startsWith('/admin');
@@ -87,7 +119,7 @@ const App = () => {
         <AnimatePresence mode="wait">
           <Suspense fallback={<RouteFallback />}>
             <Routes>
-              <Route path="/" element={<Home />} />
+              <Route path="/" element={<HomeRoute />} />
               <Route path="/kerko" element={<SearchResults />} />
               <Route path="/fjala/:id" element={<WordDetail />} />
               <Route path="/fjala-e-dites" element={<WordOfTheDay />} />
