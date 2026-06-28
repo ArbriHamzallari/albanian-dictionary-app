@@ -53,19 +53,20 @@ const AdminHomeBanner = () => (
   </div>
 );
 
-// "/" surface: premium (non-admin) users get the richer PremiumHome; admins get
-// the marketing Home plus a banner to their panel; everyone else gets Home.
-// Reads the access hook on mount, so a subscription change reflects next mount.
+// "/" surface: anyone with unlimited access (premium OR admin) gets the richer
+// PremiumHome; admins also get a banner to their panel so the premium surface is
+// reachable and testable with zero paywalls (AUTH-4-FIX, intentionally overriding
+// UX-4's admin→Home). Free users get the marketing Home. Reads the access hook on
+// mount, so a subscription change reflects next mount.
 const HomeRoute = () => {
   const { isAdmin } = useAuth();
   const hasUnlimited = useHasUnlimitedAccess();
 
-  if (hasUnlimited && !isAdmin) return <PremiumHome />;
-  if (isAdmin) {
+  if (hasUnlimited) {
     return (
       <>
-        <AdminHomeBanner />
-        <Home />
+        {isAdmin && <AdminHomeBanner />}
+        <PremiumHome />
       </>
     );
   }
@@ -74,11 +75,11 @@ const HomeRoute = () => {
 
 const App = () => {
   const location = useLocation();
-  const { isLoggedIn, isAdmin, loading: authLoading } = useAuth();
+  const { isLoggedIn, loading: authLoading } = useAuth();
   const hasUnlimited = useHasUnlimitedAccess();
-  // A premium (non-admin) user on "/" sees the app-like PremiumHome, which needs
-  // the header/nav — so it is NOT the chrome-less marketing splash.
-  const isPremiumHome = location.pathname === '/' && hasUnlimited && !isAdmin;
+  // Anyone with unlimited access (premium or admin) on "/" sees the app-like
+  // PremiumHome, which needs the header/nav — so it is NOT the chrome-less splash.
+  const isPremiumHome = location.pathname === '/' && hasUnlimited;
   const isSplash = location.pathname === '/' && !isPremiumHome;
   const isDesign = location.pathname === '/design';
   const isOnboarding = location.pathname === '/start';

@@ -328,6 +328,7 @@ const login = async (req, res, next) => {
         tier: entitlementIsPremium(entitlement) ? 'premium' : 'free',
         status: entitlement?.status || 'free',
         current_period_end: entitlement?.current_period_end || null,
+        complimentary_until: entitlement?.complimentary_until || null,
       },
       csrfToken: res.locals.csrfToken,
     });
@@ -387,6 +388,7 @@ const me = async (req, res, next) => {
         tier: entitlementIsPremium(entitlement) ? 'premium' : 'free',
         status: entitlement?.status || 'free',
         current_period_end: entitlement?.current_period_end || null,
+        complimentary_until: entitlement?.complimentary_until || null,
       },
       csrfToken,
     });
@@ -691,6 +693,7 @@ const googleAuth = async (req, res, next) => {
           tier: entitlementIsPremium(entitlement) ? 'premium' : 'free',
           status: entitlement?.status || 'free',
           current_period_end: entitlement?.current_period_end || null,
+          complimentary_until: entitlement?.complimentary_until || null,
         },
         // age IS NULL means the user hasn't passed the age gate yet.
         needsProfileCompletion: user.age == null,
