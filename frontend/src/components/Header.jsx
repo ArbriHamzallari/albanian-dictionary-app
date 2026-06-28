@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import ThemeToggle from './ThemeToggle.jsx';
 import Avatar from './Avatar.jsx';
 import NotificationBell from './NotificationBell.jsx';
+import Parrot from './mascot/Parrot.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import { t } from '../i18n/index.js';
 
@@ -49,7 +50,7 @@ const Header = () => {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
         {/* Logo */}
         <NavLink to="/" className="flex items-center gap-2 group">
-          <span className="text-3xl">🦅</span>
+          <Parrot state="idle" size={32} />
           <div>
             <h1 className="text-2xl font-black font-display text-fjalingo-green leading-none">
               Fjalingo

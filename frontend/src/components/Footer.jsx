@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Instagram, Globe, Linkedin } from 'lucide-react';
+import Parrot from './mascot/Parrot.jsx';
 import { t } from '../i18n/index.js';
 
 const Footer = () => {
@@ -10,7 +11,7 @@ const Footer = () => {
           {/* Brand */}
           <div>
             <div className="flex items-center gap-2 mb-3">
-              <span className="text-2xl">🦅</span>
+              <Parrot state="idle" size={28} />
               <span className="text-xl font-black text-fjalingo-green">Fjalingo</span>
             </div>
             <p className="text-sm font-semibold text-muted dark:text-dark-muted">

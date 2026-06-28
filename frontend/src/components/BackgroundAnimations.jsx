@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo } from 'react';
+import Parrot from './mascot/Parrot.jsx';
 
 const WORDS = ['shqip', 'gjuhë', 'fjalë', 'mëso', 'argëto', 'dije', 'libër', 'shkruaj', 'lexo', 'zbulo', 'flamur', 'atdhe', 'bukur', 'dashuri', 'jetë'];
 
@@ -63,14 +64,14 @@ const BackgroundAnimations = () => {
         <FallingWord key={fw.id} {...fw} />
       ))}
 
-      {/* Flying bird */}
+      {/* Flying mascot (the branded parrot, wings flapping via the wave state) */}
       {showBird && (
         <div
           key={birdKey}
-          className="absolute text-4xl animate-fly pointer-events-none"
+          className="absolute animate-fly pointer-events-none"
           style={{ top: `${15 + Math.random() * 30}%` }}
         >
-          🦅
+          <Parrot state="wave" size={48} />
         </div>
       )}
     </div>
