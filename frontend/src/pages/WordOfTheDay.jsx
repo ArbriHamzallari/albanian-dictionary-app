@@ -4,6 +4,7 @@ import { Star } from 'lucide-react';
 import LoadingSpinner from '../components/LoadingSpinner.jsx';
 import ErrorMessage from '../components/ErrorMessage.jsx';
 import WordCard from '../components/WordCard.jsx';
+import Seo from '../components/Seo.jsx';
 import api from '../utils/api.js';
 import { t } from '../i18n/index.js';
 
@@ -28,6 +29,11 @@ const WordOfTheDay = () => {
 
   return (
     <div className="max-w-4xl mx-auto px-6 py-10">
+      <Seo
+        title="Fjala e Ditës — Fjalingo"
+        description="Mëso një fjalë të re shqipe çdo ditë dhe zëvendëso fjalët e huazuara me shqipen e vërtetë."
+        path="/fjala-e-dites"
+      />
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

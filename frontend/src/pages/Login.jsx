@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext.jsx';
 import ErrorMessage from '../components/ErrorMessage.jsx';
 import PasswordInput from '../components/PasswordInput.jsx';
 import GoogleSignInButton from '../components/GoogleSignInButton.jsx';
+import Seo from '../components/Seo.jsx';
 import { GOOGLE_CLIENT_ID } from '../utils/google.js';
 import { t } from '../i18n/index.js';
 
@@ -64,6 +65,11 @@ const Login = () => {
 
   return (
     <div className="max-w-md mx-auto px-6 py-16">
+      <Seo
+        title="Hyr — Fjalingo"
+        description="Hyr në llogarinë tënde Fjalingo për të vazhduar mësimin e shqipes së vërtetë."
+        path="/hyr"
+      />
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
