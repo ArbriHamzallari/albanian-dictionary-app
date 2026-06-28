@@ -7,6 +7,7 @@ const { loginSchema, registerSchema, guestUpgradeSchema, consentCheckSchema, goo
 const { USER_RANK_SQL } = require('../utils/rankSql');
 const { getEntitlement, entitlementIsPremium } = require('../middleware/entitlements');
 const { touchLastSeen } = require('../utils/presence');
+const { recordLoginEvent } = require('../utils/loginEvents');
 const { parseCookies } = require('../utils/cookies');
 const {
   getLeaderboardSegmentForAge,
@@ -294,6 +295,10 @@ const login = async (req, res, next) => {
       return res.status(401).json({ message: 'Email ose fjalëkalim i pasaktë.' });
     }
 
+    if (user.is_suspended) {
+      return res.status(403).json({ message: 'Llogaria juaj është pezulluar.', code: 'ACCOUNT_SUSPENDED' });
+    }
+
     if (!process.env.JWT_SECRET) {
       return res.status(503).json({ message: 'Serveri nuk është konfiguruar. Kontaktoni administratorin.' });
     }
@@ -303,6 +308,7 @@ const login = async (req, res, next) => {
       'UPDATE users SET last_login = NOW(), last_seen = NOW() WHERE id = $1',
       [user.id]
     );
+    await recordLoginEvent(user.uuid, req);
 
     const token = setSessionCookies(res, user);
 
@@ -564,6 +570,11 @@ const refresh = async (req, res) => {
     return res.status(401).json({ message: 'Sesioni ka skaduar.', code: 'REFRESH_INVALID' });
   }
 
+  if (userResult.rows[0].is_suspended) {
+    clearSessionCookies(res);
+    return res.status(403).json({ message: 'Llogaria juaj është pezulluar.', code: 'ACCOUNT_SUSPENDED' });
+  }
+
   setSessionCookies(res, userResult.rows[0]);
   return res.json({ ok: true, csrfToken: res.locals.csrfToken });
 };
@@ -663,9 +674,14 @@ const googleAuth = async (req, res, next) => {
 
       await client.query('COMMIT');
 
+      if (user.is_suspended) {
+        return res.status(403).json({ message: 'Llogaria juaj është pezulluar.', code: 'ACCOUNT_SUSPENDED' });
+      }
+
       const statsResult = await pool.query('SELECT * FROM user_stats WHERE user_id = $1', [user.uuid]);
       const entitlement = await getEntitlement(user.uuid);
       const token = setSessionCookies(res, user);
+      await recordLoginEvent(user.uuid, req);
       return res.json({
         token,
         role: user.role,

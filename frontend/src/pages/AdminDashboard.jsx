@@ -9,6 +9,7 @@ import LoadingSpinner from '../components/LoadingSpinner.jsx';
 import Button from '../components/ui/Button.jsx';
 import Heading from '../components/ui/Heading.jsx';
 import ConfirmDialog from '../components/ui/ConfirmDialog.jsx';
+import AdminUsers from './AdminUsers.jsx';
 import { t } from '../i18n/index.js';
 
 const CATEGORIES = ['Folje', 'Emër', 'Mbiemër', 'Ndajfolje'];
@@ -32,6 +33,7 @@ const AdminDashboard = () => {
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(true);
   const [searchQ, setSearchQ] = useState('');
+  const [activeTab, setActiveTab] = useState('content');
 
   // Word form state
   const [showForm, setShowForm] = useState(false);
@@ -289,6 +291,30 @@ const AdminDashboard = () => {
         </motion.div>
       )}
 
+      {/* ── Tabs ──────────────────────────────────────────── */}
+      <div className="flex gap-2 mb-8 border-b-2 border-border dark:border-dark-border">
+        {[
+          { id: 'content', label: t('admin.tabs.content') },
+          { id: 'users', label: t('admin.tabs.users') },
+        ].map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`px-4 py-2 -mb-0.5 text-sm font-bold border-b-2 transition ${
+              activeTab === tab.id
+                ? 'border-brand-green text-brand-green'
+                : 'border-transparent text-muted dark:text-dark-muted hover:text-heading dark:hover:text-dark-text'
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {activeTab === 'users' && <AdminUsers />}
+
+      {activeTab === 'content' && (
+        <>
       {/* ── Platform Statistics ───────────────────────────── */}
       <div className="card mb-8">
         <h3 className="text-sm font-black text-fjalingo-blue mb-5">{t('admin.statsHeading')}</h3>
@@ -430,6 +456,8 @@ const AdminDashboard = () => {
           )}
         </div>
       </div>
+        </>
+      )}
 
       {/* Add/Edit Modal */}
       <AnimatePresence>
