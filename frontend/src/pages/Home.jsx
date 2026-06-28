@@ -121,9 +121,9 @@ const Home = () => {
           {...fadeUp}
           className="relative z-10 flex w-full max-w-lg flex-col items-center gap-5 sm:gap-7"
         >
-          <Parrot state="wave" size={150} className="sm:hidden" />
-          <Parrot state="wave" size={200} className="hidden sm:block md:hidden" />
-          <Parrot state="wave" size={220} className="hidden md:block" />
+          <Parrot state="idle" size={150} className="sm:hidden" />
+          <Parrot state="idle" size={200} className="hidden sm:block md:hidden" />
+          <Parrot state="idle" size={220} className="hidden md:block" />
 
           <Heading
             level={1}

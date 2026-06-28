@@ -97,10 +97,10 @@ export default {
           '100%': { transform: 'scale(1)' },
         },
         fall: {
-          '0%': { transform: 'translateY(-100px) rotate(0deg)', opacity: '0' },
-          '10%': { opacity: '0.15' },
-          '90%': { opacity: '0.15' },
-          '100%': { transform: 'translateY(110vh) rotate(360deg)', opacity: '0' },
+          '0%': { transform: 'translateY(-10vh)', opacity: '0' },
+          '12%': { opacity: '1' },
+          '88%': { opacity: '1' },
+          '100%': { transform: 'translateY(110vh)', opacity: '0' },
         },
         fly: {
           '0%': { transform: 'translateX(-120px) translateY(0px)' },
