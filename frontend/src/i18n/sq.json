@@ -62,7 +62,27 @@
     "scrollHint": "Shiko ç'të pret poshtë",
     "hero": {
       "headline": "Fol shqipen e vërtetë, jo të huazuarën",
-      "cta": "Fillo"
+      "cta": "Fillo",
+      "problem": "Sa shpesh përdorim 'email', 'meeting', 'business' në vend të fjalëve tona?",
+      "promise": "Fjalingo të ndihmon t'i kthesh fjalët e huazuara në shqipen e vërtetë — me lojë, jo me mësim.",
+      "ctaPrimary": "Fillo falas",
+      "ctaSecondary": "Si funksionon"
+    },
+    "how": {
+      "heading": "Si funksionon",
+      "lead": "Tri lloje ushtrimesh të shkurtra.",
+      "spot": {
+        "title": "Gjej fjalën e huazuar",
+        "desc": "Trokit fjalën e huaj në një fjali dhe zbulo zëvendësimin shqip."
+      },
+      "translate": {
+        "title": "Zgjidh fjalën e saktë",
+        "desc": "Zgjidh përkthimin e duhur shqip nga katër mundësi."
+      },
+      "fill": {
+        "title": "Plotëso vendin bosh",
+        "desc": "Plotëso fjalën që mungon në fjali."
+      }
     },
     "error": {
       "wordsLoad": "Nuk mund të ngarkohen fjalët. Kontrolloni që backend dhe baza e të dhënave të jenë aktiv.",
@@ -339,19 +359,11 @@
     "ari": "Ari"
   },
   "purpose": {
-    "heading": "Pse Fjalingo? 🇦🇱",
-    "problemTitle": "Problemi",
-    "problemLead": "Gjuha shqipe po humbet të vërtetën e saj. Çdo ditë, më shumë fjalë të huazuara po zëvendësojnë fjalët tona autentike.",
-    "insteadOf": "në vend të",
-    "missionTitle": "Misioni Ynë",
-    "missionText": "Fjalingo është krijuar për të ndihmuar shqiptarët të zbulojnë dhe përdorin fjalët e sakta shqipe. Ne besojmë që gjuha jonë është pasuri dhe duhet ruajtur për brezat e ardhshëm.",
-    "howItWorks": "Si funksionon?",
-    "cta": "Bashkohu mijëra shqiptarëve që po ruajnë gjuhën tonë! 🦜",
-    "steps": {
-      "search": "Kërko fjalën e huazuar",
-      "reveal": "Zbulon versionin e saktë shqip",
-      "play": "Mëso duke luajtur kuize argëtuese",
-      "progress": "Ruaj progres dhe fitoje arritje"
+    "heading": "Pse Fjalingo?",
+    "bullets": {
+      "real": "Shqipja e vërtetë, jo Alblish — fjalët tona në vend të atyre të huazuara.",
+      "play": "Mëson me lojë: pikë, seri dhe arritje, pak minuta në ditë.",
+      "free": "Fillon falas — pa pengesa, pa presion."
     }
   },
   "notifications": {

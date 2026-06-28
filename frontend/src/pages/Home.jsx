@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, useReducedMotion } from 'framer-motion';
-import { ArrowRight, Star } from 'lucide-react';
+import { ArrowRight, Star, MousePointerClick, ListChecks, PencilLine } from 'lucide-react';
 import SearchBar from '../components/SearchBar.jsx';
 import WordCard from '../components/WordCard.jsx';
 import LoadingSpinner from '../components/LoadingSpinner.jsx';
@@ -127,19 +127,64 @@ const Home = () => {
 
           <Heading
             level={1}
-            className="text-balance px-1 text-[1.65rem] leading-snug sm:px-2 sm:text-3xl md:text-5xl"
+            className="text-balance px-1 text-[1.5rem] leading-snug sm:px-2 sm:text-3xl md:text-[2.75rem]"
           >
-            Fol shqipen e vërtetë, jo të huazuarën
+            {t('home.hero.problem')}
           </Heading>
 
-          <Link to="/kuizi" className="w-full max-w-xs px-2 sm:px-0">
-            <Button size="lg" fullWidth>
-              Fillo
-            </Button>
-          </Link>
+          <p className="max-w-md text-balance text-base font-semibold text-muted dark:text-dark-muted sm:text-lg">
+            {t('home.hero.promise')}
+          </p>
+
+          <div className="flex w-full max-w-xs flex-col gap-3 px-2 sm:max-w-md sm:flex-row sm:px-0">
+            <Link to="/kuizi" className="flex-1">
+              <Button size="lg" fullWidth>
+                {t('home.hero.ctaPrimary')}
+              </Button>
+            </Link>
+            <a href="#si-funksionon" className="btn-outline flex-1 inline-flex items-center justify-center">
+              {t('home.hero.ctaSecondary')}
+            </a>
+          </div>
 
           <ScrollHint reduceMotion={reduceMotion} />
         </motion.div>
+      </section>
+
+      {/* Si funksionon — tri llojet e ushtrimeve (emrat e mbyllur të mekanikës) */}
+      <section id="si-funksionon" className="mx-auto max-w-6xl scroll-mt-20 px-4 py-12 sm:px-6">
+        <div className="mb-8 text-center">
+          <h2 className="text-2xl font-black text-heading dark:text-dark-text sm:text-3xl">
+            {t('home.how.heading')}
+          </h2>
+          <p className="mt-2 text-sm font-semibold text-muted dark:text-dark-muted">
+            {t('home.how.lead')}
+          </p>
+        </div>
+        <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-3">
+          {[
+            { icon: MousePointerClick, key: 'spot', color: 'text-fjalingo-green' },
+            { icon: ListChecks, key: 'translate', color: 'text-fjalingo-blue' },
+            { icon: PencilLine, key: 'fill', color: 'text-fjalingo-purple' },
+          ].map((ex, i) => (
+            <motion.div
+              key={ex.key}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: 0.1 * i }}
+              className="card py-8 text-center"
+            >
+              <ex.icon className={`mx-auto mb-3 h-8 w-8 ${ex.color}`} aria-hidden="true" />
+              <h3 className="mb-2 text-base font-black text-heading dark:text-dark-text">
+                {t(`home.how.${ex.key}.title`)}
+              </h3>
+              <p className="text-sm font-semibold text-muted dark:text-dark-muted">
+                {t(`home.how.${ex.key}.desc`)}
+              </p>
+            </motion.div>
+          ))}
+        </div>
       </section>
 
       {/* Përmbajtja poshtë fold-it */}
