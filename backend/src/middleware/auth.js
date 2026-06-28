@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const pool = require('../utils/db');
 const { parseCookies } = require('../utils/cookies');
 
 const ACCESS_COOKIE = 'fjalingo_token';
@@ -17,17 +18,36 @@ function extractToken(req) {
   return token;
 }
 
-const authenticate = (req, res, next) => {
+const authenticate = async (req, res, next) => {
   const token = extractToken(req);
   if (!token) {
     return res.status(401).json({ message: 'Kërkohet autorizim.' });
   }
+  let payload;
   try {
-    req.user = jwt.verify(token, process.env.JWT_SECRET);
-    return next();
+    payload = jwt.verify(token, process.env.JWT_SECRET);
   } catch (error) {
     return res.status(401).json({ message: 'Token i pavlefshëm ose i skaduar.' });
   }
+  // The JWT is stateless, so a deleted or admin-suspended account would otherwise
+  // keep working until expiry. Check the live row on every authenticated request
+  // and reject it immediately.
+  try {
+    const result = await pool.query(
+      'SELECT is_suspended FROM users WHERE uuid = $1::uuid',
+      [payload.uuid]
+    );
+    if (!result.rows.length) {
+      return res.status(401).json({ message: 'Token i pavlefshëm ose i skaduar.' });
+    }
+    if (result.rows[0].is_suspended) {
+      return res.status(403).json({ message: 'Llogaria juaj është pezulluar.', code: 'ACCOUNT_SUSPENDED' });
+    }
+  } catch (error) {
+    return next(error);
+  }
+  req.user = payload;
+  return next();
 };
 
 const optionalAuthenticate = (req, res, next) => {

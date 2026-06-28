@@ -10,10 +10,17 @@ async function getEntitlement(userUuid) {
     return null;
   }
 
+  // Driven from users (not entitlements) so an admin-granted complimentary user,
+  // who may have no Paddle entitlement row, still resolves. A user without an
+  // entitlements row reads as free, matching the prior behavior.
   const result = await pool.query(
-    `SELECT tier, status, current_period_end
-     FROM entitlements
-     WHERE user_id = $1::uuid`,
+    `SELECT COALESCE(e.tier, 'free') AS tier,
+            COALESCE(e.status, 'free') AS status,
+            e.current_period_end,
+            u.complimentary_until
+     FROM users u
+     LEFT JOIN entitlements e ON e.user_id = u.uuid
+     WHERE u.uuid = $1::uuid`,
     [userUuid]
   );
 
@@ -23,6 +30,14 @@ async function getEntitlement(userUuid) {
 function entitlementIsPremium(entitlement) {
   if (!entitlement) {
     return false;
+  }
+
+  // Admin-granted complimentary access counts as premium until it expires.
+  if (
+    entitlement.complimentary_until &&
+    new Date(entitlement.complimentary_until).getTime() > Date.now()
+  ) {
+    return true;
   }
 
   if (entitlement.tier !== 'premium' || !PREMIUM_STATUSES.has(entitlement.status)) {

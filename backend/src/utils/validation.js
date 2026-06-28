@@ -85,6 +85,15 @@ const profileUpdateSchema = Joi.object({
   leaderboard_opt_out: Joi.boolean().optional(),
 });
 
+// AUTH-5: admin edits a user. Partial update — every field optional, but at least
+// one must be present. avatar_filename matches the preset-avatar file convention.
+const adminUserUpdateSchema = Joi.object({
+  role: Joi.string().valid('user', 'admin').optional(),
+  username: Joi.string().trim().pattern(/^[A-Za-z0-9_-]+$/).min(3).max(30).optional(),
+  avatar_filename: Joi.string().trim().pattern(/^[A-Za-z0-9._-]+\.(png|jpg|jpeg|svg|webp)$/).max(255).optional(),
+  is_suspended: Joi.boolean().optional(),
+}).min(1);
+
 const QUIZ_QUESTIONS_PER_SESSION = 10;
 
 const quizAnswerSchema = Joi.object({
@@ -122,6 +131,7 @@ module.exports = {
   registerSchema,
   guestUpgradeSchema,
   profileUpdateSchema,
+  adminUserUpdateSchema,
   quizSubmitSchema,
   QUIZ_QUESTIONS_PER_SESSION,
 };
