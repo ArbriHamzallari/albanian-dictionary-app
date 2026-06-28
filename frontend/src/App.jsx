@@ -21,6 +21,7 @@ import Dashboard from './pages/Dashboard.jsx';
 const SearchResults = lazy(() => import('./pages/SearchResults.jsx'));
 const WordDetail = lazy(() => import('./pages/WordDetail.jsx'));
 const WordOfTheDay = lazy(() => import('./pages/WordOfTheDay.jsx'));
+const DailyChallenge = lazy(() => import('./pages/DailyChallenge.jsx'));
 const SuggestWord = lazy(() => import('./pages/SuggestWord.jsx'));
 const AdminLogin = lazy(() => import('./pages/AdminLogin.jsx'));
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard.jsx'));
@@ -124,6 +125,7 @@ const App = () => {
               <Route path="/kerko" element={<SearchResults />} />
               <Route path="/fjala/:id" element={<WordDetail />} />
               <Route path="/fjala-e-dites" element={<WordOfTheDay />} />
+              <Route path="/sfida-e-dites" element={<DailyChallenge />} />
               <Route path="/propozo" element={<SuggestWord />} />
               <Route path="/kuizi" element={<Quiz />} />
               <Route path="/start" element={<Onboarding />} />
