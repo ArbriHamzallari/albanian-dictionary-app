@@ -11,6 +11,8 @@ import PurposeSection from '../components/PurposeSection.jsx';
 import Button from '../components/ui/Button.jsx';
 import Heading from '../components/ui/Heading.jsx';
 import Parrot from '../components/mascot/Parrot.jsx';
+import AnimatedBackground from '../components/AnimatedBackground.jsx';
+import BackgroundAnimations from '../components/BackgroundAnimations.jsx';
 import api from '../utils/api.js';
 import { t } from '../i18n/index.js';
 
@@ -102,10 +104,22 @@ const Home = () => {
   return (
     <div className="min-h-screen bg-cloud">
       {/* Splash hero — papagalli, slogani, CTA dhe treguesi i rrëshqitjes */}
-      <section className="flex min-h-[100dvh] flex-col items-center justify-center px-4 py-10 text-center sm:px-6 sm:py-12">
+      <section className="relative flex min-h-[100dvh] flex-col items-center justify-center overflow-hidden px-4 py-10 text-center sm:px-6 sm:py-12">
+        {/* Designed hero background: brand blobs + dot-grid + falling words */}
+        <AnimatedBackground />
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 z-0 pointer-events-none opacity-[0.06] dark:opacity-[0.04]"
+          style={{
+            backgroundImage: 'radial-gradient(var(--brand-green) 1px, transparent 1px)',
+            backgroundSize: '22px 22px',
+          }}
+        />
+        <BackgroundAnimations />
+
         <motion.div
           {...fadeUp}
-          className="flex w-full max-w-lg flex-col items-center gap-5 sm:gap-7"
+          className="relative z-10 flex w-full max-w-lg flex-col items-center gap-5 sm:gap-7"
         >
           <Parrot state="wave" size={150} className="sm:hidden" />
           <Parrot state="wave" size={200} className="hidden sm:block md:hidden" />

@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo } from 'react';
+import { useReducedMotion } from 'framer-motion';
 import Parrot from './mascot/Parrot.jsx';
 
 const WORDS = ['shqip', 'gjuhë', 'fjalë', 'mëso', 'argëto', 'dije', 'libër', 'shkruaj', 'lexo', 'zbulo', 'flamur', 'atdhe', 'bukur', 'dashuri', 'jetë'];
@@ -19,19 +20,24 @@ const FallingWord = ({ word, delay, left, duration, size }) => (
 );
 
 const BackgroundAnimations = () => {
+  const reduceMotion = useReducedMotion();
   const [showBird, setShowBird] = useState(false);
   const [birdKey, setBirdKey] = useState(0);
 
   const fallingWords = useMemo(() => {
-    return Array.from({ length: 12 }, (_, i) => ({
+    // Reduced motion: render nothing. Otherwise ~20 words on desktop, capped at
+    // 6 on mobile (acceptance), with a slow, calm fall.
+    if (reduceMotion) return [];
+    const count = window.innerWidth < 768 ? 6 : 20;
+    return Array.from({ length: count }, (_, i) => ({
       id: i,
       word: WORDS[Math.floor(Math.random() * WORDS.length)],
-      delay: Math.random() * 20,
+      delay: Math.random() * 25,
       left: Math.random() * 90 + 5,
-      duration: 12 + Math.random() * 10,
+      duration: 20 + Math.random() * 15,
       size: 14 + Math.random() * 16,
     }));
-  }, []);
+  }, [reduceMotion]);
 
   useEffect(() => {
     // Check for reduced motion preference or mobile
@@ -58,7 +64,7 @@ const BackgroundAnimations = () => {
   }, []);
 
   return (
-    <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
+    <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
       {/* Falling words */}
       {fallingWords.map((fw) => (
         <FallingWord key={fw.id} {...fw} />
