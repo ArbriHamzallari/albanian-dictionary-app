@@ -21,8 +21,8 @@ const submitSuggestion = async (req, res, next) => {
 
     const result = await pool.query(
       `INSERT INTO word_suggestions
-      (borrowed_word, suggested_albanian, suggested_definition, submitter_name, submitter_email)
-      VALUES ($1, $2, $3, $4, $5)
+      (borrowed_word, suggested_albanian, suggested_definition, submitter_name, submitter_email, submitted_by)
+      VALUES ($1, $2, $3, $4, $5, $6)
       RETURNING *`,
       [
         value.borrowed_word,
@@ -30,6 +30,7 @@ const submitSuggestion = async (req, res, next) => {
         value.suggested_definition || null,
         value.submitter_name || null,
         value.submitter_email || null,
+        req.user?.uuid || null,
       ]
     );
 

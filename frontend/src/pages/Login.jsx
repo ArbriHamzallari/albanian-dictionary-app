@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { LogIn } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.jsx';
@@ -15,7 +15,17 @@ const Login = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const { login, googleLogin } = useAuth();
+
+  // A guest action (e.g. proposing a word) can send the user here to authenticate
+  // and then resume. Honor that return target instead of the default dashboard.
+  const resumeAfterAuth = (role) => {
+    if (role === 'admin') { navigate('/admin/dashboard'); return; }
+    const from = location.state?.from;
+    if (from) { navigate(from, { state: { suggestion: location.state?.suggestion } }); return; }
+    navigate('/dashboard');
+  };
 
   const handleGoogle = useCallback(async (credential) => {
     setError('');
@@ -23,8 +33,7 @@ const Login = () => {
     try {
       const data = await googleLogin(credential);
       if (data.needsProfileCompletion) navigate('/ploteso-profilin');
-      else if (data.role === 'admin') navigate('/admin/dashboard');
-      else navigate('/dashboard');
+      else resumeAfterAuth(data.role);
     } catch (err) {
       setError(err.response?.data?.message || t('auth.google.failed'));
     } finally {
@@ -39,12 +48,7 @@ const Login = () => {
 
     try {
       const data = await login(email, password);
-      // Redirect admin users to admin dashboard
-      if (data.role === 'admin') {
-        navigate('/admin/dashboard');
-      } else {
-        navigate('/dashboard');
-      }
+      resumeAfterAuth(data.role);
     } catch (err) {
       if (err.response?.status === 401) {
         setError(t('auth.login.invalidCredentials'));
