@@ -5,6 +5,22 @@ const {
   isEmojiOnly,
   validateUserText,
 } = require('../utils/childSafety');
+const { encrypt, decrypt } = require('../services/encryption');
+const { moderateMessage } = require('../services/moderation');
+
+// Append-only auto-moderation trail for the admin Trust & Safety view. Best-effort:
+// a logging failure never blocks the (already-rejected) send.
+async function recordModerationEvent({ senderId, recipientId, reason, excerpt }) {
+  try {
+    await pool.query(
+      `INSERT INTO moderation_events (sender_id, recipient_id, surface, reason, excerpt)
+       VALUES ($1::uuid, $2::uuid, 'chat', $3, $4)`,
+      [senderId, recipientId, reason, excerpt ? String(excerpt).slice(0, 200) : null]
+    );
+  } catch (err) {
+    console.error('[moderation_event_failed]', err.message);
+  }
+}
 
 async function getUserByUsername(username) {
   const result = await pool.query(
@@ -41,15 +57,13 @@ async function usersHaveBlock(firstUserUuid, secondUserUuid) {
   return result.rows.length > 0;
 }
 
+// Structural validation only (length + the preset/emoji/minor rules). Content
+// moderation for free text runs through the moderation pipeline in sendMessage;
+// preset phrases and emoji are constrained to safe sets so they skip it.
 function validateMessageBody(messageType, body, involvesMinor) {
   const text = String(body || '').trim();
   if (!text || text.length > 280) {
     return { ok: false, message: 'Mesazhi është i pavlefshëm.' };
-  }
-
-  const textSafety = validateUserText(text);
-  if (!textSafety.ok) {
-    return { ok: false, message: 'Mesazhi përmban tekst të palejuar ose të dhëna personale.' };
   }
 
   if (messageType === 'preset') {
@@ -118,14 +132,37 @@ const sendMessage = async (req, res, next) => {
       return res.status(400).json({ message: validation.message });
     }
 
+    const text = String(body).trim();
+
+    // Free text runs the moderation pipeline (banlist/PII -> LLM borderline).
+    // Preset phrases and emoji are constrained to safe sets and skip it.
+    if (messageType === 'text') {
+      const verdict = await moderateMessage(text);
+      if (!verdict.ok) {
+        await recordModerationEvent({
+          senderId: sender.uuid,
+          recipientId: recipient.uuid,
+          reason: verdict.reason,
+          excerpt: text,
+        });
+        const message = verdict.reason === 'MODERATION_UNAVAILABLE'
+          ? 'Mesazhi nuk u verifikua dot për momentin. Provoni përsëri.'
+          : 'Mesazhi u bllokua nga moderimi sepse mund të jetë i papërshtatshëm.';
+        return res.status(400).json({ message, code: 'MESSAGE_BLOCKED' });
+      }
+    }
+
+    // Store encrypted at rest (AES-256-GCM); body stays NULL going forward.
     const result = await pool.query(
-      `INSERT INTO chat_messages (sender_id, recipient_id, message_type, body)
-       VALUES ($1::uuid, $2::uuid, $3, $4)
-       RETURNING id, message_type, body, created_at`,
-      [sender.uuid, recipient.uuid, messageType, String(body).trim()]
+      `INSERT INTO chat_messages (sender_id, recipient_id, message_type, ciphertext, moderation_status)
+       VALUES ($1::uuid, $2::uuid, $3, $4, 'clean')
+       RETURNING id, message_type, created_at`,
+      [sender.uuid, recipient.uuid, messageType, encrypt(text)]
     );
 
-    return res.status(201).json({ message: result.rows[0] });
+    // Echo the plaintext back to the sender for immediate render (it is never
+    // stored in the clear).
+    return res.status(201).json({ message: { ...result.rows[0], body: text } });
   } catch (err) {
     return next(err);
   }
@@ -159,6 +196,7 @@ const listMessages = async (req, res, next) => {
          id,
          CASE WHEN sender_id = $1::uuid THEN 'sent' ELSE 'received' END AS direction,
          message_type,
+         ciphertext,
          body,
          created_at
        FROM chat_messages
@@ -169,7 +207,18 @@ const listMessages = async (req, res, next) => {
       [req.user.uuid, otherUser.uuid]
     );
 
-    return res.json({ messages: result.rows.reverse() });
+    // Decrypt ciphertext; pre-encryption rows fall back to their plaintext body.
+    const messages = result.rows
+      .map((row) => ({
+        id: row.id,
+        direction: row.direction,
+        message_type: row.message_type,
+        body: row.ciphertext ? decrypt(row.ciphertext) : row.body,
+        created_at: row.created_at,
+      }))
+      .reverse();
+
+    return res.json({ messages });
   } catch (err) {
     return next(err);
   }
