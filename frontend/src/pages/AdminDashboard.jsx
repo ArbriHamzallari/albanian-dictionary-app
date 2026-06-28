@@ -10,6 +10,7 @@ import Button from '../components/ui/Button.jsx';
 import Heading from '../components/ui/Heading.jsx';
 import ConfirmDialog from '../components/ui/ConfirmDialog.jsx';
 import AdminUsers from './AdminUsers.jsx';
+import AdminTrustSafety from './AdminTrustSafety.jsx';
 import { t } from '../i18n/index.js';
 
 const CATEGORIES = ['Folje', 'Emër', 'Mbiemër', 'Ndajfolje'];
@@ -296,6 +297,7 @@ const AdminDashboard = () => {
         {[
           { id: 'content', label: t('admin.tabs.content') },
           { id: 'users', label: t('admin.tabs.users') },
+          { id: 'safety', label: t('admin.tabs.safety') },
         ].map((tab) => (
           <button
             key={tab.id}
@@ -312,6 +314,8 @@ const AdminDashboard = () => {
       </div>
 
       {activeTab === 'users' && <AdminUsers />}
+
+      {activeTab === 'safety' && <AdminTrustSafety />}
 
       {activeTab === 'content' && (
         <>

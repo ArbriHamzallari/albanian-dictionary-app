@@ -13,6 +13,8 @@ const {
   updateUser,
   deleteUser,
   grantComplimentary,
+  listModerationEvents,
+  resolveModerationEvent,
 } = require('../controllers/adminUserController');
 const { getMetrics } = require('../controllers/metricsController');
 const { authenticate, authorizeAdmin } = require('../middleware/auth');
@@ -36,6 +38,10 @@ router.get('/users/:uuid', getUser);
 router.patch('/users/:uuid', updateUser);
 router.delete('/users/:uuid', deleteUser);
 router.post('/users/:uuid/grant-complimentary', grantComplimentary);
+
+// Trust & Safety: auto-moderation events (INF-3). Ban/unban reuses PATCH /users/:uuid.
+router.get('/moderation-events', listModerationEvents);
+router.post('/moderation-events/:id/resolve', resolveModerationEvent);
 
 // Three-level curriculum CRUD (units -> lessons -> exercises).
 router.use('/curriculum', curriculumRoutes);
