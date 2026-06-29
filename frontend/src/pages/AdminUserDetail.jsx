@@ -233,7 +233,7 @@ const AdminUserDetail = ({ uuid, onBack }) => {
               ))}
             </tbody>
           </table>
-          {!loginEvents.length && <p className="text-center text-muted py-6">{t('admin.users.noLogins')}</p>}
+          {!loginEvents.length && <p className="text-center text-muted dark:text-dark-muted py-6">{t('admin.users.noLogins')}</p>}
         </div>
       </div>
 

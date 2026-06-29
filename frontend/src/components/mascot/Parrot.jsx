@@ -22,8 +22,8 @@ const Eyes = ({ open, lookUp = false }) => {
   if (!open) {
     return (
       <>
-        <path d="M88 108 Q98 102 108 108" stroke="var(--ink)" strokeWidth="3.5" strokeLinecap="round" fill="none" />
-        <path d="M132 108 Q142 102 152 108" stroke="var(--ink)" strokeWidth="3.5" strokeLinecap="round" fill="none" />
+        <path d="M88 108 Q98 102 108 108" stroke="#1F2933" strokeWidth="3.5" strokeLinecap="round" fill="none" />
+        <path d="M132 108 Q142 102 152 108" stroke="#1F2933" strokeWidth="3.5" strokeLinecap="round" fill="none" />
       </>
     );
   }
@@ -32,14 +32,14 @@ const Eyes = ({ open, lookUp = false }) => {
 
   return (
     <>
-      <ellipse cx="98" cy="108" rx="22" ry="24" fill="var(--paper)" stroke={STROKE} strokeWidth="2" />
-      <ellipse cx="142" cy="108" rx="22" ry="24" fill="var(--paper)" stroke={STROKE} strokeWidth="2" />
+      <ellipse cx="98" cy="108" rx="22" ry="24" fill="#FFFFFF" stroke={STROKE} strokeWidth="2" />
+      <ellipse cx="142" cy="108" rx="22" ry="24" fill="#FFFFFF" stroke={STROKE} strokeWidth="2" />
       <path d="M82 92 Q98 84 114 92" stroke={STROKE} strokeWidth="3" strokeLinecap="round" fill="none" />
       <path d="M126 92 Q142 84 158 92" stroke={STROKE} strokeWidth="3" strokeLinecap="round" fill="none" />
-      <circle cx={98} cy={108 + pupilOffset} r="9" fill="var(--ink)" />
-      <circle cx={142} cy={108 + pupilOffset} r="9" fill="var(--ink)" />
-      <circle cx={102} cy={104 + pupilOffset} r="3.5" fill="var(--paper)" />
-      <circle cx={146} cy={104 + pupilOffset} r="3.5" fill="var(--paper)" />
+      <circle cx={98} cy={108 + pupilOffset} r="9" fill="#1F2933" />
+      <circle cx={142} cy={108 + pupilOffset} r="9" fill="#1F2933" />
+      <circle cx={102} cy={104 + pupilOffset} r="3.5" fill="#FFFFFF" />
+      <circle cx={146} cy={104 + pupilOffset} r="3.5" fill="#FFFFFF" />
     </>
   );
 };
@@ -276,8 +276,8 @@ const Parrot = ({
 
               {activeState === 'think' && (
                 <g>
-                  <circle cx="198" cy="88" r="28" fill="var(--paper)" stroke={STROKE} strokeWidth="2.5" />
-                  <path d="M172 98 L182 108 L168 112 Z" fill="var(--paper)" stroke={STROKE} strokeWidth="2.5" strokeLinejoin="round" />
+                  <circle cx="198" cy="88" r="28" fill="#FFFFFF" stroke={STROKE} strokeWidth="2.5" />
+                  <path d="M172 98 L182 108 L168 112 Z" fill="#FFFFFF" stroke={STROKE} strokeWidth="2.5" strokeLinejoin="round" />
                   {thinkBubbleText && (
                     <text x="198" y="93" textAnchor="middle" fill="var(--ink-soft)" fontSize="11" fontWeight="600" fontFamily="Nunito, sans-serif">
                       {thinkBubbleText}

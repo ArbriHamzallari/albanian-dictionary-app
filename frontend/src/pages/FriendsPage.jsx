@@ -174,7 +174,7 @@ const FriendsPage = () => {
               aria-selected={active}
               onClick={() => setTab(key)}
               className={`rounded-pill px-4 py-2 text-sm font-extrabold focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green ${
-                active ? 'bg-brand-green text-paper' : 'bg-paper text-ink-soft border-2 border-line'
+                active ? 'bg-brand-green text-white' : 'bg-paper text-ink-soft border-2 border-line'
               }`}
             >
               {t(`friends.tabs.${key}`)}{count ? ` (${count})` : ''}
