@@ -6,7 +6,6 @@ import api from '../utils/api.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import ErrorMessage from '../components/ErrorMessage.jsx';
 import Button from '../components/ui/Button.jsx';
-import { unlockAchievement } from '../utils/userService.js';
 import { t } from '../i18n/index.js';
 
 const EMPTY_FORM = {
@@ -20,7 +19,7 @@ const EMPTY_FORM = {
 const SuggestWord = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, unlockAchievement } = useAuth();
   const [formData, setFormData] = useState(EMPTY_FORM);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
