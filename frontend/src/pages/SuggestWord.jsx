@@ -154,7 +154,7 @@ const SuggestWord = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.15 }}
-            className="fixed inset-0 z-[60] flex items-center justify-center bg-ink/50 px-4"
+            className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 px-4"
             role="dialog"
             aria-modal="true"
             aria-label={t('suggest.authModal.title')}

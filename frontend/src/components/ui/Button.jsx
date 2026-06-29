@@ -3,7 +3,7 @@ import { motion, useReducedMotion } from 'framer-motion';
 const VARIANTS = {
   primary: {
     bg: 'bg-brand-green',
-    text: 'text-paper',
+    text: 'text-white',
     shadow: 'shadow-[0_3px_0_0_var(--brand-green-dark)]',
     activeShadow: 'shadow-none',
     hover: 'hover:brightness-105',
@@ -25,7 +25,7 @@ const VARIANTS = {
   },
   danger: {
     bg: 'bg-accent-coral',
-    text: 'text-paper',
+    text: 'text-white',
     shadow: 'shadow-[0_3px_0_0_color-mix(in_srgb,var(--accent-coral)_75%,var(--ink))]',
     activeShadow: 'shadow-none',
     hover: 'hover:brightness-105',
