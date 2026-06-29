@@ -105,7 +105,7 @@ const Home = () => {
   return (
     <div className="min-h-screen bg-cloud">
       <Seo
-        title="Fjalingo — Fol shqipen e vërtetë, jo Alblish"
+        title="Fjalingo — Fol shqipen e vërtetë, jo fjalë të huazuara"
         description="Fjalingo të ndihmon t'i kthesh fjalët e huazuara (email, meeting, business) në shqipen e vërtetë — me lojë, jo me mësim."
         path="/"
       />
