@@ -82,6 +82,66 @@ async function fetchLessonWithUnit(client, lessonId) {
   return result.rows[0] || null;
 }
 
+// ── GET /api/lessons (curriculum browse: units -> lessons) ────
+// Lists every unit with its lessons and the user's completion state so the
+// learner can browse and resume — the discoverable surface for the three-type
+// lesson player (FEAT-1). Mirrors getLesson's access model: premium units are
+// flagged locked for free users. The daily free-lesson limit is enforced by the
+// player at play time (DAILY_LESSON_LIMIT_REACHED), not pre-hidden here.
+const listCurriculum = async (req, res, next) => {
+  try {
+    const hasAccess = hasUnlimitedAccess(req.user, req.entitlement?.isPremium);
+
+    const result = await pool.query(
+      `SELECT u.id AS unit_id, u.slug AS unit_slug, u.title AS unit_title,
+              u.description AS unit_description, u.icon, u.color,
+              u.order_index AS unit_order, u.is_premium_unit,
+              l.id AS lesson_id, l.slug AS lesson_slug, l.title AS lesson_title,
+              l.order_index AS lesson_order,
+              (ulp.completed_at IS NOT NULL) AS completed
+       FROM units u
+       JOIN lessons l ON l.unit_id = u.id
+       LEFT JOIN user_lesson_progress ulp
+         ON ulp.lesson_id = l.id AND ulp.user_id = $1::uuid
+       ORDER BY u.order_index ASC, u.created_at ASC, l.order_index ASC`,
+      [req.user.uuid]
+    );
+
+    const unitsById = new Map();
+    const units = [];
+    for (const row of result.rows) {
+      let unit = unitsById.get(row.unit_id);
+      if (!unit) {
+        unit = {
+          id: row.unit_id,
+          slug: row.unit_slug,
+          title: row.unit_title,
+          description: row.unit_description,
+          icon: row.icon,
+          color: row.color,
+          order_index: row.unit_order,
+          is_premium_unit: row.is_premium_unit,
+          locked: row.is_premium_unit && !hasAccess,
+          lessons: [],
+        };
+        unitsById.set(row.unit_id, unit);
+        units.push(unit);
+      }
+      unit.lessons.push({
+        id: row.lesson_id,
+        slug: row.lesson_slug,
+        title: row.lesson_title,
+        order_index: row.lesson_order,
+        completed: row.completed,
+      });
+    }
+
+    return res.json({ hasUnlimitedAccess: hasAccess, units });
+  } catch (err) {
+    return next(err);
+  }
+};
+
 // ── GET /api/lessons/:lessonId ───────────────────────────────
 const getLesson = async (req, res, next) => {
   try {
@@ -503,6 +563,7 @@ const submitLesson = async (req, res, next) => {
 };
 
 module.exports = {
+  listCurriculum,
   getLesson,
   submitLesson,
   practiceMistakes,

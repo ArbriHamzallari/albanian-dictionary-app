@@ -1,5 +1,6 @@
 const express = require('express');
 const {
+  listCurriculum,
   getLesson,
   submitLesson,
   practiceMistakes,
@@ -12,6 +13,10 @@ const { authenticate } = require('../middleware/auth');
 const { isPremium, requirePremium } = require('../middleware/entitlements');
 
 const router = express.Router();
+
+// Curriculum browse (units -> lessons with progress). isPremium populates
+// req.entitlement so premium units can be flagged locked for free users.
+router.get('/', authenticate, isPremium, listCurriculum);
 
 // Onboarding "first taste" — public, no account, no persistence. Registered
 // before /:lessonId so these literal paths are not captured as a lessonId.

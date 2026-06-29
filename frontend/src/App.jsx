@@ -26,6 +26,7 @@ const AdminLogin = lazy(() => import('./pages/AdminLogin.jsx'));
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard.jsx'));
 const Quiz = lazy(() => import('./pages/Quiz.jsx'));
 const Lesson = lazy(() => import('./pages/Lesson.jsx'));
+const Lessons = lazy(() => import('./pages/Lessons.jsx'));
 const Onboarding = lazy(() => import('./pages/Onboarding.jsx'));
 const Achievements = lazy(() => import('./pages/Achievements.jsx'));
 const Register = lazy(() => import('./pages/Register.jsx'));
@@ -126,6 +127,7 @@ const App = () => {
               <Route path="/fjala-e-dites" element={<WordOfTheDay />} />
               <Route path="/propozo" element={<SuggestWord />} />
               <Route path="/kuizi" element={<Quiz />} />
+              <Route path="/mesimet" element={<Lessons />} />
               <Route path="/start" element={<Onboarding />} />
               <Route path="/mesimi/:lessonId" element={<Lesson />} />
               <Route path="/perserit-gabimet" element={<Lesson />} />
