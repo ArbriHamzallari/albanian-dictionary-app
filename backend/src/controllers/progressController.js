@@ -1,5 +1,6 @@
 const pool = require('../utils/db');
 const { quizSubmitSchema, QUIZ_QUESTIONS_PER_SESSION } = require('../utils/validation');
+const { unlockAchievementByKey } = require('../utils/achievements');
 
 const LEVEL_FORMULA_SQL = `floor(sqrt((xp::numeric)/100))::int + 1`;
 
@@ -186,35 +187,19 @@ const submitQuiz = async (req, res, next) => {
       );
       stats = levelResult.rows[0];
 
+      // Streak milestone — unlock via the shared helper (FEAT-3) so quiz and the
+      // /profile unlock endpoint write achievements through one path.
       let achievementUnlocked = null;
       if (stats.streak >= 7) {
-        const achResult = await client.query(
-          `SELECT id, xp_reward FROM achievements WHERE key = '7_day_streak'`
-        );
-        if (achResult.rows.length) {
-          const ach = achResult.rows[0];
-          const insertResult = await client.query(
-            `INSERT INTO user_achievements (user_id, achievement_id)
-             VALUES ($1, $2)
-             ON CONFLICT DO NOTHING
-             RETURNING user_id`,
-            [userUuid, ach.id]
+        const unlocked = await unlockAchievementByKey(client, userUuid, '7_day_streak');
+        if (unlocked) {
+          achievementUnlocked = '7_day_streak';
+          // The helper awarded XP and re-levelled — re-read the authoritative row.
+          const refreshed = await client.query(
+            'SELECT * FROM user_stats WHERE user_id = $1',
+            [userUuid]
           );
-
-          if (insertResult.rows.length) {
-            await client.query(
-              `UPDATE user_stats
-               SET xp = xp + $2, level = ${LEVEL_FORMULA_SQL}
-               WHERE user_id = $1`,
-              [userUuid, ach.xp_reward]
-            );
-            const relevelResult = await client.query(
-              `UPDATE user_stats SET level = ${LEVEL_FORMULA_SQL} WHERE user_id = $1 RETURNING *`,
-              [userUuid]
-            );
-            stats = relevelResult.rows[0];
-            achievementUnlocked = '7_day_streak';
-          }
+          stats = refreshed.rows[0];
         }
       }
 

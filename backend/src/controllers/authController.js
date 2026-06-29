@@ -377,7 +377,7 @@ const me = async (req, res, next) => {
     const achievementsResult = await pool.query(
       `SELECT a.key, a.name, a.description, a.xp_reward, ua.unlocked_at
        FROM user_achievements ua
-       JOIN achievements a ON (a.id::text = ua.achievement_id::text OR a.key = ua.achievement_id::text)
+       JOIN achievements a ON a.id = ua.achievement_id
        WHERE ua.user_id = $1::uuid`,
       [userUuid]
     );

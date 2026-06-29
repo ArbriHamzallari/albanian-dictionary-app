@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import api from '../utils/api.js';
+import { unlockAchievement as saveGuestAchievement } from '../utils/userService.js';
 
 const AuthContext = createContext(null);
 
@@ -141,6 +142,26 @@ export function AuthProvider({ children }) {
     setUser(null);
   };
 
+  // One entry point for unlocking an achievement (FEAT-3). Logged-in users unlock
+  // server-side (idempotent, free + premium identical) and we refresh so it shows
+  // immediately; guests keep a local record. Never blocks the user's primary
+  // action — a failure is logged, not thrown.
+  const unlockAchievement = async (key) => {
+    if (!key) return;
+    if (!user) {
+      saveGuestAchievement(key);
+      return;
+    }
+    try {
+      const res = await api.post('/profile/achievements/unlock', { key });
+      if (res.data?.unlocked) {
+        await loadUser();
+      }
+    } catch (err) {
+      console.error('Achievement unlock failed:', key, err);
+    }
+  };
+
   const updateUserProfile = (profileUpdate) => {
     if (!profileUpdate) return;
     setUser((prev) => {
@@ -206,6 +227,7 @@ export function AuthProvider({ children }) {
         completeProfile,
         logout,
         updateUserProfile,
+        unlockAchievement,
         guestUpgrade,
         loadUser,
         getGuestProgress,
