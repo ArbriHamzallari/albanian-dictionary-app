@@ -387,7 +387,7 @@
   "purpose": {
     "heading": "Pse Fjalingo?",
     "bullets": {
-      "real": "Shqipja e vërtetë, jo Alblish — fjalët tona në vend të atyre të huazuara.",
+      "real": "Shqipja e vërtetë, jo fjalë të huazuara — fjalët tona në vend të atyre të huazuara.",
       "play": "Mëson me lojë: pikë, seri dhe arritje, pak minuta në ditë.",
       "free": "Fillon falas — pa pengesa, pa presion."
     }
@@ -458,7 +458,7 @@
     "consentRequiredError": "Kërkohet pëlqimi i prindit për këtë moshë.",
     "registerError": "Regjistrimi dështoi. Provo përsëri.",
     "splash": {
-      "title": "Fol shqipen e vërtetë, jo Alblish.",
+      "title": "Fol shqipen e vërtetë, jo fjalë të huazuara.",
       "subtitle": "Mëso fjalët tona në vend të atyre të huazuara — pak minuta në ditë."
     },
     "taste": {
@@ -529,8 +529,8 @@
     "back": "Mbrapa",
     "stepOf": "{current} nga {total}",
     "step1": {
-      "title": "Çfarë është Alblishja?",
-      "body": "Alblishja është shqipja e përzier me fjalë të huaja. Pa e vënë re, themi fjalë të huazuara në vend të atyre tona.",
+      "title": "Çfarë janë fjalët e huazuara?",
+      "body": "Fjalët e huazuara janë fjalë të huaja që përdorim në vend të fjalëve tona shqipe. Pa e vënë re, themi fjalë të huazuara në vend të atyre tona.",
       "exampleBorrowed": "email",
       "exampleArrow": "→",
       "exampleCorrect": "postë elektronike"
