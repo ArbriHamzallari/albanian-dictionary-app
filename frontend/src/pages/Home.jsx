@@ -191,6 +191,11 @@ const Home = () => {
             </motion.div>
           ))}
         </div>
+        <div className="mt-8 text-center">
+          <Link to="/mesimet">
+            <Button size="lg">{t('home.how.cta')}</Button>
+          </Link>
+        </div>
       </section>
 
       {/* Përmbajtja poshtë fold-it */}
