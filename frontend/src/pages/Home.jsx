@@ -211,7 +211,7 @@ const Home = () => {
               emoji: '🎯',
               title: t('home.cards.daily.title'),
               desc: t('home.cards.daily.desc'),
-              link: '/fjala-e-dites',
+              link: '/sfida-e-dites',
               cta: t('home.cards.daily.cta'),
             },
             {
