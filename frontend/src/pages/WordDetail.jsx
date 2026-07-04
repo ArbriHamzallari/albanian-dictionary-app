@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { ArrowLeft, ArrowRight, BookOpen } from 'lucide-react';
 import LoadingSpinner from '../components/LoadingSpinner.jsx';
 import ErrorMessage from '../components/ErrorMessage.jsx';
 import Seo, { SITE_URL } from '../components/Seo.jsx';
@@ -9,66 +9,75 @@ import api from '../utils/api.js';
 import { t } from '../i18n/index.js';
 
 // Each word page is individually indexable as a DefinedTerm (schema.org).
-const buildJsonLd = (word, id) => ({
+const buildJsonLd = (word) => ({
   '@context': 'https://schema.org',
   '@type': 'DefinedTerm',
-  name: word.correct_albanian,
-  description:
-    word.definitions?.[0]?.definition_text || `Fjala shqipe për "${word.borrowed_word}".`,
+  name: word.correct_albanian || word.borrowed_word,
+  description: word.definitions?.[0]?.definition_text || word.borrowed_word,
   inDefinedTermSet: {
     '@type': 'DefinedTermSet',
     name: 'Fjalori Fjalingo',
     url: SITE_URL,
   },
-  url: `${SITE_URL}/fjala/${id}`,
+  url: `${SITE_URL}/fjala/${word.slug}`,
   inLanguage: 'sq',
 });
 
-const categoryColors = {
-  'Folje': 'badge-green',
-  'Emër': 'badge-blue',
-  'Mbiemër': 'badge-purple',
-  'Ndajfolje': 'badge-orange',
-};
-
 const WordDetail = () => {
-  const { id } = useParams();
+  const { slug } = useParams();
+  const navigate = useNavigate();
   const [word, setWord] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    const fetchWord = async () => {
+    let active = true;
+    setLoading(true);
+    setError('');
+    (async () => {
       try {
-        const response = await api.get(`/words/${id}`);
-        setWord(response.data.word);
+        const res = await api.get(`/words/${encodeURIComponent(slug)}`);
+        if (!active) return;
+        const w = res.data.word;
+        // Canonicalize: arriving via a legacy id or non-canonical value redirects
+        // (replace) to the slug URL — the SPA equivalent of a 301.
+        if (w.slug && w.slug !== slug) {
+          navigate(`/fjala/${w.slug}`, { replace: true });
+          return;
+        }
+        setWord(w);
       } catch {
-        setError(t('wordDetail.notFound'));
+        if (active) setError(t('wordDetail.notFound'));
       } finally {
-        setLoading(false);
+        if (active) setLoading(false);
       }
+    })();
+    return () => {
+      active = false;
     };
-    fetchWord();
-  }, [id]);
+  }, [slug, navigate]);
+
+  const isHeritage = word?.word_type === 'heritage';
+  const definition = word?.definitions?.[0]?.definition_text;
+  const example = word?.examples?.[0];
 
   return (
-    <div className="max-w-4xl mx-auto px-6 py-10">
-      <Seo
-        title={word ? `${word.correct_albanian} (jo "${word.borrowed_word}") — Fjalingo` : 'Fjalor — Fjalingo'}
-        description={
-          word
-            ? `"${word.borrowed_word}" në shqipen e vërtetë është "${word.correct_albanian}".${word.definitions?.[0]?.definition_text ? ' ' + word.definitions[0].definition_text : ''}`
-            : undefined
-        }
-        path={`/fjala/${id}`}
-        type="article"
-      >
-        {word && (
-          <script type="application/ld+json">{JSON.stringify(buildJsonLd(word, id))}</script>
-        )}
-      </Seo>
+    <div className="max-w-3xl mx-auto px-6 py-10">
+      {word && (
+        <Seo
+          title={`${isHeritage ? word.borrowed_word : word.correct_albanian} — Fjalingo`}
+          description={definition || undefined}
+          path={`/fjala/${word.slug}`}
+          type="article"
+        >
+          <script type="application/ld+json">{JSON.stringify(buildJsonLd(word))}</script>
+        </Seo>
+      )}
 
-      <Link to="/" className="inline-flex items-center gap-1 text-fjalingo-green text-sm font-bold hover:gap-2 transition-all mb-6">
+      <Link
+        to="/"
+        className="inline-flex items-center gap-1 text-fjalingo-green text-sm font-bold hover:gap-2 transition-all mb-6"
+      >
         <ArrowLeft className="w-4 h-4" /> {t('common.back')}
       </Link>
 
@@ -83,73 +92,78 @@ const WordDetail = () => {
         >
           {/* Header */}
           <div className="card border-fjalingo-green/30">
-            <div className="flex items-center gap-3 flex-wrap mb-3">
-              <span className="text-xl font-bold text-muted dark:text-dark-muted line-through decoration-1">
+            {isHeritage ? (
+              <span className="text-3xl font-black text-heading dark:text-dark-text">
                 {word.borrowed_word}
               </span>
-              <ArrowRight className="w-5 h-5 text-fjalingo-green" />
-              <span className="text-3xl font-black text-fjalingo-green">
-                {word.correct_albanian}
-              </span>
-            </div>
-            {word.category && (
-              <span className={`badge ${categoryColors[word.category] || 'badge-blue'}`}>
-                {word.category}
-              </span>
+            ) : (
+              <div className="flex items-center gap-3 flex-wrap">
+                <span className="text-xl font-bold text-muted dark:text-dark-muted line-through decoration-1">
+                  {word.borrowed_word}
+                </span>
+                <ArrowRight className="w-5 h-5 text-fjalingo-green" aria-hidden="true" />
+                <span className="text-3xl font-black text-fjalingo-green">
+                  {word.correct_albanian}
+                </span>
+              </div>
+            )}
+
+            {/* Origin badge → the history spine */}
+            {word.origin_language && word.origin_name && (
+              <Link
+                to={`/origjina/${word.origin_language}`}
+                className="badge badge-purple mt-4 inline-flex hover:opacity-80 transition-opacity"
+              >
+                {word.origin_name}
+              </Link>
+            )}
+
+            {isHeritage && (
+              <p className="text-sm font-semibold text-fjalingo-purple mt-4">
+                {t('wordDetail.heritageNote')}
+              </p>
             )}
           </div>
 
-          {/* Definitions */}
-          <div className="card">
-            <h3 className="text-sm font-black text-fjalingo-blue tracking-wide mb-4">{t('wordDetail.definitionHeading')}</h3>
-            <ul className="space-y-3">
-              {word.definitions.map((def, i) => (
-                <li key={def.id} className="flex gap-3">
-                  <span className="w-6 h-6 rounded-lg bg-fjalingo-blue/10 flex items-center justify-center text-xs font-black text-fjalingo-blue flex-shrink-0 mt-0.5">
-                    {i + 1}
-                  </span>
-                  <div>
-                    <p className="text-body dark:text-dark-text font-semibold">{def.definition_text}</p>
-                    {def.example_sentence && (
-                      <p className="text-sm text-muted dark:text-dark-muted italic mt-1">
-                        "{def.example_sentence}"
-                      </p>
-                    )}
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Conjugations */}
-          {word.conjugations.length > 0 && (
+          {/* Definition */}
+          {definition && (
             <div className="card">
-              <h3 className="text-sm font-black text-fjalingo-purple tracking-wide mb-4">{t('wordDetail.conjugationHeading')}</h3>
-              <div className="grid md:grid-cols-2 gap-4">
-                {word.conjugations.map((conj) => (
-                  <div key={conj.id} className="card py-4 px-4 border-fjalingo-purple/20">
-                    <p className="text-xs font-black text-fjalingo-purple mb-2">{conj.conjugation_type}</p>
-                    <p className="text-sm font-semibold text-body dark:text-dark-text">{conj.conjugation_text}</p>
-                  </div>
-                ))}
+              <h3 className="text-sm font-black text-fjalingo-blue tracking-wide mb-3">
+                {t('wordDetail.definitionHeading')}
+              </h3>
+              <p className="text-body dark:text-dark-text font-semibold leading-relaxed">
+                {definition}
+              </p>
+            </div>
+          )}
+
+          {/* One example pair — loan vs clean, visually contrasted. Heritage words
+              have none (they are not quiz/replacement content). */}
+          {!isHeritage && example && (
+            <div className="card">
+              <h3 className="text-sm font-black text-fjalingo-yellow tracking-wide mb-4">
+                {t('wordDetail.examplesHeading')}
+              </h3>
+              <div className="space-y-2">
+                <p className="rounded-xl bg-accent-coral/10 border border-accent-coral/20 px-4 py-3 text-sm font-semibold text-body dark:text-dark-text line-through decoration-accent-coral/60">
+                  {example.sentence_loan}
+                </p>
+                <p className="rounded-xl bg-fjalingo-green/10 border border-fjalingo-green/20 px-4 py-3 text-sm font-semibold text-body dark:text-dark-text">
+                  {example.sentence_clean}
+                </p>
               </div>
             </div>
           )}
 
-          {/* Examples */}
-          {word.definitions.some((def) => def.example_sentence) && (
-            <div className="card">
-              <h3 className="text-sm font-black text-fjalingo-yellow tracking-wide mb-4">{t('wordDetail.examplesHeading')}</h3>
-              <ul className="space-y-2">
-                {word.definitions
-                  .filter((def) => def.example_sentence)
-                  .map((def) => (
-                    <li key={`ex-${def.id}`} className="text-sm text-body dark:text-dark-text font-semibold">
-                      — {def.example_sentence}
-                    </li>
-                  ))}
-              </ul>
-            </div>
+          {/* Learn the history of this word's layer */}
+          {word.origin_language && (
+            <Link
+              to={`/origjina/${word.origin_language}`}
+              className="inline-flex items-center gap-2 text-fjalingo-purple font-bold hover:gap-3 transition-all"
+            >
+              <BookOpen className="w-4 h-4" aria-hidden="true" />
+              {t('wordDetail.learnHistory')}
+            </Link>
           )}
         </motion.div>
       )}

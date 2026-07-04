@@ -285,7 +285,9 @@
     "notFound": "Fjala nuk u gjet.",
     "definitionHeading": "📖 PËRKUFIZIMI",
     "conjugationHeading": "🔤 ZGJEDHIMI I FJALËS",
-    "examplesHeading": "💡 SHEMBUJ"
+    "examplesHeading": "💡 SHEMBUJ",
+    "learnHistory": "TODO_SQ_wordDetail_learnHistory",
+    "heritageNote": "TODO_SQ_wordDetail_heritageNote"
   },
   "wordOfDay": {
     "notFound": "Fjala e ditës nuk është gjetur.",

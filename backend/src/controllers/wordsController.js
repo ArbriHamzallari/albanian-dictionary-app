@@ -76,25 +76,44 @@ const searchWords = async (req, res, next) => {
   }
 };
 
+// Accepts either a numeric id (legacy URLs) or a slug (WEB-2). Always returns the
+// word's canonical `slug` so the frontend can redirect id/non-canonical URLs. Joins
+// the origin name for the badge and returns the enriched example pairs.
 const getWordById = async (req, res, next) => {
   try {
-    const { id } = req.params;
+    const param = req.params.id;
+    const byNumericId = /^\d+$/.test(param); // constant branch — value stays parameterized
     const client = await pool.connect();
     try {
-      const wordResult = await client.query('SELECT * FROM words WHERE id = $1', [id]);
+      const wordResult = await client.query(
+        `SELECT w.*, o.name_sq AS origin_name
+           FROM words w
+           LEFT JOIN origins o ON o.code = w.origin_language
+          WHERE ${byNumericId ? 'w.id = $1' : 'w.slug = $1'}`,
+        [param]
+      );
       if (!wordResult.rows.length) {
         return res.status(404).json({ message: 'Fjala nuk u gjet.' });
       }
 
       const word = wordResult.rows[0];
-      const definitionsResult = await client.query(
-        'SELECT * FROM definitions WHERE word_id = $1 ORDER BY definition_order ASC',
-        [id]
-      );
-      const conjugationsResult = await client.query('SELECT * FROM conjugations WHERE word_id = $1', [id]);
+      const [definitionsResult, conjugationsResult, examplesResult] = await Promise.all([
+        client.query(
+          'SELECT * FROM definitions WHERE word_id = $1 ORDER BY definition_order ASC',
+          [word.id]
+        ),
+        client.query('SELECT * FROM conjugations WHERE word_id = $1', [word.id]),
+        client.query(
+          'SELECT id, sentence_loan, sentence_clean FROM word_examples WHERE word_id = $1 ORDER BY id ASC',
+          [word.id]
+        ),
+      ]);
 
       return res.json({
-        word: mapWord(word, definitionsResult.rows, conjugationsResult.rows),
+        word: {
+          ...mapWord(word, definitionsResult.rows, conjugationsResult.rows),
+          examples: examplesResult.rows,
+        },
       });
     } finally {
       client.release();
