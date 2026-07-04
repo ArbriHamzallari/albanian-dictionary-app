@@ -1,7 +1,7 @@
 import { Helmet } from 'react-helmet-async';
 
 // Production origin for canonical/OG URLs. Override per environment with
-// VITE_SITE_URL (e.g. a Netlify preview); defaults to the live domain.
+// VITE_SITE_URL (e.g. a Vercel preview); defaults to the live domain.
 export const SITE_URL = (import.meta.env.VITE_SITE_URL || 'https://fjalingo.al').replace(/\/$/, '');
 
 const DEFAULT_DESCRIPTION =
