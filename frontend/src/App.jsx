@@ -38,7 +38,12 @@ const FriendsPage = lazy(() => import('./pages/FriendsPage.jsx'));
 const ChatPage = lazy(() => import('./pages/ChatPage.jsx'));
 const PublicProfile = lazy(() => import('./pages/PublicProfile.jsx'));
 const Premium = lazy(() => import('./pages/Premium.jsx'));
-const DesignGallery = lazy(() => import('./pages/DesignGallery.jsx'));
+// DesignGallery is a dev-only reference page (frontend/CLAUDE.md). It is registered
+// only in development, so /design 404s in production and its chunk is tree-shaken
+// out of the production build (OPS-2).
+const DesignGallery = import.meta.env.DEV
+  ? lazy(() => import('./pages/DesignGallery.jsx'))
+  : null;
 const Terms = lazy(() => import('./pages/Terms.jsx'));
 const Privacy = lazy(() => import('./pages/Privacy.jsx'));
 const Refund = lazy(() => import('./pages/Refund.jsx'));
@@ -86,7 +91,7 @@ const App = () => {
   // PremiumHome, which needs the header/nav — so it is NOT the chrome-less splash.
   const isPremiumHome = location.pathname === '/' && hasUnlimited;
   const isSplash = location.pathname === '/' && !isPremiumHome;
-  const isDesign = location.pathname === '/design';
+  const isDesign = import.meta.env.DEV && location.pathname === '/design';
   const isOnboarding = location.pathname === '/start';
   const isAdminRoute = location.pathname.startsWith('/admin');
 
@@ -158,7 +163,7 @@ const App = () => {
               <Route path="/en" element={<EnglishAbout />} />
               <Route path="/admin" element={<AdminLogin />} />
               <Route path="/admin/dashboard" element={<AdminDashboard />} />
-              <Route path="/design" element={<DesignGallery />} />
+              {DesignGallery && <Route path="/design" element={<DesignGallery />} />}
             </Routes>
           </Suspense>
         </AnimatePresence>
