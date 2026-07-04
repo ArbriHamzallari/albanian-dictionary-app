@@ -44,6 +44,8 @@ const Premium = lazy(() => import('./pages/Premium.jsx'));
 const DesignGallery = import.meta.env.DEV
   ? lazy(() => import('./pages/DesignGallery.jsx'))
   : null;
+const Origins = lazy(() => import('./pages/Origins.jsx'));
+const OriginDetail = lazy(() => import('./pages/OriginDetail.jsx'));
 const Terms = lazy(() => import('./pages/Terms.jsx'));
 const Privacy = lazy(() => import('./pages/Privacy.jsx'));
 const Refund = lazy(() => import('./pages/Refund.jsx'));
@@ -138,6 +140,8 @@ const App = () => {
               <Route path="/kerko" element={<SearchResults />} />
               <Route path="/fjala/:id" element={<WordDetail />} />
               <Route path="/fjala-e-dites" element={<WordOfTheDay />} />
+              <Route path="/origjina" element={<Origins />} />
+              <Route path="/origjina/:code" element={<OriginDetail />} />
               <Route path="/propozo" element={<SuggestWord />} />
               <Route path="/kuizi" element={<Quiz />} />
               <Route path="/start" element={<Onboarding />} />
