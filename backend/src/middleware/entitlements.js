@@ -3,7 +3,6 @@ const { hasUnlimitedAccess } = require('../utils/access');
 
 const FREE_DAILY_QUIZ_LIMIT = 1;
 const FREE_DAILY_SEARCH_LIMIT = 5;
-const PREMIUM_STATUSES = new Set(['active', 'trialing']);
 
 async function getEntitlement(userUuid) {
   if (!userUuid) {
@@ -40,7 +39,26 @@ function entitlementIsPremium(entitlement) {
     return true;
   }
 
-  if (entitlement.tier !== 'premium' || !PREMIUM_STATUSES.has(entitlement.status)) {
+  if (entitlement.tier !== 'premium') {
+    return false;
+  }
+
+  // Access decision by Paddle subscription status (PAY-2; see Paddle's "provision
+  // access and handle subscription state" guidance):
+  //   past_due         -> GRANT. Dunning grace: Paddle keeps retrying payment and
+  //                       will send subscription.canceled if recovery fails. No
+  //                       period-end check — the failed period has already ended.
+  //   active, trialing -> GRANT while the paid period has not ended. A scheduled
+  //                       cancellation/pause keeps the status 'active' until it
+  //                       takes effect, so "premium until period end, then free"
+  //                       falls out of this rule without special-casing 'canceled'.
+  //   paused, canceled -> REVOKE (canceled revokes immediately, which protects
+  //                       against refunds leaving Premium active).
+  if (entitlement.status === 'past_due') {
+    return true;
+  }
+
+  if (entitlement.status !== 'active' && entitlement.status !== 'trialing') {
     return false;
   }
 
