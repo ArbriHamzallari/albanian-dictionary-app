@@ -3,6 +3,7 @@ node_modules
 .env.local
 .env.*.local
 backend/.env
+backend/.env.import
 frontend/.env
 .DS_Store
 dist
