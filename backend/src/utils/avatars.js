@@ -1,55 +1,41 @@
-const fs = require('fs');
-const path = require('path');
-
-// --- Directory resolution ---
-function resolveAvatarsDir() {
-  // 1. Explicit env override
-  if (process.env.AVATARS_DIR) {
-    const dir = path.resolve(process.env.AVATARS_DIR);
-    if (fs.existsSync(dir)) return dir;
-  }
-
-  // 2. Common relative locations (backend cwd 
-  // 
-  // or project root)
-  const candidates = [
-    path.resolve(process.cwd(), 'frontend', 'public', 'avatars'),
-    path.resolve(process.cwd(), '..', 'frontend', 'public', 'avatars'),
-  ];
-
-  for (const dir of candidates) {
-    if (fs.existsSync(dir)) return dir;
-  }
-
-  return null;
-}
-
-// --- In-memory cache (5 minutes) ---
-const CACHE_TTL_MS = 5 * 60 * 1000;
-let cache = { list: null, fetchedAt: 0 };
+// Canonical list of preset avatars — the single source of truth the backend uses
+// to (a) serve the picker via GET /avatars and (b) validate PUT /profile/avatar.
+//
+// The matching PNG files live in frontend/public/avatars and are served by the
+// frontend origin (the <Avatar> component loads /avatars/<file>). The backend
+// deploys WITHOUT the frontend (see Dockerfile / .dockerignore), so it must not
+// read that directory — doing so threw "Avatars directory not found" in
+// production, leaving the picker empty (FEAT-2). It only needs the names here.
+//
+// Keep this list in sync with frontend/public/avatars/*.png.
+const AVATAR_FILENAMES = [
+  'bear.png',
+  'bird.png',
+  'book.png',
+  'brain.png',
+  'cat.png',
+  'crown.png',
+  'default.png',
+  'dragon.png',
+  'eagle.png',
+  'fox.png',
+  'lion.png',
+  'owl.png',
+  'panda.png',
+  'parrot.png',
+  'penguin.png',
+  'robot.png',
+  'rocket.png',
+  'snail.png',
+  'think.png',
+];
 
 function getAvatarList() {
-  const now = Date.now();
-  if (cache.list && now - cache.fetchedAt < CACHE_TTL_MS) {
-    return cache.list;
-  }
-
-  const dir = resolveAvatarsDir();
-  if (!dir) {
-    throw new Error('Avatars directory not found. Set AVATARS_DIR env or ensure frontend/public/avatars exists.');
-  }
-
-  const files = fs.readdirSync(dir)
-    .filter((f) => f.endsWith('.png'))
-    .sort();
-
-  cache = { list: files, fetchedAt: now };
-  return files;
+  return [...AVATAR_FILENAMES];
 }
 
 function isValidAvatar(filename) {
-  const list = getAvatarList();
-  return list.includes(filename);
+  return AVATAR_FILENAMES.includes(filename);
 }
 
-module.exports = { getAvatarList, isValidAvatar, resolveAvatarsDir };
+module.exports = { getAvatarList, isValidAvatar, AVATAR_FILENAMES };

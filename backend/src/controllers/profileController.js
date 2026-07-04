@@ -1,6 +1,7 @@
 const pool = require('../utils/db');
 const { profileUpdateSchema } = require('../utils/validation');
 const { isValidAvatar } = require('../utils/avatars');
+const { unlockAchievementByKey } = require('../utils/achievements');
 const { USER_RANK_SQL } = require('../utils/rankSql');
 const { validateUserTexts } = require('../utils/childSafety');
 
@@ -170,7 +171,7 @@ const getPublicProfile = async (req, res, next) => {
     const achievementsResult = await pool.query(
       `SELECT a.key, a.name, a.description, a.xp_reward, ua.unlocked_at
        FROM user_achievements ua
-       JOIN achievements a ON (a.id::text = ua.achievement_id::text OR a.key = ua.achievement_id::text)
+       JOIN achievements a ON a.id = ua.achievement_id
        WHERE ua.user_id = $1::uuid`,
       [user.uuid]
     );
@@ -193,4 +194,33 @@ const getPublicProfile = async (req, res, next) => {
   }
 };
 
-module.exports = { updateProfile, updateAvatar, getPublicProfile };
+// ── POST /profile/achievements/unlock ───────────────────────
+// Unlocks an achievement for the logged-in user. NOT tier-gated — free and
+// premium unlock identically. Idempotent: re-unlocking is a clean no-op, never a
+// duplicate or an error. Admin promotion of role etc. is unrelated; any
+// authenticated user may unlock their own achievements.
+const unlockAchievement = async (req, res, next) => {
+  try {
+    const { key } = req.body;
+    if (!key || typeof key !== 'string') {
+      return res.status(400).json({ message: 'Çelësi i arritjes mungon.' });
+    }
+
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+      const newlyUnlocked = await unlockAchievementByKey(client, req.user.uuid, key);
+      await client.query('COMMIT');
+      return res.json({ unlocked: newlyUnlocked, key });
+    } catch (err) {
+      await client.query('ROLLBACK');
+      throw err;
+    } finally {
+      client.release();
+    }
+  } catch (err) {
+    return next(err);
+  }
+};
+
+module.exports = { updateProfile, updateAvatar, getPublicProfile, unlockAchievement };

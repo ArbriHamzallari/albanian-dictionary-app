@@ -165,7 +165,8 @@
       "fill": {
         "title": "Plotëso vendin bosh",
         "desc": "Plotëso fjalën që mungon në fjali."
-      }
+      },
+      "cta": "Provo mësimet"
     },
     "error": {
       "wordsLoad": "Nuk mund të ngarkohen fjalët. Kontrolloni që backend dhe baza e të dhënave të jenë aktiv.",
@@ -502,6 +503,17 @@
     "loading": "Duke hapur…",
     "error": "Pagesa Premium nuk u hap. Provoni përsëri."
   },
+  "lessonsBrowse": {
+    "title": "Mësimet",
+    "subtitle": "Mëso shqipen e vërtetë me tri lloje ushtrimesh.",
+    "premiumBadge": "Premium",
+    "premiumCta": "Kalo në Premium",
+    "empty": "Mësimet po vijnë së shpejti.",
+    "loadError": "Mësimet nuk u ngarkuan. Provoni përsëri.",
+    "lessonAria": "Hap mësimin {title}",
+    "dashTitle": "Mësimet",
+    "dashDesc": "Gjej fjalën e huazuar, zgjidh fjalën e saktë, plotëso vendin bosh"
+  },
   "lesson": {
     "whyItMatters": "Pse ka rëndësi",
     "spotPrompt": "Gjej fjalën e huazuar dhe trokit mbi të.",
@@ -696,7 +708,30 @@
     "deleteConfirm": "Fshij",
     "tabs": {
       "content": "Fjalët",
-      "users": "Përdoruesit"
+      "users": "Përdoruesit",
+      "safety": "Siguria"
+    },
+    "safety": {
+      "heading": "🛡️ MODERIMI & SIGURIA",
+      "loadError": "Nuk mund të ngarkohen ngjarjet e moderimit.",
+      "actionError": "Veprimi dështoi.",
+      "none": "Nuk ka ngjarje moderimi.",
+      "colTime": "Koha",
+      "colSender": "Dërguesi",
+      "colRecipient": "Marrësi",
+      "colReason": "Arsyeja",
+      "colExcerpt": "Fragmenti",
+      "colActions": "Veprime",
+      "suspended": "Pezulluar",
+      "ban": "Pezullo",
+      "unban": "Hiq pezullimin",
+      "resolve": "Zgjidh",
+      "reason": {
+        "PROFANITY_DETECTED": "Fjalor i papërshtatshëm",
+        "PII_DETECTED": "Të dhëna personale",
+        "LLM_FLAGGED": "Shenjuar nga moderimi",
+        "MODERATION_UNAVAILABLE": "Moderimi i padisponueshëm"
+      }
     },
     "users": {
       "heading": "👥 PËRDORUESIT",

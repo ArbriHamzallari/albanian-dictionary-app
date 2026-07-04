@@ -37,7 +37,7 @@ const Onboarding = ({ onClose }) => {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.15 }}
-      className="fixed inset-0 z-[60] flex items-center justify-center bg-ink/50 px-4"
+      className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 px-4"
       role="dialog"
       aria-modal="true"
       aria-label={t('onboardingTour.step1.title')}
@@ -96,7 +96,7 @@ const Onboarding = ({ onClose }) => {
                   <ul className="mt-4 space-y-2">
                     {['ex1', 'ex2', 'ex3'].map((k, i) => (
                       <li key={k} className="flex items-start gap-3 rounded-2xl border border-line bg-cloud px-4 py-3">
-                        <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand-green text-xs font-black text-paper">{i + 1}</span>
+                        <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand-green text-xs font-black text-white">{i + 1}</span>
                         <span className="text-sm font-semibold text-ink">{t(`onboardingTour.step2.${k}`)}</span>
                       </li>
                     ))}

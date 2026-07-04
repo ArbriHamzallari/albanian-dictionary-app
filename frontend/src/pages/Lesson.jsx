@@ -67,9 +67,9 @@ const SpotAlblish = ({ exercise, reveal, selectedIndex, onSelect }) => {
               ? ' bg-brand-green/15 text-ink ring-2 ring-brand-green'
               : ' text-ink hover:bg-cloud cursor-pointer';
           } else if (isLoan) {
-            cls += ' bg-brand-green text-paper';
+            cls += ' bg-brand-green text-white';
           } else if (isPicked) {
-            cls += ' bg-accent-coral text-paper';
+            cls += ' bg-accent-coral text-white';
           } else {
             cls += ' text-ink-soft';
           }
