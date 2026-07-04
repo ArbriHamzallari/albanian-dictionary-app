@@ -72,7 +72,7 @@ const AdminUsers = () => {
           {t('admin.users.heading')} ({t('admin.users.totalCount', { total })})
         </h3>
         <div className="flex items-center bg-white dark:bg-dark-bg border-2 border-border dark:border-dark-border rounded-xl px-3 w-full sm:w-72">
-          <Search className="w-4 h-4 text-muted" aria-hidden="true" />
+          <Search className="w-4 h-4 text-muted dark:text-dark-muted" aria-hidden="true" />
           <label htmlFor="admin-user-search" className="sr-only">{t('admin.users.searchPlaceholder')}</label>
           <input
             id="admin-user-search"
@@ -134,7 +134,7 @@ const AdminUsers = () => {
                 ))}
               </tbody>
             </table>
-            {!users.length && <p className="text-center text-muted py-8">{t('admin.users.none')}</p>}
+            {!users.length && <p className="text-center text-muted dark:text-dark-muted py-8">{t('admin.users.none')}</p>}
           </div>
 
           {totalPages > 1 && (

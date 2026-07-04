@@ -185,7 +185,7 @@ const ChatPage = () => {
           <p className="text-center text-sm font-semibold text-ink-soft py-8">{t('chat.sayHello')}</p>
         ) : messages.map((m) => (
           <div key={m.id} className={`flex ${m.direction === 'sent' ? 'justify-end' : 'justify-start'}`}>
-            <span className={`max-w-[75%] rounded-2xl px-4 py-2 text-base font-semibold ${m.direction === 'sent' ? 'bg-brand-green text-paper' : 'bg-cloud text-ink'}`}>
+            <span className={`max-w-[75%] rounded-2xl px-4 py-2 text-base font-semibold ${m.direction === 'sent' ? 'bg-brand-green text-white' : 'bg-cloud text-ink'}`}>
               {m.body}
             </span>
           </div>

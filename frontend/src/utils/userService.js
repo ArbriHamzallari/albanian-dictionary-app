@@ -115,7 +115,10 @@ export async function awardPoints(points = 0) {
 }
 
 // ─────────────────────────────────────────────────────────────
-// Achievements (client-side)
+// Achievements — GUEST-ONLY local record (FEAT-3).
+// Logged-in users unlock server-side via AuthContext.unlockAchievement, which is
+// the single entry point; this localStorage record is only for guests (kept until
+// they sign up). Do not call it directly from pages — go through AuthContext.
 // ─────────────────────────────────────────────────────────────
 export function unlockAchievement(key) {
   if (!key) return false;

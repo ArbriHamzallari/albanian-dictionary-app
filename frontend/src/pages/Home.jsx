@@ -191,6 +191,11 @@ const Home = () => {
             </motion.div>
           ))}
         </div>
+        <div className="mt-8 text-center">
+          <Link to="/mesimet">
+            <Button size="lg">{t('home.how.cta')}</Button>
+          </Link>
+        </div>
       </section>
 
       {/* Përmbajtja poshtë fold-it */}
@@ -211,7 +216,7 @@ const Home = () => {
               emoji: '🎯',
               title: t('home.cards.daily.title'),
               desc: t('home.cards.daily.desc'),
-              link: '/fjala-e-dites',
+              link: '/sfida-e-dites',
               cta: t('home.cards.daily.cta'),
             },
             {

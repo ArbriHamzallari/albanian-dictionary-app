@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Star, Flame, Trophy, Target, BarChart3, Clock } from 'lucide-react';
+import { Star, Flame, Trophy, Target, BarChart3, Clock, BookOpen, ArrowRight } from 'lucide-react';
 import { useAuth, useHasUnlimitedAccess } from '../context/AuthContext.jsx';
 import Avatar from '../components/Avatar.jsx';
 import LoadingSpinner from '../components/LoadingSpinner.jsx';
@@ -60,7 +60,10 @@ const Dashboard = () => {
   const streak = stats?.streak || 0;
   const totalQuizzes = stats?.total_quizzes || 0;
   const correctAnswers = stats?.correct_answers || 0;
-  const totalAnswers = totalQuizzes * 10; // Assuming 10 questions per quiz
+  // Server-tracked count of questions actually answered (BUG-5) — the authoritative
+  // accuracy denominator. Replaces the old "total_quizzes * 10" assumption, which
+  // over-counted whenever a quiz had fewer than 10 questions.
+  const totalAnswers = stats?.total_questions || 0;
   const accuracy = totalAnswers > 0 ? Math.round((correctAnswers / totalAnswers) * 100) : 0;
 
   const currentLevelXp = LEVEL_POINTS(level);
@@ -138,6 +141,25 @@ const Dashboard = () => {
           </div>
         </Card>
         <DashboardQuestCard />
+      </motion.div>
+
+      {/* Lessons (Mësimet) — the three-type lesson player */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.13 }}
+        className="mb-6"
+      >
+        <Link to="/mesimet" className="card card-hover flex items-center gap-4">
+          <span className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-fjalingo-green/15">
+            <BookOpen className="h-6 w-6 text-fjalingo-green" />
+          </span>
+          <div className="flex-1">
+            <p className="font-black text-heading dark:text-dark-text">{t('lessonsBrowse.dashTitle')}</p>
+            <p className="text-xs font-bold text-muted dark:text-dark-muted">{t('lessonsBrowse.dashDesc')}</p>
+          </div>
+          <ArrowRight className="h-5 w-5 text-muted dark:text-dark-muted flex-shrink-0" />
+        </Link>
       </motion.div>
 
       {/* Practice Mistakes (Përsërit gabimet) */}

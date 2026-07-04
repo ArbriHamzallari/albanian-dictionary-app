@@ -10,6 +10,7 @@ import Button from '../components/ui/Button.jsx';
 import Heading from '../components/ui/Heading.jsx';
 import ConfirmDialog from '../components/ui/ConfirmDialog.jsx';
 import AdminUsers from './AdminUsers.jsx';
+import AdminTrustSafety from './AdminTrustSafety.jsx';
 import { t } from '../i18n/index.js';
 
 const CATEGORIES = ['Folje', 'Emër', 'Mbiemër', 'Ndajfolje'];
@@ -296,6 +297,7 @@ const AdminDashboard = () => {
         {[
           { id: 'content', label: t('admin.tabs.content') },
           { id: 'users', label: t('admin.tabs.users') },
+          { id: 'safety', label: t('admin.tabs.safety') },
         ].map((tab) => (
           <button
             key={tab.id}
@@ -312,6 +314,8 @@ const AdminDashboard = () => {
       </div>
 
       {activeTab === 'users' && <AdminUsers />}
+
+      {activeTab === 'safety' && <AdminTrustSafety />}
 
       {activeTab === 'content' && (
         <>
@@ -364,7 +368,7 @@ const AdminDashboard = () => {
                 <span className="badge badge-blue">{s.total}</span>
               </div>
             ))}
-            {!topSearches.length && <p className="text-sm text-muted">{t('admin.noDataYet')}</p>}
+            {!topSearches.length && <p className="text-sm text-muted dark:text-dark-muted">{t('admin.noDataYet')}</p>}
           </div>
         </div>
 
@@ -381,7 +385,7 @@ const AdminDashboard = () => {
                   <p className="font-bold text-heading dark:text-dark-text text-sm">
                     "{s.borrowed_word}" → {s.suggested_albanian || t('admin.noSuggestion')}
                   </p>
-                  {s.suggested_definition && <p className="text-xs text-muted mt-1">{s.suggested_definition}</p>}
+                  {s.suggested_definition && <p className="text-xs text-muted dark:text-dark-muted mt-1">{s.suggested_definition}</p>}
                   <div className="flex gap-2 mt-2">
                     <button onClick={() => handleSuggestion(s.id, 'approve')} className="text-xs font-bold text-fjalingo-green hover:underline">{t('admin.approve')}</button>
                     <button onClick={() => handleSuggestion(s.id, 'reject')} className="text-xs font-bold text-fjalingo-red hover:underline">{t('publicProfile.decline')}</button>
@@ -389,7 +393,7 @@ const AdminDashboard = () => {
                 </div>
               ))}
               {!suggestions.filter((s) => s.status === 'pending').length && (
-                <p className="text-sm text-muted">{t('admin.noPendingSuggestions')}</p>
+                <p className="text-sm text-muted dark:text-dark-muted">{t('admin.noPendingSuggestions')}</p>
               )}
             </div>
           )}
@@ -404,7 +408,7 @@ const AdminDashboard = () => {
           </h3>
           <div className="flex gap-2 w-full sm:w-auto">
             <div className="flex items-center bg-white dark:bg-dark-bg border-2 border-border dark:border-dark-border rounded-xl px-3 flex-1 sm:flex-initial">
-              <Search className="w-4 h-4 text-muted" aria-hidden="true" />
+              <Search className="w-4 h-4 text-muted dark:text-dark-muted" aria-hidden="true" />
               <label htmlFor="admin-word-search" className="sr-only">{t('search.bar.aria')}</label>
               <input
                 id="admin-word-search"
@@ -452,7 +456,7 @@ const AdminDashboard = () => {
             </tbody>
           </table>
           {!filteredWords.length && (
-            <p className="text-center text-muted py-8">{t('admin.noWordsFound')}</p>
+            <p className="text-center text-muted dark:text-dark-muted py-8">{t('admin.noWordsFound')}</p>
           )}
         </div>
       </div>
@@ -515,7 +519,7 @@ const AdminDashboard = () => {
                   {formData.definitions.map((d, i) => (
                     <div key={i} className="card py-3 px-4 mb-2">
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs font-bold text-muted">{t('admin.definitionN', { n: i + 1 })}</span>
+                        <span className="text-xs font-bold text-muted dark:text-dark-muted">{t('admin.definitionN', { n: i + 1 })}</span>
                         {formData.definitions.length > 1 && (
                           <button onClick={() => removeDef(i)} className="text-xs text-fjalingo-red hover:underline">{t('admin.remove')}</button>
                         )}
@@ -547,7 +551,7 @@ const AdminDashboard = () => {
                   {formData.conjugations.map((c, i) => (
                     <div key={i} className="card py-3 px-4 mb-2">
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs font-bold text-muted">{t('admin.conjugationN', { n: i + 1 })}</span>
+                        <span className="text-xs font-bold text-muted dark:text-dark-muted">{t('admin.conjugationN', { n: i + 1 })}</span>
                         <button onClick={() => removeConj(i)} className="text-xs text-fjalingo-red hover:underline">{t('admin.remove')}</button>
                       </div>
                       <select

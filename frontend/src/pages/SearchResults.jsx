@@ -9,10 +9,11 @@ import Heading from '../components/ui/Heading.jsx';
 import Button from '../components/ui/Button.jsx';
 import Parrot from '../components/mascot/Parrot.jsx';
 import api from '../utils/api.js';
-import { unlockAchievement } from '../utils/userService.js';
+import { useAuth } from '../context/AuthContext.jsx';
 import { t } from '../i18n/index.js';
 
 const SearchResults = () => {
+  const { unlockAchievement } = useAuth();
   const [searchParams] = useSearchParams();
   const query = searchParams.get('q') || '';
   const [results, setResults] = useState([]);

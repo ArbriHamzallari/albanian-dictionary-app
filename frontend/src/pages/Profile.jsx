@@ -129,7 +129,7 @@ const Profile = () => {
                 <Avatar filename={filename} size={40} className="mx-auto" />
                 {active && (
                   <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-brand-green flex items-center justify-center">
-                    <Check className="w-3 h-3 text-paper" aria-hidden="true" />
+                    <Check className="w-3 h-3 text-white" aria-hidden="true" />
                   </span>
                 )}
               </button>

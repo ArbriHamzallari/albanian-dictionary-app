@@ -6,7 +6,6 @@ import api from '../utils/api.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import ErrorMessage from '../components/ErrorMessage.jsx';
 import Button from '../components/ui/Button.jsx';
-import { unlockAchievement } from '../utils/userService.js';
 import { t } from '../i18n/index.js';
 
 const EMPTY_FORM = {
@@ -20,7 +19,7 @@ const EMPTY_FORM = {
 const SuggestWord = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, unlockAchievement } = useAuth();
   const [formData, setFormData] = useState(EMPTY_FORM);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
@@ -155,7 +154,7 @@ const SuggestWord = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.15 }}
-            className="fixed inset-0 z-[60] flex items-center justify-center bg-ink/50 px-4"
+            className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 px-4"
             role="dialog"
             aria-modal="true"
             aria-label={t('suggest.authModal.title')}

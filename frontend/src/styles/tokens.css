@@ -10,3 +10,16 @@
   --cloud: #F4F7FB;
   --line: #E3E8EF;
 }
+
+/* Dark mode (UX-5): the .dark class on <html> flips the neutral surface/text
+   tokens to the existing dark.* palette (tailwind.config.js), so every
+   text-ink / text-ink-soft / bg-paper / bg-cloud / border-line surface respects
+   dark mode without per-element dark: variants. Brand/accent colors are
+   intentionally theme-stable and stay in :root. */
+.dark {
+  --ink: #F5F5F5;       /* dark.text  — primary text */
+  --ink-soft: #A0A0A0;  /* dark.muted — secondary text */
+  --paper: #2D2D2D;     /* dark.card  — card/surface background */
+  --cloud: #1A1A1A;     /* dark.bg    — page background */
+  --line: #404040;      /* dark.border — borders/dividers */
+}

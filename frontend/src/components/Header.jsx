@@ -95,7 +95,7 @@ const Header = () => {
                   <span className="text-sm font-bold text-heading dark:text-dark-text">
                     {isAdmin ? t('common.admin') : (user?.profile?.username || t('header.dashboard'))}
                   </span>
-                  <ChevronDown className={`w-4 h-4 text-muted transition-transform ${accountOpen ? 'rotate-180' : ''}`} aria-hidden="true" />
+                  <ChevronDown className={`w-4 h-4 text-muted dark:text-dark-muted transition-transform ${accountOpen ? 'rotate-180' : ''}`} aria-hidden="true" />
                 </button>
                 {accountOpen && (
                   <div role="menu" className="absolute right-0 mt-2 w-48 rounded-xl border-2 border-border dark:border-dark-border bg-white dark:bg-dark-bg shadow-lg py-1">
