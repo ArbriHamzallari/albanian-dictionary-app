@@ -53,12 +53,12 @@
     "tagline": "Gjuha shqipe nuk humbet kurrë! 🦜",
     "navHeading": "Navigimi",
     "contactHeading": "Kontakti",
-    "legalHeading": "TODO_SQ_footer_legalHeading",
+    "legalHeading": "Ligjore",
     "links": {
-      "terms": "TODO_SQ_footer_links_terms",
-      "privacy": "TODO_SQ_footer_links_privacy",
-      "refund": "TODO_SQ_footer_links_refund",
-      "contact": "TODO_SQ_footer_links_contact",
+      "terms": "Kushtet e Përdorimit",
+      "privacy": "Politika e Privatësisë",
+      "refund": "Rimbursimet",
+      "contact": "Kontakt",
       "english": "English"
     },
     "copyright": "© {year} Fjalingo. Të gjitha të drejtat e rezervuara.",
@@ -67,60 +67,60 @@
     "linkedinAria": "LinkedIn Codrix"
   },
   "legal": {
-    "updated": "TODO_SQ_legal_updated",
-    "operatorRole": "TODO_SQ_legal_operatorRole",
+    "updated": "Përditësuar më 4 korrik 2026",
+    "operatorRole": "person fizik që operon platformën Fjalingo",
     "terms": {
-      "seoTitle": "TODO_SQ_legal_terms_seoTitle",
-      "seoDesc": "TODO_SQ_legal_terms_seoDesc",
-      "title": "TODO_SQ_legal_terms_title",
-      "operatorHeading": "TODO_SQ_legal_terms_operatorHeading",
+      "seoTitle": "Kushtet e Përdorimit të Fjalingo",
+      "seoDesc": "Kushtet që rregullojnë përdorimin e Fjalingo, një aplikacion abonimi për praktikimin e gjuhës shqipe.",
+      "title": "Kushtet e Përdorimit",
+      "operatorHeading": "Operatori i shërbimit",
       "sections": {
-        "intro": { "heading": "TODO_SQ_legal_terms_intro_heading", "body": "TODO_SQ_legal_terms_intro_body" },
-        "eligibility": { "heading": "TODO_SQ_legal_terms_eligibility_heading", "body": "TODO_SQ_legal_terms_eligibility_body" },
-        "account": { "heading": "TODO_SQ_legal_terms_account_heading", "body": "TODO_SQ_legal_terms_account_body" },
-        "acceptableUse": { "heading": "TODO_SQ_legal_terms_acceptableUse_heading", "body": "TODO_SQ_legal_terms_acceptableUse_body" },
-        "subscription": { "heading": "TODO_SQ_legal_terms_subscription_heading", "body": "TODO_SQ_legal_terms_subscription_body" },
-        "refund": { "heading": "TODO_SQ_legal_terms_refund_heading", "body": "TODO_SQ_legal_terms_refund_body" },
-        "liability": { "heading": "TODO_SQ_legal_terms_liability_heading", "body": "TODO_SQ_legal_terms_liability_body" },
-        "changes": { "heading": "TODO_SQ_legal_terms_changes_heading", "body": "TODO_SQ_legal_terms_changes_body" },
-        "law": { "heading": "TODO_SQ_legal_terms_law_heading", "body": "TODO_SQ_legal_terms_law_body" },
-        "contact": { "heading": "TODO_SQ_legal_terms_contact_heading", "body": "TODO_SQ_legal_terms_contact_body" }
+        "intro": { "heading": "Hyrje", "body": "Këto kushte zbatohen për përdorimin e Fjalingo (fjalingo.al), një aplikacion web me lojëra gjuhësore për praktikimin e shqipes. Fjalingo është shërbim abonimi digjital dhe nuk është kurs apo shkollë. Duke përdorur shërbimin, përdoruesi pranon këto kushte." },
+        "eligibility": { "heading": "Përshtatshmëria", "body": "Përdorimi i Fjalingo kërkon që përdoruesi të jetë në përputhje me moshën minimale të lejuar nga ligjet përkatëse. Për përdoruesit në BE zbatohet mosha e pëlqimit digjital (13–16 vjeç, sipas shtetit). Për përdoruesit në SHBA nën 13 vjeç zbatohet COPPA. Llogaritë e të miturve kanë kufizime shtesë dhe mbrohen sipas rregullave të sistemit." },
+        "account": { "heading": "Llogaria", "body": "Përdoruesit mund të regjistrohen me email dhe fjalëkalim ose me Google Sign-In. Emri i përdoruesit zgjidhet nga vetë përdoruesi. Përdoruesi është përgjegjës për sigurinë e llogarisë së tij dhe për çdo aktivitet që ndodh në të." },
+        "acceptableUse": { "heading": "Përdorimi i lejuar", "body": "Përdoruesit nuk duhet të abuzojnë me shërbimin, të ngacmojnë të tjerët, të imitojnë persona të tjerë, të përdorin mashtrime, të bëjnë scraping, ose të publikojnë përmbajtje të paligjshme. Shkeljet mund të çojnë në kufizim ose pezullim të llogarisë." },
+        "subscription": { "heading": "Abonimi", "body": "Fjalingo ofron një plan Premium me abonim vjetor €25, i cili rinovohet automatikisht. Pagesat përpunohen nga Paddle, i cili vepron si Merchant of Record. Kontrata e blerjes krijohet midis përdoruesit dhe Paddle. Përdoruesi mund të anulojë abonimin në çdo kohë dhe qasja Premium mbetet aktive deri në fund të periudhës së paguar." },
+        "refund": { "heading": "Rimbursimet", "body": "Përdoruesit në BE/EEA kanë të drejtën ligjore të tërheqjes brenda 14 ditëve nga blerja, sipas ligjit për konsumatorët. Kërkesat për rimbursim trajtohen përmes Paddle si Merchant of Record ose duke kontaktuar [hello@fjalingo.al](mailto:hello@fjalingo.al). Jashtë të drejtave ligjore, rimbursimet shqyrtohen rast pas rasti." },
+        "liability": { "heading": "Kufizimi i përgjegjësisë", "body": "Shërbimi ofrohet siç është, pa garanci të veçanta për vazhdimësi ose rezultate specifike. Në masën e lejuar nga ligji, përgjegjësia e operatorit kufizohet dhe nuk përfshin dëme indirekte ose humbje të të dhënave." },
+        "changes": { "heading": "Ndryshimet", "body": "Këto kushte mund të ndryshohen me njoftim në faqen e Fjalingo. Përdorimi i vazhdueshëm i shërbimit pas ndryshimeve nënkupton pranimin e kushteve të reja." },
+        "law": { "heading": "Ligji i zbatueshëm", "body": "Këto kushte rregullohen nga ligjet e Republikës së Shqipërisë." },
+        "contact": { "heading": "Kontakt", "body": "Për pyetje rreth këtyre kushteve mund të kontaktoni në [hello@fjalingo.al](mailto:hello@fjalingo.al)." }
       }
     },
     "privacy": {
-      "seoTitle": "TODO_SQ_legal_privacy_seoTitle",
-      "seoDesc": "TODO_SQ_legal_privacy_seoDesc",
-      "title": "TODO_SQ_legal_privacy_title",
+      "seoTitle": "Privatësia në Fjalingo",
+      "seoDesc": "Si mblidhen, përdoren dhe mbrohen të dhënat personale në Fjalingo.",
+      "title": "Politika e Privatësisë",
       "sections": {
-        "intro": { "heading": "TODO_SQ_legal_privacy_intro_heading", "body": "TODO_SQ_legal_privacy_intro_body" },
-        "dataCollected": { "heading": "TODO_SQ_legal_privacy_dataCollected_heading", "body": "TODO_SQ_legal_privacy_dataCollected_body" },
-        "dataUse": { "heading": "TODO_SQ_legal_privacy_dataUse_heading", "body": "TODO_SQ_legal_privacy_dataUse_body" },
-        "legalBasis": { "heading": "TODO_SQ_legal_privacy_legalBasis_heading", "body": "TODO_SQ_legal_privacy_legalBasis_body" },
-        "children": { "heading": "TODO_SQ_legal_privacy_children_heading", "body": "TODO_SQ_legal_privacy_children_body" },
-        "sharing": { "heading": "TODO_SQ_legal_privacy_sharing_heading", "body": "TODO_SQ_legal_privacy_sharing_body" },
-        "retention": { "heading": "TODO_SQ_legal_privacy_retention_heading", "body": "TODO_SQ_legal_privacy_retention_body" },
-        "rights": { "heading": "TODO_SQ_legal_privacy_rights_heading", "body": "TODO_SQ_legal_privacy_rights_body" },
-        "security": { "heading": "TODO_SQ_legal_privacy_security_heading", "body": "TODO_SQ_legal_privacy_security_body" },
-        "contact": { "heading": "TODO_SQ_legal_privacy_contact_heading", "body": "TODO_SQ_legal_privacy_contact_body" }
+        "intro": { "heading": "Hyrje", "body": "Kjo politikë shpjegon si Fjalingo mbledh dhe përdor të dhënat personale të përdoruesve. Fjalingo nuk përdor reklama dhe nuk shet të dhëna personale." },
+        "dataCollected": { "heading": "Të dhënat e mbledhura", "body": "Mblidhen: email, emri i përdoruesit, fjalëkalimi i hash-uar ose identifikuesi i Google, viti i lindjes dhe vendi, progresi në lojë (XP, seri ditore, rezultate), lidhjet me miqtë, mesazhet në chat (të enkriptuara dhe të moderuara), avatar i zgjedhur dhe log-e teknike. Përdoren edhe cookies të domosdoshme për sesionin dhe sigurinë." },
+        "dataUse": { "heading": "Përdorimi i të dhënave", "body": "Të dhënat përdoren për funksionimin e shërbimit, krijimin e llogarive, ruajtjen e progresit, sigurinë e platformës dhe përmirësimin e përvojës së lojës gjuhësore." },
+        "legalBasis": { "heading": "Baza ligjore", "body": "Përpunimi i të dhënave bazohet në nevojën për ofrimin e shërbimit, përmbushjen e kontratës së abonimit dhe interesin legjitim për siguri dhe funksionim teknik." },
+        "children": { "heading": "Të miturit", "body": "Fjalingo ka rregulla të veçanta për të miturit. Regjistrimi është i kufizuar sipas moshës minimale të pëlqimit digjital në BE (13–16 vjeç sipas shtetit) dhe COPPA në SHBA për nën 13 vjeç. Llogaritë e të miturve janë private: shfaqet vetëm emri dhe avatari. Mesazhet e lira nuk lejohen; komunikimi bëhet vetëm me fraza të paracaktuara me miq të pranuar. Leaderboard-et janë pseudonime dhe të segmentuara." },
+        "sharing": { "heading": "Ndarja e të dhënave", "body": "Të dhënat ndahen vetëm me ofrues shërbimesh që ndihmojnë në funksionimin e platformës: Vercel, Fly.io, Supabase, Paddle, Google (vetëm për login nëse zgjidhet nga përdoruesi) dhe Anthropic për moderim sigurie të mesazheve. Nuk ka shitje të të dhënave dhe as ndarje për reklama." },
+        "retention": { "heading": "Ruajtja e të dhënave", "body": "Të dhënat ruhen për sa kohë që llogaria ekziston. Përdoruesi mund të kërkojë fshirje të llogarisë dhe të dhënave në çdo kohë." },
+        "rights": { "heading": "Të drejtat e përdoruesit", "body": "Përdoruesit mund të kërkojnë akses, korrigjim, fshirje ose eksport të të dhënave të tyre duke kontaktuar në email. Përdoruesit kanë gjithashtu të drejtë të ankohen pranë autoritetit për mbrojtjen e të dhënave." },
+        "security": { "heading": "Siguria", "body": "Fjalingo përdor masa sigurie për mbrojtjen e të dhënave, përfshirë ruajtje të fjalëkalimeve të hash-uar dhe komunikime të enkriptuara për mesazhet." },
+        "contact": { "heading": "Kontakt", "body": "Për pyetje mbi privatësinë kontaktoni në [hello@fjalingo.al](mailto:hello@fjalingo.al)." }
       }
     },
     "refund": {
-      "seoTitle": "TODO_SQ_legal_refund_seoTitle",
-      "seoDesc": "TODO_SQ_legal_refund_seoDesc",
-      "title": "TODO_SQ_legal_refund_title",
-      "termsLink": "TODO_SQ_legal_refund_termsLink",
+      "seoTitle": "Rimbursime Fjalingo",
+      "seoDesc": "Politika e rimbursimeve dhe e drejta e tërheqjes për abonimin Fjalingo.",
+      "title": "Rimbursimet",
+      "termsLink": "Kushtet e Përdorimit",
       "sections": {
-        "policy": { "heading": "TODO_SQ_legal_refund_policy_heading", "body": "TODO_SQ_legal_refund_policy_body" },
-        "howTo": { "heading": "TODO_SQ_legal_refund_howTo_heading", "body": "TODO_SQ_legal_refund_howTo_body" }
+        "policy": { "heading": "Politika", "body": "Përdoruesit në BE/EEA kanë të drejtën ligjore të tërheqjes brenda 14 ditëve nga blerja e abonimit, sipas ligjit për mbrojtjen e konsumatorit. Përtej kësaj periudhe, rimbursimet nuk janë të garantuara dhe shqyrtohen rast pas rasti." },
+        "howTo": { "heading": "Si të kërkosh", "body": "Kërkesat për rimbursim bëhen përmes Paddle (Merchant of Record) ose duke dërguar email në [hello@fjalingo.al](mailto:hello@fjalingo.al) me detajet e blerjes." }
       }
     },
     "contact": {
-      "seoTitle": "TODO_SQ_legal_contact_seoTitle",
-      "seoDesc": "TODO_SQ_legal_contact_seoDesc",
-      "title": "TODO_SQ_legal_contact_title",
-      "intro": "TODO_SQ_legal_contact_intro",
-      "emailHeading": "TODO_SQ_legal_contact_emailHeading",
-      "operatorHeading": "TODO_SQ_legal_contact_operatorHeading"
+      "seoTitle": "Kontakt Fjalingo",
+      "seoDesc": "Kontakto ekipin e Fjalingo për mbështetje dhe pyetje.",
+      "title": "Kontakt",
+      "intro": "Për çdo pyetje ose mbështetje për Fjalingo, mund të na kontaktoni përmes kanaleve më poshtë.",
+      "emailHeading": "Email",
+      "operatorHeading": "Operatori"
     }
   },
   "home": {
