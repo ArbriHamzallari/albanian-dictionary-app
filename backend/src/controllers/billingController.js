@@ -54,7 +54,7 @@ async function checkoutConfig(req, res, next) {
     const checkoutSignature = signCheckoutUser(req.user.uuid, secret);
 
     return res.json({
-      environment: 'sandbox',
+      environment: process.env.PADDLE_ENVIRONMENT || 'sandbox',
       clientToken,
       items: [{ priceId, quantity: 1 }],
       customer: { email: userResult.rows[0].email },
