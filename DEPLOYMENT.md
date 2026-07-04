@@ -183,7 +183,7 @@ node scripts/smoke-test.js https://<fly-app-name>.fly.dev
 | `DATABASE_URL` | Yes | Supabase/Postgres pooled connection string (`sslmode=require`) |
 | `JWT_SECRET` | Yes | Signs auth tokens; use `openssl rand -hex 32` |
 | `FRONTEND_URL` | Yes | Production frontend (Vercel) origin for CORS (e.g. `https://your-app.vercel.app`) |
-| `PADDLE_ENVIRONMENT` | Yes | `sandbox` until live billing; `production` after Paddle verification |
+| `PADDLE_ENVIRONMENT` | Yes | `sandbox` until live billing; `production` after Paddle verification. Must be exactly `sandbox` or `production`. Single source of truth for the checkout environment — the frontend reads it from `/billing/checkout-config`, there is **no** frontend Paddle env var. Set `production` alongside the live `PADDLE_CLIENT_TOKEN` / `PADDLE_PREMIUM_PRICE_ID`. |
 | `PADDLE_CLIENT_TOKEN` | Yes | Paddle client-side token for checkout |
 | `PADDLE_PREMIUM_PRICE_ID` | Yes | Paddle price ID for €25/year Premium |
 | `PADDLE_WEBHOOK_SECRET` | Yes | Verifies Paddle webhook signatures |

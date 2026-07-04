@@ -22,16 +22,28 @@ function loadPaddleScript() {
   });
 }
 
-export async function openPremiumCheckout(config) {
+// `config` comes from GET /billing/checkout-config (the single source of truth for the
+// Paddle environment + token). `theme` is the app's current UI theme ('dark' | 'light').
+export async function openPremiumCheckout(config, theme) {
   const Paddle = await loadPaddleScript();
-  Paddle.Environment.set('sandbox');
+
+  // Paddle.js v2: call Environment.set only for sandbox; omitting it defaults to
+  // production. Fail fast on any unexpected value so we never silently ship the wrong env.
+  if (config.environment === 'sandbox') {
+    Paddle.Environment.set('sandbox');
+  } else if (config.environment !== 'production') {
+    throw new Error(
+      `Unexpected Paddle environment "${config.environment}"; expected "sandbox" or "production".`
+    );
+  }
+
   Paddle.Initialize({ token: config.clientToken });
   Paddle.Checkout.open({
     items: config.items,
     customer: config.customer,
     customData: config.customData,
     settings: {
-      theme: 'light',
+      theme: theme === 'dark' ? 'dark' : 'light',
     },
   });
 }

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../utils/api.js';
 import { openPremiumCheckout } from '../utils/paddleCheckout.js';
+import { getTheme } from '../utils/userService.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import Button from './ui/Button.jsx';
 import { t } from '../i18n/index.js';
@@ -22,7 +23,7 @@ const PremiumCheckoutButton = ({ fullWidth = false, size = 'lg' }) => {
       setLoading(true);
       setError('');
       const response = await api.get('/billing/checkout-config');
-      await openPremiumCheckout(response.data);
+      await openPremiumCheckout(response.data, getTheme());
     } catch {
       setError(t('premiumButton.error'));
     } finally {
