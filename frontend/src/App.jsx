@@ -39,6 +39,11 @@ const ChatPage = lazy(() => import('./pages/ChatPage.jsx'));
 const PublicProfile = lazy(() => import('./pages/PublicProfile.jsx'));
 const Premium = lazy(() => import('./pages/Premium.jsx'));
 const DesignGallery = lazy(() => import('./pages/DesignGallery.jsx'));
+const Terms = lazy(() => import('./pages/Terms.jsx'));
+const Privacy = lazy(() => import('./pages/Privacy.jsx'));
+const Refund = lazy(() => import('./pages/Refund.jsx'));
+const Contact = lazy(() => import('./pages/Contact.jsx'));
+const EnglishAbout = lazy(() => import('./pages/EnglishAbout.jsx'));
 
 const RouteFallback = () => (
   <div className="min-h-[50vh] flex items-center justify-center text-ink-soft font-semibold">
@@ -112,6 +117,10 @@ const App = () => {
   };
 
   const showChrome = !isSplash && !isDesign && !isOnboarding;
+  // The footer carries the legal links (LEGAL-1). It must be reachable from the
+  // marketing splash too — that is the page Paddle's domain review lands on — so it
+  // shows everywhere except the dev gallery and the onboarding takeover.
+  const showFooter = !isDesign && !isOnboarding;
 
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-dark-bg">
@@ -142,6 +151,11 @@ const App = () => {
               <Route path="/bisedat" element={<ChatPage />} />
               <Route path="/bisedat/:username" element={<ChatPage />} />
               <Route path="/premium" element={<Premium />} />
+              <Route path="/kushtet" element={<Terms />} />
+              <Route path="/privatesia" element={<Privacy />} />
+              <Route path="/rimbursimi" element={<Refund />} />
+              <Route path="/kontakt" element={<Contact />} />
+              <Route path="/en" element={<EnglishAbout />} />
               <Route path="/admin" element={<AdminLogin />} />
               <Route path="/admin/dashboard" element={<AdminDashboard />} />
               <Route path="/design" element={<DesignGallery />} />
@@ -149,7 +163,7 @@ const App = () => {
           </Suspense>
         </AnimatePresence>
       </main>
-      {showChrome && (
+      {showFooter && (
         <div className="hidden md:block">
           <Footer />
         </div>

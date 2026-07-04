@@ -1,13 +1,17 @@
 import { Link } from 'react-router-dom';
 import { Instagram, Globe, Linkedin } from 'lucide-react';
 import Parrot from './mascot/Parrot.jsx';
+import { OperatorLine } from './LegalPage.jsx';
 import { t } from '../i18n/index.js';
+
+const legalLinkClass =
+  'text-sm font-semibold text-muted dark:text-dark-muted hover:text-fjalingo-green transition-colors';
 
 const Footer = () => {
   return (
     <footer className="bg-card dark:bg-dark-card border-t-2 border-border dark:border-dark-border mt-auto">
       <div className="max-w-6xl mx-auto px-6 py-12">
-        <div className="grid gap-8 md:grid-cols-3">
+        <div className="grid gap-8 md:grid-cols-4">
           {/* Brand */}
           <div>
             <div className="flex items-center gap-2 mb-3">
@@ -74,9 +78,23 @@ const Footer = () => {
               </a>
             </div>
           </div>
+
+          {/* Legal (LEGAL-1) — Paddle domain review requires Terms, Privacy and Refund
+              reachable from site navigation on every page. */}
+          <div>
+            <h4 className="font-bold text-heading dark:text-dark-text mb-3">{t('footer.legalHeading')}</h4>
+            <div className="flex flex-col gap-2">
+              <Link to="/kushtet" className={legalLinkClass}>{t('footer.links.terms')}</Link>
+              <Link to="/privatesia" className={legalLinkClass}>{t('footer.links.privacy')}</Link>
+              <Link to="/rimbursimi" className={legalLinkClass}>{t('footer.links.refund')}</Link>
+              <Link to="/kontakt" className={legalLinkClass}>{t('footer.links.contact')}</Link>
+              <Link to="/en" className={legalLinkClass}>{t('footer.links.english')}</Link>
+            </div>
+          </div>
         </div>
 
         <div className="border-t border-border dark:border-dark-border mt-8 pt-6 text-center">
+          <OperatorLine className="block text-xs font-semibold text-muted dark:text-dark-muted mb-1" />
           <p className="text-xs font-semibold text-muted dark:text-dark-muted">
             {t('footer.copyright', { year: new Date().getFullYear() })}
           </p>

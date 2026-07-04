@@ -53,10 +53,75 @@
     "tagline": "Gjuha shqipe nuk humbet kurrë! 🦜",
     "navHeading": "Navigimi",
     "contactHeading": "Kontakti",
+    "legalHeading": "TODO_SQ_footer_legalHeading",
+    "links": {
+      "terms": "TODO_SQ_footer_links_terms",
+      "privacy": "TODO_SQ_footer_links_privacy",
+      "refund": "TODO_SQ_footer_links_refund",
+      "contact": "TODO_SQ_footer_links_contact",
+      "english": "English"
+    },
     "copyright": "© {year} Fjalingo. Të gjitha të drejtat e rezervuara.",
     "instagramAria": "Instagram Codrix",
     "websiteAria": "Website Codrix",
     "linkedinAria": "LinkedIn Codrix"
+  },
+  "legal": {
+    "updated": "TODO_SQ_legal_updated",
+    "operatorRole": "TODO_SQ_legal_operatorRole",
+    "terms": {
+      "seoTitle": "TODO_SQ_legal_terms_seoTitle",
+      "seoDesc": "TODO_SQ_legal_terms_seoDesc",
+      "title": "TODO_SQ_legal_terms_title",
+      "operatorHeading": "TODO_SQ_legal_terms_operatorHeading",
+      "sections": {
+        "intro": { "heading": "TODO_SQ_legal_terms_intro_heading", "body": "TODO_SQ_legal_terms_intro_body" },
+        "eligibility": { "heading": "TODO_SQ_legal_terms_eligibility_heading", "body": "TODO_SQ_legal_terms_eligibility_body" },
+        "account": { "heading": "TODO_SQ_legal_terms_account_heading", "body": "TODO_SQ_legal_terms_account_body" },
+        "acceptableUse": { "heading": "TODO_SQ_legal_terms_acceptableUse_heading", "body": "TODO_SQ_legal_terms_acceptableUse_body" },
+        "subscription": { "heading": "TODO_SQ_legal_terms_subscription_heading", "body": "TODO_SQ_legal_terms_subscription_body" },
+        "refund": { "heading": "TODO_SQ_legal_terms_refund_heading", "body": "TODO_SQ_legal_terms_refund_body" },
+        "liability": { "heading": "TODO_SQ_legal_terms_liability_heading", "body": "TODO_SQ_legal_terms_liability_body" },
+        "changes": { "heading": "TODO_SQ_legal_terms_changes_heading", "body": "TODO_SQ_legal_terms_changes_body" },
+        "law": { "heading": "TODO_SQ_legal_terms_law_heading", "body": "TODO_SQ_legal_terms_law_body" },
+        "contact": { "heading": "TODO_SQ_legal_terms_contact_heading", "body": "TODO_SQ_legal_terms_contact_body" }
+      }
+    },
+    "privacy": {
+      "seoTitle": "TODO_SQ_legal_privacy_seoTitle",
+      "seoDesc": "TODO_SQ_legal_privacy_seoDesc",
+      "title": "TODO_SQ_legal_privacy_title",
+      "sections": {
+        "intro": { "heading": "TODO_SQ_legal_privacy_intro_heading", "body": "TODO_SQ_legal_privacy_intro_body" },
+        "dataCollected": { "heading": "TODO_SQ_legal_privacy_dataCollected_heading", "body": "TODO_SQ_legal_privacy_dataCollected_body" },
+        "dataUse": { "heading": "TODO_SQ_legal_privacy_dataUse_heading", "body": "TODO_SQ_legal_privacy_dataUse_body" },
+        "legalBasis": { "heading": "TODO_SQ_legal_privacy_legalBasis_heading", "body": "TODO_SQ_legal_privacy_legalBasis_body" },
+        "children": { "heading": "TODO_SQ_legal_privacy_children_heading", "body": "TODO_SQ_legal_privacy_children_body" },
+        "sharing": { "heading": "TODO_SQ_legal_privacy_sharing_heading", "body": "TODO_SQ_legal_privacy_sharing_body" },
+        "retention": { "heading": "TODO_SQ_legal_privacy_retention_heading", "body": "TODO_SQ_legal_privacy_retention_body" },
+        "rights": { "heading": "TODO_SQ_legal_privacy_rights_heading", "body": "TODO_SQ_legal_privacy_rights_body" },
+        "security": { "heading": "TODO_SQ_legal_privacy_security_heading", "body": "TODO_SQ_legal_privacy_security_body" },
+        "contact": { "heading": "TODO_SQ_legal_privacy_contact_heading", "body": "TODO_SQ_legal_privacy_contact_body" }
+      }
+    },
+    "refund": {
+      "seoTitle": "TODO_SQ_legal_refund_seoTitle",
+      "seoDesc": "TODO_SQ_legal_refund_seoDesc",
+      "title": "TODO_SQ_legal_refund_title",
+      "termsLink": "TODO_SQ_legal_refund_termsLink",
+      "sections": {
+        "policy": { "heading": "TODO_SQ_legal_refund_policy_heading", "body": "TODO_SQ_legal_refund_policy_body" },
+        "howTo": { "heading": "TODO_SQ_legal_refund_howTo_heading", "body": "TODO_SQ_legal_refund_howTo_body" }
+      }
+    },
+    "contact": {
+      "seoTitle": "TODO_SQ_legal_contact_seoTitle",
+      "seoDesc": "TODO_SQ_legal_contact_seoDesc",
+      "title": "TODO_SQ_legal_contact_title",
+      "intro": "TODO_SQ_legal_contact_intro",
+      "emailHeading": "TODO_SQ_legal_contact_emailHeading",
+      "operatorHeading": "TODO_SQ_legal_contact_operatorHeading"
+    }
   },
   "home": {
     "scrollHint": "Shiko ç'të pret poshtë",
