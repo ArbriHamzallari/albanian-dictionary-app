@@ -164,7 +164,10 @@ const App = () => {
         </AnimatePresence>
       </main>
       {showFooter && (
-        <div className="hidden md:block">
+        // Footer shows on all viewports (LEGAL-1b — legal links must be reachable on
+        // mobile). When MobileNav is present it's fixed to the bottom, so clear it with
+        // the same pb-20 md:pb-0 pattern <main> uses; the splash has no MobileNav.
+        <div className={showChrome ? 'pb-20 md:pb-0' : ''}>
           <Footer />
         </div>
       )}
