@@ -11,19 +11,30 @@ const categoryColors = {
 
 const WordCard = ({ word }) => {
   const badgeClass = categoryColors[word.category] || 'badge-blue';
+  // Heritage words (byrek, xhami…) have no replacement — never render them as a
+  // "wrong word → correction". Show the word plainly instead.
+  const isHeritage = word.word_type === 'heritage' || !word.correct_albanian;
 
   return (
     <div className="card card-hover group">
       <div className="flex flex-col gap-3">
-        {/* Borrowed → Correct */}
+        {/* Borrowed → Correct (replace) or the word on its own (heritage) */}
         <div className="flex items-center gap-3 flex-wrap">
-          <span className="text-lg font-bold text-muted dark:text-dark-muted line-through decoration-1">
-            {word.borrowed_word}
-          </span>
-          <ArrowRight className="w-4 h-4 text-fjalingo-green flex-shrink-0" />
-          <span className="text-xl font-black text-fjalingo-green">
-            {word.correct_albanian}
-          </span>
+          {isHeritage ? (
+            <span className="text-xl font-black text-heading dark:text-dark-text">
+              {word.borrowed_word}
+            </span>
+          ) : (
+            <>
+              <span className="text-lg font-bold text-muted dark:text-dark-muted line-through decoration-1">
+                {word.borrowed_word}
+              </span>
+              <ArrowRight className="w-4 h-4 text-fjalingo-green flex-shrink-0" />
+              <span className="text-xl font-black text-fjalingo-green">
+                {word.correct_albanian}
+              </span>
+            </>
+          )}
         </div>
 
         {/* Category badge */}

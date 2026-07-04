@@ -166,9 +166,13 @@ const getRandomWord = async (req, res, next) => {
 
 const getPopularWords = async (req, res, next) => {
   try {
+    // Only 'replace' words: this feeds the quiz (a heritage word has no answer to
+    // grade) and the homepage "swap this loanword" cards. Legacy rows default to
+    // 'replace', so nothing is lost until heritage content is imported.
     const result = await pool.query(
       `SELECT w.*
        FROM words w
+       WHERE w.word_type = 'replace'
        ORDER BY w.usage_count DESC, w.borrowed_word ASC
        LIMIT 10`
     );
