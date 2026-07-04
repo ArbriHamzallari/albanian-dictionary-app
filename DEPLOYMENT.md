@@ -3,8 +3,8 @@
 This guide gets the app running online. You will use:
 
 - **Vercel** – frontend (always available)
-- **Fly.io** – backend API (always-on container; no Render free-tier cold starts)
-- **Supabase** (recommended) or **Neon** / **ElephantSQL** – PostgreSQL
+- **Fly.io** – backend API (always-on container)
+- **Supabase** – managed PostgreSQL
 
 **Important:** Vercel hosts the static frontend build (and serverless functions). It does **not** run our persistent Node.js server. The backend is deployed on Fly.io from the repo root using `fly.toml` and `backend/Dockerfile`. The frontend's SPA routing is handled by `frontend/vercel.json`.
 
@@ -15,7 +15,7 @@ This guide gets the app running online. You will use:
 - A [GitHub](https://github.com) account (repo with this project)
 - [Fly.io](https://fly.io) account (credit card required; smallest VM is ~$5/mo always-on)
 - [Vercel](https://vercel.com) account
-- PostgreSQL: [Supabase](https://supabase.com) (current production path), [Neon](https://neon.tech), or [ElephantSQL](https://elephantsql.com)
+- [Supabase](https://supabase.com) project (managed PostgreSQL)
 - [flyctl](https://fly.io/docs/hands-on/install-flyctl/) installed locally
 
 ---
@@ -39,10 +39,12 @@ All commands below run from the **repo root** (`albanian-dictionary-app/`).
 fly auth login
 ```
 
-If the name `fjalingo-api` is taken globally, pick another name and update `app = "..."` in `fly.toml`:
+The Fly app is **`albanian-dictionary-app`** (`app` in `fly.toml`, region `ams`), so its API
+host is `https://albanian-dictionary-app.fly.dev`. If you are creating a fresh Fly app, the
+name must be globally unique — pick your own and update `app = "..."` in `fly.toml`:
 
 ```powershell
-fly apps create your-unique-app-name
+fly apps create albanian-dictionary-app
 ```
 
 ### 2b. Set secrets (before first deploy)
@@ -55,6 +57,7 @@ fly secrets set `
   DATABASE_URL="postgresql://..." `
   JWT_SECRET="your-long-random-secret" `
   FRONTEND_URL="https://your-app.vercel.app" `
+  CRON_SECRET="your-long-random-cron-secret" `
   PADDLE_ENVIRONMENT=sandbox `
   PADDLE_CLIENT_TOKEN="test_..." `
   PADDLE_PREMIUM_PRICE_ID="pri_..." `
@@ -82,8 +85,8 @@ See the **Secrets checklist** section below for what each required secret does.
 fly deploy
 ```
 
-Note your API host: `https://<fly-app-name>.fly.dev`  
-API base URL for the frontend: `https://<fly-app-name>.fly.dev/api`
+Note your API host: `https://albanian-dictionary-app.fly.dev`  
+API base URL for the frontend: `https://albanian-dictionary-app.fly.dev/api`
 
 ### 2d. Run migrations and seed (one-time)
 
@@ -100,7 +103,7 @@ Remove or secure the local `.env` afterward. Do not commit it.
 ### 2e. Verify health (cold-start acceptance test)
 
 ```powershell
-curl https://<fly-app-name>.fly.dev/api/health
+curl https://albanian-dictionary-app.fly.dev/api/health
 ```
 
 Expected response (200, typically &lt;300ms):
@@ -124,8 +127,16 @@ If `db` is `"fail"`, check `DATABASE_URL` and Supabase network/SSL settings.
 3. **Environment variable** — add this **before the first deploy** (a missing/late
    `VITE_API_URL` bakes an undefined API URL into the bundle even though the deploy
    "succeeds"). Set it for **Production, Preview, and Development**:
-   - `VITE_API_URL` = `https://<backend-host>/api` (**must end with `/api`**)
+   - `VITE_API_URL` = `https://albanian-dictionary-app.fly.dev/api` (**must end with `/api`**)
 4. Deploy and copy your site URL (e.g. `https://your-app.vercel.app`).
+
+Optional frontend env vars (set alongside `VITE_API_URL` if used):
+
+| Variable | Purpose |
+|----------|---------|
+| `VITE_GOOGLE_CLIENT_ID` | Google OAuth Web client ID (same value as backend `GOOGLE_CLIENT_ID`). If unset, the Google button is hidden. |
+| `VITE_CLARITY_PROJECT_ID` | Microsoft Clarity analytics project ID. If unset, Clarity is disabled. |
+| `VITE_SITE_URL` | Overrides the canonical/OG origin (defaults to the live domain); handy on preview deploys. |
 
 The SPA rewrite (so `/kerko`, `/kuizi`, `/admin` don't 404 on hard refresh) and the
 security headers are handled by `frontend/vercel.json` — no dashboard config needed.
@@ -154,12 +165,35 @@ use it for a custom domain, and during the host cutover to keep the old origin a
 alongside the new one:
 
 ```powershell
-fly secrets set FRONTEND_URL_EXTRA="https://fjalingo.al,https://your-app.netlify.app"
+fly secrets set FRONTEND_URL_EXTRA="https://fjalingo.al"
 ```
 
 ---
 
-## Step 5: Verify end-to-end
+## Step 5: Schedule the daily cron
+
+The nightly streak/freeze job runs via an **external scheduler** that calls the backend once a
+day. There is no in-app scheduler — Fly does not run cron for us.
+
+- **Endpoint:** `POST https://albanian-dictionary-app.fly.dev/api/cron/daily`
+- **Header:** `x-cron-secret: <CRON_SECRET>` (must equal the `CRON_SECRET` Fly secret)
+- **Cadence:** once daily (e.g. `0 4 * * *`, 04:00 UTC)
+
+Use any scheduler that can send a POST with a header — [cron-job.org](https://cron-job.org),
+GitHub Actions, or Fly Machines. A request without the correct `x-cron-secret` is rejected `403`.
+
+```bash
+curl -X POST https://albanian-dictionary-app.fly.dev/api/cron/daily \
+  -H "x-cron-secret: $CRON_SECRET"
+```
+
+> A separate GitHub Actions workflow (`.github/workflows/sitemap.yml`) regenerates
+> `frontend/public/sitemap.xml` daily from the words table and commits it; the commit triggers
+> a Vercel redeploy. It needs `DATABASE_URL` and `SITE_URL` repo secrets.
+
+---
+
+## Step 6: Verify end-to-end
 
 1. Open your Vercel URL — Fjalingo UI loads.
 2. Search, word of the day, register/login, quiz, leaderboard.
@@ -168,7 +202,7 @@ fly secrets set FRONTEND_URL_EXTRA="https://fjalingo.al,https://your-app.netlify
 
 ```powershell
 cd backend
-node scripts/smoke-test.js https://<fly-app-name>.fly.dev
+node scripts/smoke-test.js https://albanian-dictionary-app.fly.dev
 ```
 
 5. In browser DevTools → Network: API calls go to `*.fly.dev/api/...` with no CORS errors.
@@ -183,6 +217,7 @@ node scripts/smoke-test.js https://<fly-app-name>.fly.dev
 | `DATABASE_URL` | Yes | Supabase/Postgres pooled connection string (`sslmode=require`) |
 | `JWT_SECRET` | Yes | Signs auth tokens; use `openssl rand -hex 32` |
 | `FRONTEND_URL` | Yes | Production frontend (Vercel) origin for CORS (e.g. `https://your-app.vercel.app`) |
+| `CRON_SECRET` | Yes | Shared secret for the daily cron (`x-cron-secret` header on `POST /api/cron/daily`); `openssl rand -hex 32` |
 | `PADDLE_ENVIRONMENT` | Yes | `sandbox` until live billing; `production` after Paddle verification. Must be exactly `sandbox` or `production`. Single source of truth for the checkout environment — the frontend reads it from `/billing/checkout-config`, there is **no** frontend Paddle env var. Set `production` alongside the live `PADDLE_CLIENT_TOKEN` / `PADDLE_PREMIUM_PRICE_ID`. |
 | `PADDLE_CLIENT_TOKEN` | Yes | Paddle client-side token for checkout |
 | `PADDLE_PREMIUM_PRICE_ID` | Yes | Paddle price ID for €25/year Premium |
@@ -214,27 +249,6 @@ Fly performs rolling deploys with zero downtime when health checks pass at `/api
 | Health returns `"db": "fail"` | `DATABASE_URL` correct; Supabase pooler URL with SSL; migrations run. |
 | Health slow or timeout | Fly machine region (`primary_region = "ams"` in `fly.toml`) should be near EU users and Supabase region. |
 | App name taken on Fly | Change `app` in `fly.toml`, run `fly apps create <new-name>`, deploy again. |
-
----
-
-## Migration runbook (Netlify → Vercel)
-
-The repo changes (`frontend/vercel.json`, this doc) are already committed. These are the
-platform steps to execute the cutover — run them in order:
-
-1. Create the Vercel project, import the GitHub repo, set **Root Directory** to `frontend`
-   and **Framework Preset** to Vite.
-2. Add the `VITE_API_URL` env var on Vercel for **Production + Preview + Development**
-   **before the first deploy**.
-3. Deploy. Verify the Vercel URL loads and that a hard refresh on `/kerko` does **not** 404.
-4. Update `FRONTEND_URL` on the backend host to the new Vercel URL. Optionally set
-   `FRONTEND_URL_EXTRA` to the old Netlify URL during the cutover window.
-5. Smoke test: home, search, login, quiz, admin, and a hard refresh on a deep route.
-6. If a custom domain currently points at Netlify, repoint DNS to Vercel per Vercel's
-   instructions (DNS lives at the registrar, not in this repo).
-7. After 24–48h of clean operation: remove `frontend/netlify.toml` **and**
-   `frontend/public/_headers` in a follow-up commit, drop `FRONTEND_URL_EXTRA`, and leave
-   the Netlify site **disabled (not deleted)** for one week as a rollback.
 
 ---
 

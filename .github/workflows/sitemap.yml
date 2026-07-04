@@ -1,7 +1,7 @@
 name: Generate sitemap
 
 # Regenerates frontend/public/sitemap.xml from the words table and commits it.
-# The commit triggers Netlify's deploy, so the published sitemap is always fresh.
+# The commit triggers Vercel's deploy, so the published sitemap is always fresh.
 # Requires a DATABASE_URL repo secret (read access to the words table).
 
 on:

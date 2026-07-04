@@ -69,14 +69,20 @@ async function checkoutConfig(req, res, next) {
   }
 }
 
-async function upsertEntitlementFromSubscription(client, eventType, subscription, occurredAt) {
+// Applies a subscription.* event to the entitlements table by syncing Paddle's
+// subscription.status (the source of truth); entitlements middleware maps that
+// status -> access. Returns an outcome and NEVER throws for events we simply can't
+// act on: an authentic Paddle event (outer HMAC already verified) whose custom_data
+// we can't bind to one of our users is acknowledged and logged, not retried forever
+// — throwing would 500, roll back the idempotency row, and loop Paddle's retries.
+async function applySubscriptionEvent(client, eventType, subscription, occurredAt) {
   const customData = customDataFromSubscription(subscription);
   const userUuid = customData.user_uuid || customData.userUuid;
   const signature = customData.checkout_signature || customData.checkoutSignature;
   const secret = checkoutSigningSecret();
 
   if (!verifyCheckoutUserSignature(userUuid, signature, secret)) {
-    throw new Error('Paddle subscription custom data failed verification.');
+    return { applied: false, reason: 'unattributable' };
   }
 
   const status = eventType === 'subscription.canceled'
@@ -112,6 +118,8 @@ async function upsertEntitlementFromSubscription(client, eventType, subscription
       occurredAt,
     ]
   );
+
+  return { applied: true, status };
 }
 
 async function paddleWebhook(req, res, next) {
@@ -149,11 +157,21 @@ async function paddleWebhook(req, res, next) {
         return res.json({ received: true, deduplicated: true });
       }
 
-      if (eventType?.startsWith('subscription.')) {
-        await upsertEntitlementFromSubscription(client, eventType, event.data, occurredAt);
-      }
+      // Only subscription.* events change access; everything else (transaction.*,
+      // etc.) and any event we can't attribute is acknowledged, not 500'd — a 500
+      // would roll back the idempotency row above and make Paddle retry forever.
+      const outcome = (eventType?.startsWith('subscription.') && event.data)
+        ? await applySubscriptionEvent(client, eventType, event.data, occurredAt)
+        : { applied: false, reason: 'unhandled_event_type' };
 
       await client.query('COMMIT');
+
+      if (outcome.applied) {
+        console.info('[paddle_webhook_applied]', eventType, '->', outcome.status);
+      } else {
+        console.warn('[paddle_webhook_skipped]', eventType, outcome.reason);
+      }
+
       return res.json({ received: true });
     } catch (err) {
       await client.query('ROLLBACK');
@@ -169,5 +187,5 @@ async function paddleWebhook(req, res, next) {
 module.exports = {
   checkoutConfig,
   paddleWebhook,
-  upsertEntitlementFromSubscription,
+  applySubscriptionEvent,
 };

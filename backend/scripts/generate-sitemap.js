@@ -1,6 +1,6 @@
 // Generates frontend/public/sitemap.xml from the words table.
 //
-// Run in CI before the Netlify build (needs DB access + backend deps):
+// Run in CI before the Vercel build (needs DB access + backend deps):
 //   cd backend && npm ci && npm run generate-sitemap
 // Configure the public origin with SITE_URL (defaults to the live domain).
 
