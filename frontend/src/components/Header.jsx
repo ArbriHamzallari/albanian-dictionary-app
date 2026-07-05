@@ -34,6 +34,7 @@ const Header = () => {
 
   const navLinks = [
     { to: '/', label: t('nav.home') },
+    { to: '/origjina', label: t('nav.origins') },
     { to: '/kuizi', label: t('nav.quiz') },
     { to: '/arritjet', label: t('nav.achievements') },
     { to: '/renditja', label: t('nav.leaderboard') },

@@ -30,7 +30,25 @@
     "friends": "Miqtë",
     "chats": "Bisedat",
     "premium": "Premium",
-    "suggest": "Propozo Fjalë"
+    "suggest": "Propozo Fjalë",
+    "origins": "TODO_SQ_nav_origins"
+  },
+  "origins": {
+    "seoTitle": "TODO_SQ_origins_seoTitle",
+    "seoDesc": "TODO_SQ_origins_seoDesc",
+    "title": "TODO_SQ_origins_title",
+    "lead": "TODO_SQ_origins_lead",
+    "wordsLabel": "TODO_SQ_origins_wordsLabel",
+    "loadError": "TODO_SQ_origins_loadError",
+    "detail": {
+      "back": "TODO_SQ_origins_detail_back",
+      "wordsHeading": "TODO_SQ_origins_detail_wordsHeading",
+      "heritageLine": "TODO_SQ_origins_detail_heritageLine",
+      "practiceCta": "TODO_SQ_origins_detail_practiceCta",
+      "empty": "TODO_SQ_origins_detail_empty",
+      "notFound": "TODO_SQ_origins_detail_notFound",
+      "loadMore": "TODO_SQ_origins_detail_loadMore"
+    }
   },
   "header": {
     "tagline": "Mëso shqipen autentike",
