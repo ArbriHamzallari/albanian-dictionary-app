@@ -8,78 +8,128 @@ if (!process.env.DATABASE_URL || typeof process.env.DATABASE_URL !== 'string') {
 }
 
 const pool = require('../src/utils/db');
-
 const migrationsDir = path.join(__dirname, 'migrations');
 
 function splitStatements(sql) {
-  // Split on semicolons followed by a newline, but skip semicolons
-  // inside dollar-quoted blocks (e.g. DO $$ ... $$;)
+  // Split on semicolons at end of line, but skip semicolons inside dollar-quoted
+  // blocks (e.g. DO $$ ... $$;).
   const statements = [];
   let current = '';
   let inDollarQuote = false;
-  const lines = sql.split('\n');
 
-  for (const line of lines) {
-    // Track $$ toggling (simplified: only bare $$ pairs)
+  for (const line of sql.split('\n')) {
     const dollarMatches = line.match(/\$\$/g);
     if (dollarMatches) {
-      for (const _ of dollarMatches) {
-        inDollarQuote = !inDollarQuote;
-      }
+      for (const _ of dollarMatches) inDollarQuote = !inDollarQuote;
     }
-
     current += line + '\n';
-
-    // If we're outside a dollar-quoted block and the line ends with ;
     if (!inDollarQuote && line.trimEnd().endsWith(';')) {
       const trimmed = current.trim();
-      if (trimmed.length > 0) {
-        statements.push(trimmed);
-      }
+      if (trimmed.length > 0) statements.push(trimmed);
       current = '';
     }
   }
-
-  // Catch any trailing statement without a final ;
   const remaining = current.trim();
-  if (remaining.length > 0) {
-    statements.push(remaining);
-  }
-
+  if (remaining.length > 0) statements.push(remaining);
   return statements;
 }
 
-const runMigrations = async () => {
-  const files = fs.readdirSync(migrationsDir).filter((file) => file.endsWith('.sql')).sort();
+function migrationFiles() {
+  return fs.readdirSync(migrationsDir).filter((f) => f.endsWith('.sql')).sort();
+}
 
-  for (const file of files) {
-    const filePath = path.join(migrationsDir, file);
-    const sql = fs.readFileSync(filePath, 'utf8');
-    const statements = splitStatements(sql);
-    console.log(`Running migration: ${file} (${statements.length} statements)`);
+async function ensureTrackingTable(client) {
+  await client.query(`
+    CREATE TABLE IF NOT EXISTS schema_migrations (
+      filename TEXT PRIMARY KEY,
+      applied_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
+  `);
+}
 
-    for (let i = 0; i < statements.length; i++) {
-      const statement = statements[i].trim();
-      if (!statement) continue;
-      const query = statement.endsWith(';') ? statement : statement + ';';
+async function appliedFilenames(client) {
+  const { rows } = await client.query('SELECT filename FROM schema_migrations');
+  return new Set(rows.map((r) => r.filename));
+}
+
+// Record all current migration files as applied WITHOUT running them. For adopting
+// tracking on a database that is already migrated (e.g. production) so a later
+// `migrate` doesn't re-run everything.
+async function baseline() {
+  const client = await pool.connect();
+  try {
+    await ensureTrackingTable(client);
+    const files = migrationFiles();
+    for (const f of files) {
+      await client.query(
+        'INSERT INTO schema_migrations (filename) VALUES ($1) ON CONFLICT (filename) DO NOTHING',
+        [f]
+      );
+    }
+    console.log(`Baseline: recorded ${files.length} migration(s) as applied (none executed).`);
+    console.log('Future `npm run migrate` will apply only new files.');
+  } finally {
+    client.release();
+  }
+}
+
+// Apply only pending (unrecorded) migrations, each in its own transaction.
+async function migrate() {
+  const client = await pool.connect();
+  try {
+    await ensureTrackingTable(client);
+    const applied = await appliedFilenames(client);
+
+    // Safety net: a database that already has application tables but no recorded
+    // migrations predates tracking. Running migrations now would RE-RUN every file —
+    // including destructive ones like 004's `DROP TABLE quiz_sessions`. Refuse and
+    // point to baseline instead of wiping data.
+    if (applied.size === 0) {
+      const { rows } = await client.query("SELECT to_regclass('public.users') AS t");
+      if (rows[0].t) {
+        throw new Error(
+          'This database already has tables but no migration history.\n' +
+          '  It is already migrated — run `npm run migrate:baseline` ONCE to record the\n' +
+          '  existing migrations as applied, then use `npm run migrate` for new ones.\n' +
+          '  (Running migrate now would re-run every migration, including destructive ones.)'
+        );
+      }
+    }
+
+    const pending = migrationFiles().filter((f) => !applied.has(f));
+    if (!pending.length) {
+      console.log('No pending migrations — database is up to date.');
+      return;
+    }
+
+    for (const file of pending) {
+      const statements = splitStatements(fs.readFileSync(path.join(migrationsDir, file), 'utf8'));
+      console.log(`Applying ${file} (${statements.length} statements)...`);
+      await client.query('BEGIN');
       try {
-        await pool.query(query);
-        const preview = query.substring(0, 50).replace(/\s+/g, ' ');
-        console.log(`  OK: ${preview}${query.length > 50 ? '...' : ''}`);
+        for (const statement of statements) {
+          if (!statement.trim()) continue;
+          await client.query(statement.endsWith(';') ? statement : statement + ';');
+        }
+        await client.query('INSERT INTO schema_migrations (filename) VALUES ($1)', [file]);
+        await client.query('COMMIT');
+        console.log(`  OK: ${file}`);
       } catch (err) {
-        console.error(`  FAILED statement ${i + 1}/${statements.length}:`, err.message);
-        console.error('  SQL:', query.substring(0, 100) + (query.length > 100 ? '...' : ''));
+        await client.query('ROLLBACK').catch(() => {});
+        console.error(`  FAILED: ${file} — ${err.message}`);
         throw err;
       }
     }
+    console.log(`Migrations completed (${pending.length} applied).`);
+  } finally {
+    client.release();
   }
+}
 
-  console.log('Migrations completed.');
-  await pool.end();
-};
-
-runMigrations().catch((error) => {
-  console.error('Migration failed:', error.message);
-  pool.end().catch(() => {});
-  process.exit(1);
-});
+const command = process.argv[2];
+(command === 'baseline' ? baseline() : migrate())
+  .catch((error) => {
+    console.error('Migration failed:', error.message);
+    process.exitCode = 1;
+  })
+  .finally(() => pool.end().catch(() => {}));

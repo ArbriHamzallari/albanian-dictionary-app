@@ -8,6 +8,7 @@
     "dev": "nodemon server.js",
     "start": "node server.js",
     "migrate": "node database/migrate.js",
+    "migrate:baseline": "node database/migrate.js baseline",
     "seed": "node database/seed.js",
     "import:words": "node scripts/import_words.js",
     "smoke-test": "node scripts/smoke-test.js",
