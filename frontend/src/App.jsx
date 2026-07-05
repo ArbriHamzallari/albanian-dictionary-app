@@ -140,7 +140,7 @@ const App = () => {
             <Routes>
               <Route path="/" element={<HomeRoute />} />
               <Route path="/kerko" element={<SearchResults />} />
-              <Route path="/fjala/:id" element={<WordDetail />} />
+              <Route path="/fjala/:slug" element={<WordDetail />} />
               <Route path="/fjala-e-dites" element={<WordOfTheDay />} />
               <Route path="/origjina" element={<Origins />} />
               <Route path="/origjina/:code" element={<OriginDetail />} />

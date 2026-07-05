@@ -33,11 +33,15 @@ function urlEntry({ loc, lastmod, changefreq, priority }) {
 }
 
 async function main() {
-  const { rows } = await pool.query('SELECT id, updated_at FROM words ORDER BY id ASC');
+  // Slug URLs only (WEB-2). encodeURIComponent percent-encodes diacritics (ë, ç) for
+  // valid <loc> values; the leading /fjala/ path stays literal.
+  const { rows } = await pool.query(
+    'SELECT slug, updated_at FROM words WHERE slug IS NOT NULL ORDER BY slug ASC'
+  );
 
   const wordEntries = rows.map((w) =>
     urlEntry({
-      loc: `/fjala/${w.id}`,
+      loc: `/fjala/${encodeURIComponent(w.slug)}`,
       lastmod: w.updated_at ? new Date(w.updated_at).toISOString().slice(0, 10) : undefined,
       changefreq: 'monthly',
       priority: '0.7',
