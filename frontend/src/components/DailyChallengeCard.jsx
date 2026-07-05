@@ -47,7 +47,9 @@ const DailyChallengeCard = () => {
   };
 
   if (loading) return null;
-  if (!word) return null;
+  // A heritage word has no replacement to type, so it can't be a fill-in challenge —
+  // skip it rather than crash on word.correct_albanian below.
+  if (!word || !word.correct_albanian) return null;
 
   return (
     <motion.div

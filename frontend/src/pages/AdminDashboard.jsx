@@ -152,7 +152,7 @@ const AdminDashboard = () => {
     setEditingId(word.id);
     setFormData({
       borrowed_word: word.borrowed_word,
-      correct_albanian: word.correct_albanian,
+      correct_albanian: word.correct_albanian || '',
       category: word.category || 'Emër',
       difficulty_level: word.difficulty_level || '',
       definitions: word.definitions?.length
@@ -270,7 +270,7 @@ const AdminDashboard = () => {
   const filteredWords = searchQ
     ? words.filter((w) =>
         w.borrowed_word.toLowerCase().includes(searchQ.toLowerCase()) ||
-        w.correct_albanian.toLowerCase().includes(searchQ.toLowerCase())
+        (w.correct_albanian || '').toLowerCase().includes(searchQ.toLowerCase())
       )
     : words;
 
