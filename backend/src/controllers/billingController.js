@@ -85,6 +85,15 @@ async function applySubscriptionEvent(client, eventType, subscription, occurredA
     return { applied: false, reason: 'unattributable' };
   }
 
+  // The user may have deleted their account after subscribing (entitlements
+  // cascades on user delete). Re-inserting would violate the users FK and poison
+  // the webhook transaction; acknowledge and ignore so Paddle stops retrying
+  // (SEC-DELETE). Deletion does not auto-cancel Paddle subscriptions in v1.
+  const userExists = await client.query('SELECT 1 FROM users WHERE uuid = $1::uuid', [userUuid]);
+  if (!userExists.rows.length) {
+    return { applied: false, reason: 'unknown_user' };
+  }
+
   const status = eventType === 'subscription.canceled'
     ? 'canceled'
     : (subscription.status || 'unknown');

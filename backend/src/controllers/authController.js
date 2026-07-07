@@ -3,7 +3,8 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const pool = require('../utils/db');
 const { OAuth2Client } = require('google-auth-library');
-const { loginSchema, registerSchema, guestUpgradeSchema, consentCheckSchema, googleAuthSchema, completeProfileSchema } = require('../utils/validation');
+const { loginSchema, registerSchema, guestUpgradeSchema, consentCheckSchema, googleAuthSchema, completeProfileSchema, deleteAccountSchema } = require('../utils/validation');
+const { deleteUserData, hashUserIdentifier } = require('../utils/deleteUser');
 const { USER_RANK_SQL } = require('../utils/rankSql');
 const { getEntitlement, entitlementIsPremium } = require('../middleware/entitlements');
 const { touchLastSeen } = require('../utils/presence');
@@ -118,6 +119,7 @@ function profileFromRow(u) {
     email: u.email,
     full_name: u.full_name,
     role: u.role,
+    auth_provider: u.auth_provider || 'password',
     avatar_filename: u.avatar_filename,
     bio: u.bio,
     favorite_word: u.favorite_word,
@@ -591,6 +593,90 @@ const logout = (req, res) => {
   return res.json({ ok: true });
 };
 
+// Re-verify identity before an irreversible account deletion. Fails closed:
+// password accounts must re-enter their password; Google-only accounts must
+// present a fresh Google credential for the SAME google_sub. A linked account
+// (has both) is verified by password. Never reveals which factor was expected.
+async function verifyIdentityForDeletion(user, body) {
+  if (user.password_hash) {
+    if (!body || typeof body.password !== 'string' || !body.password) return false;
+    return bcrypt.compare(body.password, user.password_hash);
+  }
+  if (user.google_sub) {
+    if (!googleClient || !body || typeof body.credential !== 'string' || !body.credential) return false;
+    try {
+      const ticket = await googleClient.verifyIdToken({ idToken: body.credential, audience: GOOGLE_CLIENT_ID });
+      const payload = ticket.getPayload();
+      return Boolean(payload && payload.sub === user.google_sub);
+    } catch {
+      return false;
+    }
+  }
+  return false;
+}
+
+// ── DELETE /account ──────────────────────────────────────────
+// Self-service GDPR erasure (the privacy policy promises it). Authenticated +
+// CSRF (global) + re-verified identity. One transaction: write a PII-free
+// tombstone to the audit trail (a legal record), then cascade-erase the user via
+// the shared deleteUserData. Deletion does NOT auto-cancel a Paddle subscription
+// — the frontend warns and links the cancel flow first; a webhook that arrives
+// for the now-deleted user is acknowledged and ignored (see billingController).
+const deleteAccount = async (req, res, next) => {
+  try {
+    const { error, value } = deleteAccountSchema.validate(req.body || {});
+    if (error) {
+      return res.status(400).json({ message: 'Të dhënat janë të pavlefshme.' });
+    }
+
+    const userResult = await pool.query('SELECT * FROM users WHERE uuid = $1::uuid', [req.user.uuid]);
+    if (!userResult.rows.length) {
+      return res.status(404).json({ message: 'Përdoruesi nuk u gjet.' });
+    }
+    const user = userResult.rows[0];
+
+    const identityOk = await verifyIdentityForDeletion(user, value);
+    if (!identityOk) {
+      return res.status(401).json({ message: 'Verifikimi dështoi. Provoni përsëri.', code: 'DELETE_IDENTITY_FAILED' });
+    }
+
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+
+      await client.query(
+        `INSERT INTO admin_audit_log
+           (admin_user_id, action, target_type, target_id, metadata, ip, user_agent)
+         VALUES (NULL, 'account.self_delete', 'user', $1, $2::jsonb, $3, $4)`,
+        [
+          hashUserIdentifier(user.uuid),
+          JSON.stringify({ auth_provider: user.auth_provider || 'password', was_minor: user.is_minor === true }),
+          req.ip || null,
+          req.get ? (req.get('user-agent') || null) : null,
+        ]
+      );
+
+      const deleted = await deleteUserData(client, user.uuid);
+      if (!deleted) {
+        await client.query('ROLLBACK');
+        return res.status(404).json({ message: 'Përdoruesi nuk u gjet.' });
+      }
+
+      await client.query('COMMIT');
+    } catch (err) {
+      await client.query('ROLLBACK');
+      throw err;
+    } finally {
+      client.release();
+    }
+
+    clearSessionCookies(res);
+    return res.json({ ok: true });
+  } catch (err) {
+    return next(err);
+  }
+};
+
 // Pseudonymous auto-username for Google sign-ups (no real name, per child-safety
 // rules). The user can change it later from their profile.
 async function generateUniqueUsername(client) {
@@ -768,4 +854,4 @@ const completeProfile = async (req, res, next) => {
   }
 };
 
-module.exports = { register, login, me, guestUpgrade, heartbeat, consentCheck, refresh, logout, googleAuth, completeProfile };
+module.exports = { register, login, me, guestUpgrade, heartbeat, consentCheck, refresh, logout, googleAuth, completeProfile, deleteAccount };

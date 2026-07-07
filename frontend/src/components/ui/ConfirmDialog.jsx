@@ -17,6 +17,9 @@ const ConfirmDialog = ({
   onConfirm,
   onCancel,
   loading = false,
+  // When the confirm action is driven by a custom control in `children` (e.g. a
+  // re-auth button), hide the built-in confirm button and show only cancel.
+  hideConfirm = false,
   children,
 }) => {
   const reduceMotion = useReducedMotion();
@@ -61,9 +64,11 @@ const ConfirmDialog = ({
               <Button variant="secondary" size="md" fullWidth onClick={onCancel} disabled={loading}>
                 {cancelLabel}
               </Button>
-              <Button variant={variant} size="md" fullWidth onClick={onConfirm} loading={loading}>
-                {confirmLabel}
-              </Button>
+              {!hideConfirm && (
+                <Button variant={variant} size="md" fullWidth onClick={onConfirm} loading={loading}>
+                  {confirmLabel}
+                </Button>
+              )}
             </div>
           </motion.div>
         </motion.div>

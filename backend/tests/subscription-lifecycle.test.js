@@ -80,22 +80,32 @@ function subscription(status, endsAt, customData = validCustomData()) {
   };
 }
 
-function stubClient() {
+function stubClient({ userExists = true } = {}) {
   return {
     calls: [],
     async query(text, values) {
       this.calls.push({ text, values });
+      // The applier first checks the target user still exists (SEC-DELETE); a
+      // deleted user is the one case where it must skip the entitlement write.
+      if (/FROM users/i.test(text)) {
+        return { rows: userExists ? [{ exists: 1 }] : [] };
+      }
       return { rows: [] };
     },
   };
+}
+
+// Finds the entitlements INSERT among the applier's queries (it also runs a user
+// existence check first), so assertions don't depend on call ordering.
+function entitlementInsert(client) {
+  return client.calls.find((c) => /INSERT INTO entitlements/i.test(c.text));
 }
 
 test('applySubscriptionEvent: syncs status and period end for active', async () => {
   const client = stubClient();
   const outcome = await applySubscriptionEvent(client, 'subscription.updated', subscription('active', future), OCCURRED_AT);
   assert.deepEqual(outcome, { applied: true, status: 'active' });
-  assert.equal(client.calls.length, 1);
-  const [userUuid, status, , , periodEnd] = client.calls[0].values;
+  const [userUuid, status, , , periodEnd] = entitlementInsert(client).values;
   assert.equal(userUuid, USER_UUID);
   assert.equal(status, 'active');
   assert.equal(periodEnd, future);
@@ -106,7 +116,7 @@ test('applySubscriptionEvent: canceled event always writes canceled', async () =
   // Even if the payload status lags, the canceled event forces canceled.
   const outcome = await applySubscriptionEvent(client, 'subscription.canceled', subscription('active', past), OCCURRED_AT);
   assert.deepEqual(outcome, { applied: true, status: 'canceled' });
-  assert.equal(client.calls[0].values[1], 'canceled');
+  assert.equal(entitlementInsert(client).values[1], 'canceled');
 });
 
 test('applySubscriptionEvent: past_due and paused sync their status', async () => {
@@ -114,7 +124,7 @@ test('applySubscriptionEvent: past_due and paused sync their status', async () =
     const client = stubClient();
     const outcome = await applySubscriptionEvent(client, 'subscription.updated', subscription(status, future), OCCURRED_AT);
     assert.deepEqual(outcome, { applied: true, status });
-    assert.equal(client.calls[0].values[1], status);
+    assert.equal(entitlementInsert(client).values[1], status);
   }
 });
 
@@ -129,4 +139,14 @@ test('applySubscriptionEvent: unattributable event changes nothing and does not 
   );
   assert.deepEqual(outcome, { applied: false, reason: 'unattributable' });
   assert.equal(client.calls.length, 0);
+});
+
+test('applySubscriptionEvent: deleted user is acknowledged and never written (SEC-DELETE)', async () => {
+  // A validly-attributed event for a user who has since erased their account:
+  // must skip the entitlement write (its FK would fail) and report unknown_user
+  // so the webhook 200s instead of retrying forever.
+  const client = stubClient({ userExists: false });
+  const outcome = await applySubscriptionEvent(client, 'subscription.updated', subscription('active', future), OCCURRED_AT);
+  assert.deepEqual(outcome, { applied: false, reason: 'unknown_user' });
+  assert.equal(entitlementInsert(client), undefined);
 });

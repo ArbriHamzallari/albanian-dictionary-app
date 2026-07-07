@@ -415,7 +415,23 @@
     "optOutLabel": "Mos më shfaq në renditjen publike botërore.",
     "save": "Ruaj Ndryshimet",
     "friendsDesc": "Shto, prano dhe menaxho miqtë e tu.",
-    "friendsCta": "Shiko"
+    "friendsCta": "Shiko",
+    "deleteAccount": {
+      "title": "TODO_SQ_deleteAccount_title",
+      "description": "TODO_SQ_deleteAccount_description",
+      "premiumNotice": "TODO_SQ_deleteAccount_premiumNotice",
+      "premiumCancelCta": "TODO_SQ_deleteAccount_premiumCancelCta",
+      "button": "TODO_SQ_deleteAccount_button",
+      "dialogTitle": "TODO_SQ_deleteAccount_dialogTitle",
+      "dialogDescription": "TODO_SQ_deleteAccount_dialogDescription",
+      "confirm": "TODO_SQ_deleteAccount_confirm",
+      "typeToConfirm": "TODO_SQ_deleteAccount_typeToConfirm ({word})",
+      "passwordLabel": "TODO_SQ_deleteAccount_passwordLabel",
+      "googleReauth": "TODO_SQ_deleteAccount_googleReauth",
+      "identityFailed": "TODO_SQ_deleteAccount_identityFailed",
+      "confirmMismatch": "TODO_SQ_deleteAccount_confirmMismatch",
+      "error": "TODO_SQ_deleteAccount_error"
+    }
   },
   "premium": {
     "title": "Përvoja e plotë Fjalingo",
