@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://fjalingo.al/sitemap.xml
+Sitemap: https://fjalingo.com/sitemap.xml

@@ -4,7 +4,7 @@ const pool = require('../src/utils/db');
 const { validateExercise } = require('../src/utils/exerciseSchemas');
 
 const isProduction = process.env.NODE_ENV === 'production';
-const adminEmail = process.env.ADMIN_EMAIL || (isProduction ? null : 'admin@fjalingo.al');
+const adminEmail = process.env.ADMIN_EMAIL || (isProduction ? null : 'admin@fjalingo.com');
 const adminPassword = process.env.ADMIN_PASSWORD || (isProduction ? null : 'Fjalor123!');
 if (isProduction && (!adminEmail || !adminPassword)) {
   console.error('In production set ADMIN_EMAIL and ADMIN_PASSWORD in backend/.env. Do not use default credentials.');

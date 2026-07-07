@@ -192,4 +192,4 @@ Quick checklist:
 - Website: https://codrixwebsite.vercel.app/
 - LinkedIn: https://www.linkedin.com/company/codrix-solutions/
 
-hello@fjalingo.al
+hello@fjalingo.com
