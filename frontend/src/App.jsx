@@ -5,7 +5,7 @@ import Header from './components/Header.jsx';
 import Footer from './components/Footer.jsx';
 import MobileNav from './components/MobileNav.jsx';
 import OnboardingTour from './components/Onboarding.jsx';
-import { useAuth, useHasUnlimitedAccess } from './context/AuthContext.jsx';
+import { useAuth } from './context/AuthContext.jsx';
 import { initTheme } from './utils/userService.js';
 import { t } from './i18n/index.js';
 
@@ -15,6 +15,7 @@ const ONBOARDED_KEY = 'fjalingo_onboarded';
 import Home from './pages/Home.jsx';
 import Login from './pages/Login.jsx';
 import Dashboard from './pages/Dashboard.jsx';
+import LoadingSpinner from './components/LoadingSpinner.jsx';
 
 // Lazy: everything else is code-split so the initial bundle stays small
 // (CLAUDE.md §13 — split the lesson player from the marketing splash).
@@ -31,7 +32,6 @@ const Lessons = lazy(() => import('./pages/Lessons.jsx'));
 const Onboarding = lazy(() => import('./pages/Onboarding.jsx'));
 const Achievements = lazy(() => import('./pages/Achievements.jsx'));
 const Register = lazy(() => import('./pages/Register.jsx'));
-const PremiumHome = lazy(() => import('./pages/PremiumHome.jsx'));
 const CompleteProfile = lazy(() => import('./pages/CompleteProfile.jsx'));
 const Profile = lazy(() => import('./pages/Profile.jsx'));
 const Leaderboard = lazy(() => import('./pages/Leaderboard.jsx'));
@@ -67,34 +67,39 @@ const AdminHomeBanner = () => (
   </div>
 );
 
-// "/" surface: anyone with unlimited access (premium OR admin) gets the richer
-// PremiumHome; admins also get a banner to their panel so the premium surface is
-// reachable and testable with zero paywalls (AUTH-4-FIX, intentionally overriding
-// UX-4's admin→Home). Free users get the marketing Home. Reads the access hook on
-// mount, so a subscription change reflects next mount.
+// "/" surface, gated on authentication (UI-0), not entitlement. Guests get the
+// marketing Home; every logged-in user lands in the app home instead of the brochure.
+// There is ONE app home — the Dashboard — which itself shows different things by tier
+// (free badge + upgrade upsell + locked widgets for free; unlocked + premium badge for
+// premium/admin). Admins also get a banner to their panel. Waits for auth to resolve
+// so a logged-in user never flashes the marketing page.
 const HomeRoute = () => {
-  const { isAdmin } = useAuth();
-  const hasUnlimited = useHasUnlimitedAccess();
+  const { isLoggedIn, isAdmin, loading: authLoading } = useAuth();
 
-  if (hasUnlimited) {
+  if (authLoading) {
     return (
-      <>
-        {isAdmin && <AdminHomeBanner />}
-        <PremiumHome />
-      </>
+      <div className="mx-auto max-w-2xl px-6 py-16">
+        <LoadingSpinner />
+      </div>
     );
   }
-  return <Home />;
+  if (!isLoggedIn) {
+    return <Home />;
+  }
+  return (
+    <>
+      {isAdmin && <AdminHomeBanner />}
+      <Dashboard />
+    </>
+  );
 };
 
 const App = () => {
   const location = useLocation();
   const { isLoggedIn, loading: authLoading } = useAuth();
-  const hasUnlimited = useHasUnlimitedAccess();
-  // Anyone with unlimited access (premium or admin) on "/" sees the app-like
-  // PremiumHome, which needs the header/nav — so it is NOT the chrome-less splash.
-  const isPremiumHome = location.pathname === '/' && hasUnlimited;
-  const isSplash = location.pathname === '/' && !isPremiumHome;
+  // Only a guest at "/" gets the chrome-less marketing splash. Every logged-in user
+  // gets the app home (Dashboard), which needs the header/nav (UI-0).
+  const isSplash = location.pathname === '/' && !isLoggedIn;
   const isDesign = import.meta.env.DEV && location.pathname === '/design';
   const isOnboarding = location.pathname === '/start';
   const isAdminRoute = location.pathname.startsWith('/admin');
