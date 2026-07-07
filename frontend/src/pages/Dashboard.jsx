@@ -20,7 +20,7 @@ const LEVEL_POINTS = (level) => {
 };
 
 const Dashboard = () => {
-  const { user, loading: authLoading, isLoggedIn, isAdmin } = useAuth();
+  const { user, loading: authLoading, isLoggedIn } = useAuth();
   const hasUnlimited = useHasUnlimitedAccess();
   const navigate = useNavigate();
   const [recentAttempts, setRecentAttempts] = useState([]);
@@ -29,11 +29,9 @@ const Dashboard = () => {
     if (!authLoading && !isLoggedIn) {
       navigate('/hyr');
     }
-    // Redirect admin users to admin dashboard
-    if (!authLoading && isLoggedIn && isAdmin) {
-      navigate('/admin/dashboard', { replace: true });
-    }
-  }, [authLoading, isLoggedIn, isAdmin, navigate]);
+    // Admins are not redirected away: the Dashboard is the single app home (UI-0),
+    // and admins see it with the AdminHomeBanner + their Header link to the panel.
+  }, [authLoading, isLoggedIn, navigate]);
 
   useEffect(() => {
     if (!user) return;
