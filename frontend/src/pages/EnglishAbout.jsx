@@ -64,6 +64,10 @@ const EnglishAbout = () => (
       <Link to="/rimbursimi" className="font-bold text-fjalingo-green hover:text-fjalingo-green-dark">
         refund policy
       </Link>
+      . See the full{' '}
+      <Link to="/premium" className="font-bold text-fjalingo-green hover:text-fjalingo-green-dark">
+        pricing page
+      </Link>
       .
     </p>
 

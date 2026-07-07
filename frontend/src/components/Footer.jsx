@@ -39,6 +39,9 @@ const Footer = () => {
               <Link to="/propozo" className="text-sm font-semibold text-muted dark:text-dark-muted hover:text-fjalingo-green transition-colors">
                 {t('nav.suggest')}
               </Link>
+              <Link to="/premium" className="text-sm font-semibold text-muted dark:text-dark-muted hover:text-fjalingo-green transition-colors">
+                {t('nav.pricing')}
+              </Link>
             </div>
           </div>
 

@@ -31,7 +31,8 @@
     "chats": "Bisedat",
     "premium": "Premium",
     "suggest": "Propozo Fjalë",
-    "origins": "TODO_SQ_nav_origins"
+    "origins": "TODO_SQ_nav_origins",
+    "pricing": "TODO_SQ_nav_pricing"
   },
   "origins": {
     "seoTitle": "TODO_SQ_origins_seoTitle",
@@ -420,6 +421,29 @@
     "title": "Përvoja e plotë Fjalingo",
     "priceNote": "25 EUR në vit. Pagesa hapet me Paddle Sandbox dhe aktivizohet nga webhook-u i verifikuar në server.",
     "active": "Premium aktiv",
+    "seoTitle": "TODO_SQ_premium_seoTitle",
+    "seoDesc": "TODO_SQ_premium_seoDesc",
+    "hero": "TODO_SQ_premium_hero",
+    "priceDetail": "TODO_SQ_premium_priceDetail",
+    "freeCta": "TODO_SQ_premium_freeCta",
+    "compare": {
+      "freeTitle": "TODO_SQ_premium_compare_freeTitle",
+      "premiumTitle": "TODO_SQ_premium_compare_premiumTitle",
+      "free": {
+        "dictionary": "TODO_SQ_premium_compare_free_dictionary",
+        "history": "TODO_SQ_premium_compare_free_history",
+        "dailyLessons": "TODO_SQ_premium_compare_free_dailyLessons",
+        "streak": "TODO_SQ_premium_compare_free_streak",
+        "leaderboard": "TODO_SQ_premium_compare_free_leaderboard"
+      },
+      "premium": {
+        "unlimited": "TODO_SQ_premium_compare_premium_unlimited",
+        "allContent": "TODO_SQ_premium_compare_premium_allContent",
+        "mistakes": "TODO_SQ_premium_compare_premium_mistakes",
+        "freeze": "TODO_SQ_premium_compare_premium_freeze",
+        "friends": "TODO_SQ_premium_compare_premium_friends"
+      }
+    },
     "features": {
       "search": "Kërkime pa kufi",
       "quizzes": "Kuize pa kufi",
