@@ -100,6 +100,31 @@ npm run seed
 
 Remove or secure the local `.env` afterward. Do not commit it.
 
+> **Automatic migrations on deploy.** `fly.toml` has `[deploy] release_command =
+> "npm run migrate"`, so every `fly deploy` applies pending migrations before the new
+> version serves traffic (and no-ops when nothing is pending).
+>
+> **One-time prerequisite — reconcile prod's tracking first.** Migration tracking
+> (`schema_migrations`) was added after prod had already been migrated by hand, and some
+> migrations (e.g. `022_content_model.sql`, `023_word_slugs.sql`) were applied to prod
+> straight from feature branches. So prod's real schema can be *ahead* of what
+> `schema_migrations` records. If you enable the release command without reconciling,
+> a later deploy either refuses to run (empty tracking on a populated DB) or re-runs an
+> already-applied migration and fails. Reconcile in this order:
+>
+> 1. Probe prod's real state (read-only) to see which migrations are applied vs recorded:
+>    ```
+>    fly ssh console -a albanian-dictionary-app
+>    cd /app && node scripts/check-prod-migrations.js
+>    ```
+> 2. Record every already-applied file in `schema_migrations` (the probe prints the exact
+>    `INSERT … ON CONFLICT DO NOTHING` statements). `npm run migrate:baseline` records the
+>    files present in the working tree — run it only from a tree that matches what prod
+>    actually has, or run the probe's INSERTs directly.
+>
+> Only once `schema_migrations` honestly reflects prod should you rely on the release
+> command. After that, `npm run migrate` applies only genuinely new files.
+
 ### 2e. Verify health (cold-start acceptance test)
 
 ```powershell
