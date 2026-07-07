@@ -5,6 +5,13 @@ primary_region = "ams"
 [build]
   dockerfile = "Dockerfile"
 
+# Run pending migrations before the new version serves traffic, so the schema is
+# never behind the code. Idempotent: no-ops when nothing is pending. NOTE: the DB
+# must have migration tracking initialized first (`npm run migrate:baseline` once)
+# — migrate refuses to run on a populated DB with empty tracking. See DEPLOYMENT.md.
+[deploy]
+  release_command = "npm run migrate"
+
 [env]
   NODE_ENV = "production"
   PORT = "5000"
