@@ -9,6 +9,8 @@ const { processSeasonEnd } = require('../utils/leagues');
 //   2. For users who missed a day: spend a freeze if available, else reset the
 //      streak. The "day" is evaluated in each user's own timezone.
 //   3. End-of-season league processing: rank, promote/demote, seed next season.
+//   4. Word of the Day: if nobody set one for today, pick a teachable word
+//      deterministically from the date so the homepage widget always has content.
 // ─────────────────────────────────────────────────────────────
 const runDailyCron = async (req, res, next) => {
   const client = await pool.connect();
@@ -96,6 +98,33 @@ const runDailyCron = async (req, res, next) => {
     // 3. End-of-season league processing (rank, promote/demote, seed next).
     const leagues = await processSeasonEnd(client);
 
+    // 4. Word of the Day. If no row exists for today, pick a teachable word
+    //    deterministically from the date: number the eligible words (word_type
+    //    'replace' WITH at least one definition) by id and take the one at a
+    //    date-hashed offset. ON CONFLICT (display_date) DO NOTHING means an
+    //    admin's manual pick made earlier today always wins, and re-runs no-op.
+    const wotd = await client.query(
+      `WITH eligible AS (
+         SELECT w.id,
+                row_number() OVER (ORDER BY w.id) - 1 AS rn,
+                count(*) OVER () AS total
+         FROM words w
+         WHERE w.word_type = 'replace'
+           AND EXISTS (SELECT 1 FROM definitions d WHERE d.word_id = w.id)
+       )
+       INSERT INTO word_of_the_day (word_id, display_date)
+       SELECT id, CURRENT_DATE
+       FROM eligible
+       WHERE total > 0
+         AND rn = ((hashtext(CURRENT_DATE::text) % total) + total) % total
+       ON CONFLICT (display_date) DO NOTHING
+       RETURNING word_id, display_date`
+    );
+    if (wotd.rows.length) {
+      const { word_id, display_date } = wotd.rows[0];
+      console.log(`Cron: word_of_the_day set to word ${word_id} for ${display_date}`);
+    }
+
     await client.query('COMMIT');
 
     return res.json({
@@ -104,6 +133,7 @@ const runDailyCron = async (req, res, next) => {
       streaks_frozen: frozen,
       streaks_reset: reset,
       leagues,
+      word_of_the_day: wotd.rows[0]?.word_id ?? null,
     });
   } catch (err) {
     await client.query('ROLLBACK');
