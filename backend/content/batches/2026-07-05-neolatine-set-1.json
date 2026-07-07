@@ -1,0 +1,145 @@
+{
+    "batch": "2026-07-05-neolatine-set-1",
+    "words": [
+      {
+        "borrowed_word": "Abonim",
+        "correct_albanian": "pajtim",
+        "origin_language": "neolatine",
+        "word_type": "replace",
+        "difficulty": 2,
+        "definition_sq": "Marrëveshje për të marrë një shërbim për një periudhë të caktuar.",
+        "examples": [
+          {
+            "sentence_loan": "Bëra abonim për një vit.",
+            "sentence_clean": "Bëra pajtim për një vit."
+          }
+        ]
+      },
+      {
+        "borrowed_word": "Abrogoj",
+        "correct_albanian": "shfuqizoj",
+        "origin_language": "neolatine",
+        "word_type": "replace",
+        "difficulty": 3,
+        "definition_sq": "Heq fuqinë juridike të një ligji ose vendimi.",
+        "examples": [
+          {
+            "sentence_loan": "Kuvendi e abrogoi ligjin.",
+            "sentence_clean": "Kuvendi e shfuqizoi ligjin."
+          }
+        ]
+      },
+      {
+        "borrowed_word": "Adapt",
+        "correct_albanian": "i përshtatshëm",
+        "origin_language": "neolatine",
+        "word_type": "replace",
+        "difficulty": 2,
+        "definition_sq": "Që i përshtatet mirë një qëllimi ose rrethane.",
+        "examples": [
+          {
+            "sentence_loan": "Ky vend është adapt për fëmijë.",
+            "sentence_clean": "Ky vend është i përshtatshëm për fëmijë."
+          }
+        ]
+      },
+      {
+        "borrowed_word": "Adaptoj",
+        "correct_albanian": "përshtat",
+        "origin_language": "neolatine",
+        "word_type": "replace",
+        "difficulty": 2,
+        "definition_sq": "E bëj të përshtatshëm për një nevojë ose rrethanë.",
+        "examples": [
+          {
+            "sentence_loan": "Duhet ta adaptojmë planin.",
+            "sentence_clean": "Duhet ta përshtatim planin."
+          }
+        ]
+      },
+      {
+        "borrowed_word": "Afirmoj",
+        "correct_albanian": "pohoj",
+        "origin_language": "neolatine",
+        "word_type": "replace",
+        "difficulty": 2,
+        "definition_sq": "Shpreh si të vërtetë një mendim ose fakt.",
+        "examples": [
+          {
+            "sentence_loan": "Ai afirmoi lajmin.",
+            "sentence_clean": "Ai pohoi lajmin."
+          }
+        ]
+      },
+      {
+        "borrowed_word": "Aktivitet",
+        "correct_albanian": "veprimtari",
+        "origin_language": "neolatine",
+        "word_type": "replace",
+        "difficulty": 1,
+        "definition_sq": "Veprim i organizuar që kryhet për një qëllim të caktuar.",
+        "examples": [
+          {
+            "sentence_loan": "Mora pjesë në aktivitet.",
+            "sentence_clean": "Mora pjesë në veprimtari."
+          }
+        ]
+      },
+      {
+        "borrowed_word": "Aktual",
+        "correct_albanian": "i tanishëm",
+        "origin_language": "neolatine",
+        "word_type": "replace",
+        "difficulty": 2,
+        "definition_sq": "Që i përket kohës së tashme.",
+        "examples": [
+          {
+            "sentence_loan": "Situata aktuale është e qetë.",
+            "sentence_clean": "Situata e tanishme është e qetë."
+          }
+        ]
+      },
+      {
+        "borrowed_word": "Alarm",
+        "correct_albanian": "kushtrim",
+        "origin_language": "neolatine",
+        "word_type": "replace",
+        "difficulty": 2,
+        "definition_sq": "Sinjal që paralajmëron për rrezik ose nevojë për reagim.",
+        "examples": [
+          {
+            "sentence_loan": "Ra alarmi i zjarrit.",
+            "sentence_clean": "Ra kushtrimi i zjarrit."
+          }
+        ]
+      },
+      {
+        "borrowed_word": "Ambient",
+        "correct_albanian": "mjedis",
+        "origin_language": "neolatine",
+        "word_type": "replace",
+        "difficulty": 1,
+        "definition_sq": "Hapësira ose rrethina ku zhvillohet një veprim.",
+        "examples": [
+          {
+            "sentence_loan": "Ambienti ishte i pastër.",
+            "sentence_clean": "Mjedisi ishte i pastër."
+          }
+        ]
+      },
+      {
+        "borrowed_word": "Angazhim",
+        "correct_albanian": "zotim",
+        "origin_language": "neolatine",
+        "word_type": "replace",
+        "difficulty": 2,
+        "definition_sq": "Premtim ose detyrim për të kryer një përgjegjësi ose detyrë.",
+        "examples": [
+          {
+            "sentence_loan": "Kam një angazhim nesër.",
+            "sentence_clean": "Kam një zotim nesër."
+          }
+        ]
+      }
+    ]
+  }

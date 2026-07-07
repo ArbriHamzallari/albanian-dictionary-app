@@ -1,0 +1,199 @@
+{
+    "batch": "2026-07-05-turkish-set-4",
+    "words": [
+      {
+        "borrowed_word": "Mysafir",
+        "correct_albanian": "i ftuar",
+        "origin_language": "turqisht",
+        "word_type": "replace",
+        "difficulty": 1,
+        "definition_sq": "Person që vjen për vizitë ose është i ftuar në një shtëpi a veprimtari.",
+        "examples": [
+          {
+            "sentence_loan": "Sot kemi mysafir.",
+            "sentence_clean": "Sot kemi të ftuar."
+          }
+        ]
+      },
+      {
+        "borrowed_word": "Namaz",
+        "correct_albanian": null,
+        "origin_language": "turqisht",
+        "word_type": "heritage",
+        "difficulty": 1,
+        "definition_sq": "Falja rituale islame; fjalë e trashëguar pa zëvendësim në shqip.",
+        "examples": []
+      },
+      {
+        "borrowed_word": "Ortak",
+        "correct_albanian": "bashkëpronar",
+        "origin_language": "turqisht",
+        "word_type": "replace",
+        "difficulty": 2,
+        "definition_sq": "Person që ndan pronësinë ose veprimtarinë me një tjetër.",
+        "examples": [
+          {
+            "sentence_loan": "Ai është ortaku im.",
+            "sentence_clean": "Ai është bashkëpronari im."
+          }
+        ]
+      },
+      {
+        "borrowed_word": "Oturak",
+        "correct_albanian": "stol",
+        "origin_language": "turqisht",
+        "word_type": "replace",
+        "difficulty": 2,
+        "definition_sq": "Ndenjëse e vogël pa mbështetëse.",
+        "examples": [
+          {
+            "sentence_loan": "U ul në oturak.",
+            "sentence_clean": "U ul në stol."
+          }
+        ]
+      },
+      {
+        "borrowed_word": "Oxhak",
+        "correct_albanian": null,
+        "origin_language": "turqisht",
+        "word_type": "heritage",
+        "difficulty": 1,
+        "definition_sq": "Vend në shtëpi ku ndizet zjarri për ngrohje ose gatim; fjalë e trashëguar pa zëvendësim në shqip.",
+        "examples": []
+      },
+      {
+        "borrowed_word": "Padishah",
+        "correct_albanian": null,
+        "origin_language": "turqisht",
+        "word_type": "heritage",
+        "difficulty": 3,
+        "definition_sq": "Titulli i perandorit osman; fjalë historike e trashëguar pa zëvendësim.",
+        "examples": []
+      },
+      {
+        "borrowed_word": "Papuçe",
+        "correct_albanian": "shapka",
+        "origin_language": "turqisht",
+        "word_type": "replace",
+        "difficulty": 1,
+        "definition_sq": "Këpucë të lehta që vishen zakonisht brenda shtëpisë.",
+        "examples": [
+          {
+            "sentence_loan": "Veshi papuçet.",
+            "sentence_clean": "Veshi shapkat."
+          }
+        ]
+      },
+      {
+        "borrowed_word": "Pasha",
+        "correct_albanian": null,
+        "origin_language": "turqisht",
+        "word_type": "heritage",
+        "difficulty": 2,
+        "definition_sq": "Titull i lartë administrativ dhe ushtarak në Perandorinë Osmane; fjalë e trashëguar pa zëvendësim.",
+        "examples": []
+      },
+      {
+        "borrowed_word": "Pazar",
+        "correct_albanian": "treg",
+        "origin_language": "turqisht",
+        "word_type": "replace",
+        "difficulty": 1,
+        "definition_sq": "Vend ku blihen dhe shiten mallra.",
+        "examples": [
+          {
+            "sentence_loan": "Shkova në pazar.",
+            "sentence_clean": "Shkova në treg."
+          }
+        ]
+      },
+      {
+        "borrowed_word": "Pehlivan",
+        "correct_albanian": "mundës",
+        "origin_language": "turqisht",
+        "word_type": "replace",
+        "difficulty": 2,
+        "definition_sq": "Sportist që merret me mundje.",
+        "examples": [
+          {
+            "sentence_loan": "Pehlivani fitoi garën.",
+            "sentence_clean": "Mundësi fitoi garën."
+          }
+        ]
+      },
+      {
+        "borrowed_word": "Penxhere",
+        "correct_albanian": "dritare",
+        "origin_language": "turqisht",
+        "word_type": "replace",
+        "difficulty": 1,
+        "definition_sq": "Hapje në mur që lejon hyrjen e dritës dhe ajrit.",
+        "examples": [
+          {
+            "sentence_loan": "Hape penxheren.",
+            "sentence_clean": "Hape dritaren."
+          }
+        ]
+      },
+      {
+        "borrowed_word": "Perçe",
+        "correct_albanian": "balluke",
+        "origin_language": "turqisht",
+        "word_type": "replace",
+        "difficulty": 2,
+        "definition_sq": "Pjesa e flokëve që bie mbi ballë.",
+        "examples": [
+          {
+            "sentence_loan": "I preu perçet.",
+            "sentence_clean": "I preu balluket."
+          }
+        ]
+      },
+      {
+        "borrowed_word": "Pilaf",
+        "correct_albanian": null,
+        "origin_language": "turqisht",
+        "word_type": "heritage",
+        "difficulty": 1,
+        "definition_sq": "Gjellë me oriz të zier dhe të erëzuar; fjalë e trashëguar pa zëvendësim në shqip.",
+        "examples": []
+      },
+      {
+        "borrowed_word": "Pishman",
+        "correct_albanian": "i penduar",
+        "origin_language": "turqisht",
+        "word_type": "replace",
+        "difficulty": 1,
+        "definition_sq": "Që ndien keqardhje për një veprim të bërë.",
+        "examples": [
+          {
+            "sentence_loan": "Jam pishman për këtë.",
+            "sentence_clean": "Jam i penduar për këtë."
+          }
+        ]
+      },
+      {
+        "borrowed_word": "Pite",
+        "correct_albanian": null,
+        "origin_language": "turqisht",
+        "word_type": "heritage",
+        "difficulty": 1,
+        "definition_sq": "Gatim me petë dhe mbushje të ndryshme; fjalë e trashëguar pa zëvendësim në shqip.",
+        "examples": []
+      },
+      {
+        "borrowed_word": "Qamet",
+        "correct_albanian": "katastrofë",
+        "origin_language": "turqisht",
+        "word_type": "replace",
+        "difficulty": 2,
+        "definition_sq": "Ngjarje shumë e rëndë ose rrëmujë e madhe.",
+        "examples": [
+          {
+            "sentence_loan": "U bë qamet në rrugë.",
+            "sentence_clean": "U bë katastrofë në rrugë."
+          }
+        ]
+      }
+    ]
+  }
