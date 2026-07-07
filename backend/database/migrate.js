@@ -45,6 +45,26 @@ async function ensureTrackingTable(client) {
       applied_at TIMESTAMPTZ NOT NULL DEFAULT now()
     )
   `);
+  // Lock this internal bookkeeping table off the Supabase Data API. It lives in the
+  // exposed `public` schema but is created here by the runner — after migration 015's
+  // RLS sweep already ran — so 015 never covered it. Enable RLS with no policies to
+  // deny the anon/authenticated PostgREST roles (the backend connects as owner and
+  // bypasses RLS), mirroring 015. Idempotent, so it runs safely on every migrate.
+  await client.query('ALTER TABLE schema_migrations ENABLE ROW LEVEL SECURITY');
+  // Defense in depth: drop any default API grants too. Guarded so a local Postgres
+  // without the Supabase `anon`/`authenticated` roles doesn't error.
+  await client.query(`
+    REVOKE ALL ON TABLE schema_migrations FROM PUBLIC;
+    DO $$
+    BEGIN
+      IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'anon') THEN
+        EXECUTE 'REVOKE ALL ON TABLE schema_migrations FROM anon';
+      END IF;
+      IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'authenticated') THEN
+        EXECUTE 'REVOKE ALL ON TABLE schema_migrations FROM authenticated';
+      END IF;
+    END $$;
+  `);
 }
 
 async function appliedFilenames(client) {
