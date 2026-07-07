@@ -123,12 +123,22 @@ const completeProfileSchema = Joi.object({
   timezone: Joi.string().trim().max(64).optional(),
 });
 
+// Self-service account deletion re-verifies identity before an irreversible
+// erase: a password re-entry for password accounts, or a fresh Google credential
+// for Google-only accounts. Both optional here (only one applies per account);
+// the controller enforces that the right one is present and correct.
+const deleteAccountSchema = Joi.object({
+  password: Joi.string().max(200),
+  credential: Joi.string().max(8192),
+}).options({ stripUnknown: true });
+
 module.exports = {
   searchSchema,
   suggestionSchema,
   loginSchema,
   googleAuthSchema,
   completeProfileSchema,
+  deleteAccountSchema,
   wordSchema,
   wordOfDaySchema,
   consentCheckSchema,

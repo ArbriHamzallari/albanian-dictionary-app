@@ -211,6 +211,16 @@ export function AuthProvider({ children }) {
     localStorage.removeItem(GUEST_PROGRESS_KEY);
   };
 
+  // Self-service GDPR erasure. The server re-verifies identity (password for
+  // password accounts, a fresh Google credential otherwise), clears the session
+  // cookies, and cascade-deletes the user. On success we drop local state so the
+  // app hard-logs-out. Errors propagate so the caller can show them.
+  const deleteAccount = async ({ password, credential } = {}) => {
+    await api.delete('/auth/account', { data: { password, credential } });
+    clearGuestProgress();
+    setUser(null);
+  };
+
   const isLoggedIn = !!user;
   const isAdmin = user?.profile?.role === 'admin';
 
@@ -226,6 +236,7 @@ export function AuthProvider({ children }) {
         googleLogin,
         completeProfile,
         logout,
+        deleteAccount,
         updateUserProfile,
         unlockAchievement,
         guestUpgrade,

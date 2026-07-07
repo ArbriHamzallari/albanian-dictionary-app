@@ -2,6 +2,7 @@ const pool = require('../utils/db');
 const { adminUserUpdateSchema } = require('../utils/validation');
 const { entitlementIsPremium } = require('../middleware/entitlements');
 const { logAdminAction } = require('../utils/auditLog');
+const { deleteUserData } = require('../utils/deleteUser');
 
 const DEFAULT_PAGE_SIZE = 25;
 const MAX_PAGE_SIZE = 100;
@@ -220,8 +221,8 @@ const deleteUser = async (req, res, next) => {
       return res.status(400).json({ message: 'Nuk mund të fshini llogarinë tuaj.' });
     }
 
-    const result = await pool.query('DELETE FROM users WHERE uuid = $1::uuid RETURNING email', [uuid]);
-    if (!result.rows.length) {
+    const deleted = await deleteUserData(pool, uuid);
+    if (!deleted) {
       return res.status(404).json({ message: 'Përdoruesi nuk u gjet.' });
     }
 

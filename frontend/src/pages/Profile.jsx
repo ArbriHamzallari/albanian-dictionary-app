@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion, useReducedMotion } from 'framer-motion';
-import { Save, Check, Users } from 'lucide-react';
+import { Save, Check, Users, Trash2 } from 'lucide-react';
 import { useAuth, useHasUnlimitedAccess } from '../context/AuthContext.jsx';
 import Avatar from '../components/Avatar.jsx';
 import Card from '../components/ui/Card.jsx';
 import Button from '../components/ui/Button.jsx';
 import Heading from '../components/ui/Heading.jsx';
+import ConfirmDialog from '../components/ui/ConfirmDialog.jsx';
+import GoogleSignInButton from '../components/GoogleSignInButton.jsx';
 import Parrot from '../components/mascot/Parrot.jsx';
 import ErrorMessage from '../components/ErrorMessage.jsx';
 import api from '../utils/api.js';
@@ -16,9 +18,10 @@ const inputClass = 'w-full rounded-2xl border-2 border-line bg-paper px-4 h-14 f
 
 const Profile = () => {
   const reduceMotion = useReducedMotion();
-  const { user, loading: authLoading, isLoggedIn, loadUser, updateUserProfile } = useAuth();
+  const { user, loading: authLoading, isLoggedIn, loadUser, updateUserProfile, deleteAccount } = useAuth();
   const navigate = useNavigate();
   const isPremium = useHasUnlimitedAccess();
+  const isGoogleAccount = user?.profile?.auth_provider === 'google';
 
   const [username, setUsername] = useState('');
   const [bio, setBio] = useState('');
@@ -29,6 +32,16 @@ const Profile = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [saving, setSaving] = useState(false);
+
+  const [showDelete, setShowDelete] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState('');
+  const [deletePassword, setDeletePassword] = useState('');
+  const [deleteError, setDeleteError] = useState('');
+  const [deleting, setDeleting] = useState(false);
+  // Typed confirmation must match the user's own username before deletion is
+  // allowed — language-neutral, so no Albanian confirmation word is invented here.
+  const confirmWord = user?.profile?.username || '';
+  const confirmMatches = confirmWord.length > 0 && deleteConfirm.trim() === confirmWord;
 
   useEffect(() => {
     if (!authLoading && !isLoggedIn) navigate('/hyr');
@@ -79,6 +92,48 @@ const Profile = () => {
     } catch (err) {
       setError(err.response?.data?.message || t('profile.avatarError'));
     }
+  };
+
+  const closeDelete = () => {
+    if (deleting) return;
+    setShowDelete(false);
+    setDeleteConfirm('');
+    setDeletePassword('');
+    setDeleteError('');
+  };
+
+  // Shared destroy path for both account types. On success the AuthContext has
+  // already cleared local state, so we hard-redirect home.
+  const runDelete = async (credentials) => {
+    setDeleteError('');
+    setDeleting(true);
+    try {
+      await deleteAccount(credentials);
+      navigate('/');
+    } catch (err) {
+      setDeleteError(
+        err.response?.status === 401
+          ? t('profile.deleteAccount.identityFailed')
+          : (err.response?.data?.message || t('profile.deleteAccount.error')),
+      );
+      setDeleting(false);
+    }
+  };
+
+  const handlePasswordDelete = () => {
+    if (!confirmMatches) {
+      setDeleteError(t('profile.deleteAccount.confirmMismatch'));
+      return;
+    }
+    runDelete({ password: deletePassword });
+  };
+
+  const handleGoogleDelete = (credential) => {
+    if (!confirmMatches) {
+      setDeleteError(t('profile.deleteAccount.confirmMismatch'));
+      return;
+    }
+    runDelete({ credential });
   };
 
   if (authLoading || !user) {
@@ -179,6 +234,70 @@ const Profile = () => {
           </Link>
         </Card>
       )}
+
+      {/* Danger zone — self-service account deletion (GDPR erasure) */}
+      <Card padding="md" className="mt-6 border-2 border-accent-coral/30">
+        <Heading level={3} className="mb-2">{t('profile.deleteAccount.title')}</Heading>
+        <p className="mb-4 text-sm font-semibold text-ink-soft">{t('profile.deleteAccount.description')}</p>
+        {isPremium && (
+          <p className="mb-4 rounded-2xl border-2 border-accent-yellow/40 bg-accent-yellow/10 px-4 py-3 text-sm font-semibold text-ink-soft">
+            {t('profile.deleteAccount.premiumNotice')}{' '}
+            <Link to="/premium" className="font-extrabold underline">{t('profile.deleteAccount.premiumCancelCta')}</Link>
+          </p>
+        )}
+        <Button variant="danger" size="md" onClick={() => setShowDelete(true)}>
+          <Trash2 className="h-4 w-4" aria-hidden="true" /> {t('profile.deleteAccount.button')}
+        </Button>
+      </Card>
+
+      <ConfirmDialog
+        open={showDelete}
+        title={t('profile.deleteAccount.dialogTitle')}
+        description={t('profile.deleteAccount.dialogDescription')}
+        confirmLabel={t('profile.deleteAccount.confirm')}
+        variant="danger"
+        loading={deleting}
+        hideConfirm={isGoogleAccount}
+        onCancel={closeDelete}
+        onConfirm={handlePasswordDelete}
+      >
+        <div className="mt-4 space-y-4">
+          {deleteError && <ErrorMessage message={deleteError} />}
+          <div>
+            <label htmlFor="del-confirm" className="mb-1 block text-xs font-bold text-ink-soft">
+              {t('profile.deleteAccount.typeToConfirm', { word: confirmWord })}
+            </label>
+            <input
+              id="del-confirm"
+              type="text"
+              value={deleteConfirm}
+              onChange={(e) => setDeleteConfirm(e.target.value)}
+              className={inputClass}
+              autoComplete="off"
+            />
+          </div>
+          {isGoogleAccount ? (
+            <div>
+              <p className="mb-2 text-xs font-bold text-ink-soft">{t('profile.deleteAccount.googleReauth')}</p>
+              {confirmMatches && !deleting && <GoogleSignInButton onCredential={handleGoogleDelete} />}
+            </div>
+          ) : (
+            <div>
+              <label htmlFor="del-pass" className="mb-1 block text-xs font-bold text-ink-soft">
+                {t('profile.deleteAccount.passwordLabel')}
+              </label>
+              <input
+                id="del-pass"
+                type="password"
+                value={deletePassword}
+                onChange={(e) => setDeletePassword(e.target.value)}
+                className={inputClass}
+                autoComplete="current-password"
+              />
+            </div>
+          )}
+        </div>
+      </ConfirmDialog>
     </div>
   );
 };
