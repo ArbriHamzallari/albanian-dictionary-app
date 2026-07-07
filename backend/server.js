@@ -112,11 +112,15 @@ app.use(morgan('dev'));
 // webhook/cron requests that carry no session cookie).
 app.use(csrfProtection);
 
+// The test suite exercises every route in one process (see authz.test.js), which
+// would otherwise trip these limiters; skip them only under NODE_ENV=test.
+const skipInTest = () => process.env.NODE_ENV === 'test';
 const apiLimiter = rateLimit({
   windowMs: 60 * 1000,
   max: 100,
   standardHeaders: true,
   legacyHeaders: false,
+  skip: skipInTest,
 });
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -124,6 +128,7 @@ const authLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   message: { message: 'Shumë tentativa. Provoni përsëri më vonë.' },
+  skip: skipInTest,
 });
 
 app.use('/api', apiLimiter);
