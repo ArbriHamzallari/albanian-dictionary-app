@@ -31,24 +31,24 @@
     "chats": "Bisedat",
     "premium": "Premium",
     "suggest": "Propozo Fjalë",
-    "origins": "TODO_SQ_nav_origins",
-    "pricing": "TODO_SQ_nav_pricing"
+    "origins": "Origjina",
+    "pricing": "Çmimet"
   },
   "origins": {
-    "seoTitle": "TODO_SQ_origins_seoTitle",
-    "seoDesc": "TODO_SQ_origins_seoDesc",
-    "title": "TODO_SQ_origins_title",
-    "lead": "TODO_SQ_origins_lead",
-    "wordsLabel": "TODO_SQ_origins_wordsLabel",
-    "loadError": "TODO_SQ_origins_loadError",
+    "seoTitle": "Origjina e fjalëve në shqip | Fjalingo",
+    "seoDesc": "Zbulo si dhe pse fjalët nga gjuhë të ndryshme hynë në shqip dhe mëso historinë e tyre në mënyrë argëtuese.",
+    "title": "Origjina e fjalëve",
+    "lead": "Çdo fjalë ka një histori. Zbulo si udhëtuan fjalët drejt shqipes ndër shekuj.",
+    "wordsLabel": "Fjalë",
+    "loadError": "Diçka nuk shkoi mirë. Provo përsëri pas pak.",
     "detail": {
-      "back": "TODO_SQ_origins_detail_back",
-      "wordsHeading": "TODO_SQ_origins_detail_wordsHeading",
-      "heritageLine": "TODO_SQ_origins_detail_heritageLine",
-      "practiceCta": "TODO_SQ_origins_detail_practiceCta",
-      "empty": "TODO_SQ_origins_detail_empty",
-      "notFound": "TODO_SQ_origins_detail_notFound",
-      "loadMore": "TODO_SQ_origins_detail_loadMore"
+      "back": "Kthehu",
+      "wordsHeading": "Fjalët e kësaj origjine",
+      "heritageLine": "Kjo fjalë nuk ka zëvendësim në shqip. Është pjesë e trashëgimisë sonë gjuhësore.",
+      "practiceCta": "Luaj me këto fjalë",
+      "empty": "Nuk ka ende fjalë në këtë kategori.",
+      "notFound": "Kjo origjinë nuk u gjet.",
+      "loadMore": "Shfaq më shumë"
     }
   },
   "header": {
@@ -288,8 +288,8 @@
     "definitionHeading": "📖 PËRKUFIZIMI",
     "conjugationHeading": "🔤 ZGJEDHIMI I FJALËS",
     "examplesHeading": "💡 SHEMBUJ",
-    "learnHistory": "TODO_SQ_wordDetail_learnHistory",
-    "heritageNote": "TODO_SQ_wordDetail_heritageNote"
+    "learnHistory": "Mëso historinë",
+    "heritageNote": "Kjo fjalë nuk ka zëvendësim në shqip, sepse është pjesë e trashëgimisë sonë gjuhësore."
   },
   "wordOfDay": {
     "notFound": "Fjala e ditës nuk është gjetur.",
@@ -421,27 +421,27 @@
     "title": "Përvoja e plotë Fjalingo",
     "priceNote": "25 EUR në vit. Pagesa hapet me Paddle Sandbox dhe aktivizohet nga webhook-u i verifikuar në server.",
     "active": "Premium aktiv",
-    "seoTitle": "TODO_SQ_premium_seoTitle",
-    "seoDesc": "TODO_SQ_premium_seoDesc",
-    "hero": "TODO_SQ_premium_hero",
-    "priceDetail": "TODO_SQ_premium_priceDetail",
-    "freeCta": "TODO_SQ_premium_freeCta",
+    "seoTitle": "Fjalingo Premium | Zhblloko të gjitha mësimet",
+    "seoDesc": "Mëso pa kufi me Fjalingo Premium. Zhblloko të gjitha njësitë, përsërit gabimet dhe ruaj serinë tënde.",
+    "hero": "Zhblloko të gjitha botët e Fjalingos dhe mëso pa kufi. Mund ta anulosh kur të duash.",
+    "priceDetail": "€25/vit, faturuar përmes Paddle. Anulo kur të duash dhe ruaj qasjen deri në fund të periudhës së paguar.",
+    "freeCta": "Fillo falas",
     "compare": {
-      "freeTitle": "TODO_SQ_premium_compare_freeTitle",
-      "premiumTitle": "TODO_SQ_premium_compare_premiumTitle",
+      "freeTitle": "Falas",
+      "premiumTitle": "Premium",
       "free": {
-        "dictionary": "TODO_SQ_premium_compare_free_dictionary",
-        "history": "TODO_SQ_premium_compare_free_history",
-        "dailyLessons": "TODO_SQ_premium_compare_free_dailyLessons",
-        "streak": "TODO_SQ_premium_compare_free_streak",
-        "leaderboard": "TODO_SQ_premium_compare_free_leaderboard"
+        "dictionary": "Fjalori + kërkimi",
+        "history": "Historia e origjinave",
+        "dailyLessons": "Deri në 5 mësime/ditë",
+        "streak": "Seria, sfida dhe fjala e ditës",
+        "leaderboard": "Renditja + Liga Bronx"
       },
       "premium": {
-        "unlimited": "TODO_SQ_premium_compare_premium_unlimited",
-        "allContent": "TODO_SQ_premium_compare_premium_allContent",
-        "mistakes": "TODO_SQ_premium_compare_premium_mistakes",
-        "freeze": "TODO_SQ_premium_compare_premium_freeze",
-        "friends": "TODO_SQ_premium_compare_premium_friends"
+        "unlimited": "Mësime pa kufi",
+        "allContent": "Të gjitha njësitë",
+        "mistakes": "Përsërit gabimet",
+        "freeze": "Mburoja e serisë (2/muaj)",
+        "friends": "Miqtë, biseda, sfidat, Liga e Artë dhe familja"
       }
     },
     "features": {
