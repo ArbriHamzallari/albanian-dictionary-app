@@ -83,10 +83,10 @@ const EnglishAbout = () => (
       Fjalingo is operated by Arbri Hamzallari (sole proprietor), trading as Fjalingo. Questions?
       Email{' '}
       <a
-        href="mailto:hello@fjalingo.al"
+        href="mailto:hello@fjalingo.com"
         className="font-bold text-fjalingo-green hover:text-fjalingo-green-dark"
       >
-        hello@fjalingo.al
+        hello@fjalingo.com
       </a>
       . See our{' '}
       <Link to="/kushtet" className="font-bold text-fjalingo-green hover:text-fjalingo-green-dark">

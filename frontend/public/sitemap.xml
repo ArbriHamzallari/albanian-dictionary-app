@@ -2,17 +2,17 @@
 <!-- Baseline sitemap (static routes). backend/scripts/generate-sitemap.js
      overwrites this with every word URL at build time. -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://fjalingo.al/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
-  <url><loc>https://fjalingo.al/fjala-e-dites</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://fjalingo.al/renditja</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
-  <url><loc>https://fjalingo.al/kuizi</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://fjalingo.al/propozo</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
-  <url><loc>https://fjalingo.al/premium</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
-  <url><loc>https://fjalingo.al/hyr</loc><changefreq>monthly</changefreq><priority>0.3</priority></url>
-  <url><loc>https://fjalingo.al/regjistrohu</loc><changefreq>monthly</changefreq><priority>0.4</priority></url>
-  <url><loc>https://fjalingo.al/en</loc><changefreq>monthly</changefreq><priority>0.4</priority></url>
-  <url><loc>https://fjalingo.al/kushtet</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
-  <url><loc>https://fjalingo.al/privatesia</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
-  <url><loc>https://fjalingo.al/rimbursimi</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
-  <url><loc>https://fjalingo.al/kontakt</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://fjalingo.com/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://fjalingo.com/fjala-e-dites</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://fjalingo.com/renditja</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
+  <url><loc>https://fjalingo.com/kuizi</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://fjalingo.com/propozo</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://fjalingo.com/premium</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://fjalingo.com/hyr</loc><changefreq>monthly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://fjalingo.com/regjistrohu</loc><changefreq>monthly</changefreq><priority>0.4</priority></url>
+  <url><loc>https://fjalingo.com/en</loc><changefreq>monthly</changefreq><priority>0.4</priority></url>
+  <url><loc>https://fjalingo.com/kushtet</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://fjalingo.com/privatesia</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://fjalingo.com/rimbursimi</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://fjalingo.com/kontakt</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
 </urlset>

@@ -56,17 +56,15 @@ function signRefreshToken(user) {
   return jwt.sign({ uuid: user.uuid, type: 'refresh' }, process.env.JWT_SECRET, { expiresIn: REFRESH_TTL });
 }
 
-// The frontend (Vercel) and API (Fly) sit on different registrable domains, so
-// the session cookie must be SameSite=None to be sent on cross-site API calls;
-// otherwise the browser drops it and every authenticated request 401s. None
-// requires Secure, so it is used only in production (HTTPS); dev stays Lax on
-// same-site localhost. CSRF is still covered by the double-submit token + the
-// CORS allowlist. (If the API later moves to api.fjalingo.al alongside the
-// fjalingo.al frontend, this can return to Lax.)
+// The API (api.fjalingo.com) and frontend (fjalingo.com) share one registrable
+// domain, so session cookies are first-party and SameSite=Lax is sufficient — and
+// safer than None, which Safari/iOS blocks as a third-party cookie. Secure stays on
+// in production (HTTPS); dev is same-site localhost. CSRF is still covered by the
+// double-submit token + the CORS allowlist.
 function cookieBase() {
   return {
     secure: isProduction,
-    sameSite: isProduction ? 'none' : 'lax',
+    sameSite: 'lax',
     path: '/',
   };
 }
@@ -80,11 +78,11 @@ function setSessionCookies(res, user) {
   res.cookie(ACCESS_COOKIE, access, { ...cookieBase(), httpOnly: true, maxAge: ACCESS_MAX_AGE_MS });
   res.cookie(REFRESH_COOKIE, refresh, { ...cookieBase(), httpOnly: true, maxAge: REFRESH_MAX_AGE_MS });
   res.cookie(CSRF_COOKIE, csrf, { ...cookieBase(), httpOnly: false, maxAge: REFRESH_MAX_AGE_MS });
-  // Also expose the CSRF token to the response body. A cross-domain SPA (frontend
-  // on a different registrable domain than the API) cannot read the API's cookie
-  // via document.cookie, so it gets the token here and echoes it in the
-  // x-fjalingo-csrf header on writes. The backend still compares that header to
-  // the cookie, which the browser sends cross-site (SameSite=None).
+  // Also expose the CSRF token to the response body. The SPA runs on fjalingo.com
+  // but the cookie is set by api.fjalingo.com, so JS can't read it via
+  // document.cookie; it gets the token here and echoes it in the x-fjalingo-csrf
+  // header on writes. The backend compares that header to the cookie, which the
+  // browser sends on these same-site requests (SameSite=Lax).
   res.locals.csrfToken = csrf;
   return access;
 }

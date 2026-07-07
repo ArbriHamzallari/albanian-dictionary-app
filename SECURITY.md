@@ -2,7 +2,7 @@
 
 ## Reporting a vulnerability
 
-Please report security issues privately to **security@fjalingo.al**.
+Please report security issues privately to **security@fjalingo.com**.
 
 - Do **not** open a public GitHub issue for security reports.
 - Include steps to reproduce, affected endpoint/page, and impact.
@@ -44,7 +44,7 @@ What we defend, and how:
 - Refresh-token rotation is currently stateless (no server-side denylist), so a
   refresh token stays valid until expiry. A token store is a planned hardening.
 - `SameSite=Lax` cookie auth requires the web app and API to share a registrable
-  domain in production (e.g. `fjalingo.al` + `api.fjalingo.al`).
+  domain in production (e.g. `fjalingo.com` + `api.fjalingo.com`).
 
 ## Cryptography & auth choices
 

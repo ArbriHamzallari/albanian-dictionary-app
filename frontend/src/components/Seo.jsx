@@ -2,7 +2,7 @@ import { Helmet } from 'react-helmet-async';
 
 // Production origin for canonical/OG URLs. Override per environment with
 // VITE_SITE_URL (e.g. a Vercel preview); defaults to the live domain.
-export const SITE_URL = (import.meta.env.VITE_SITE_URL || 'https://fjalingo.al').replace(/\/$/, '');
+export const SITE_URL = (import.meta.env.VITE_SITE_URL || 'https://fjalingo.com').replace(/\/$/, '');
 
 const DEFAULT_DESCRIPTION =
   'Fjalingo të ndihmon t\'i kthesh fjalët e huazuara në shqipen e vërtetë — me lojë, jo me mësim.';

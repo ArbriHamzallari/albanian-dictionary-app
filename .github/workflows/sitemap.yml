@@ -36,7 +36,7 @@ jobs:
         run: |
           if ! git diff --quiet -- frontend/public/sitemap.xml; then
             git config user.name "fjalingo-bot"
-            git config user.email "bot@fjalingo.al"
+            git config user.email "bot@fjalingo.com"
             git add frontend/public/sitemap.xml
             git commit -m "chore: regenerate sitemap [skip ci]"
             git push

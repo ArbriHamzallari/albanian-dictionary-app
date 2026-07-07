@@ -9,7 +9,7 @@ const fs = require('fs');
 const path = require('path');
 const pool = require('../src/utils/db');
 
-const SITE_URL = (process.env.SITE_URL || process.env.VITE_SITE_URL || 'https://fjalingo.al').replace(/\/$/, '');
+const SITE_URL = (process.env.SITE_URL || process.env.VITE_SITE_URL || 'https://fjalingo.com').replace(/\/$/, '');
 const OUT_PATH = path.join(__dirname, '..', '..', 'frontend', 'public', 'sitemap.xml');
 
 // Static, publicly indexable routes (no auth-gated or per-user pages).

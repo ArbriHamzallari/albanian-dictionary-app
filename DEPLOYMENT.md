@@ -70,7 +70,7 @@ Optional secrets:
 |--------|---------|
 | `ADMIN_EMAIL` | Admin account email for seed (production) |
 | `ADMIN_PASSWORD` | Admin account password for seed (production) |
-| `FRONTEND_URL_EXTRA` | Comma-separated extra CORS origins (e.g. custom domain `https://fjalingo.al`) |
+| `FRONTEND_URL_EXTRA` | Comma-separated extra CORS origins (e.g. custom domain `https://fjalingo.com`) |
 | `FRONTEND_URL_ALT` | Second primary origin if needed |
 | `PADDLE_CHECKOUT_SECRET` | Checkout signing secret (defaults to `JWT_SECRET`) |
 | `PREMIUM_ANNUAL_PRICE_EUR` | Revenue estimate for admin metrics (default 25) |
@@ -197,8 +197,26 @@ use it for a custom domain, and during the host cutover to keep the old origin a
 alongside the new one:
 
 ```powershell
-fly secrets set FRONTEND_URL_EXTRA="https://fjalingo.al"
+fly secrets set FRONTEND_URL_EXTRA="https://fjalingo.com"
 ```
+
+### Production domain (live values)
+
+The generic host above is `*.fly.dev`; production runs on **fjalingo.com**. The API is
+served from **api.fjalingo.com** (a CNAME to the Fly app), which shares the frontend's
+registrable domain — so auth cookies are first-party (`SameSite=Lax`) and work in
+Safari/iOS. The live values:
+
+| Where | Variable | Value |
+|-------|----------|-------|
+| Fly (backend) | `FRONTEND_URL` | `https://fjalingo.com` |
+| Fly (backend) | `FRONTEND_URL_ALT` | `https://www.fjalingo.com` |
+| Vercel (frontend) | `VITE_API_URL` | `https://api.fjalingo.com/api` |
+| Vercel (frontend) | `VITE_SITE_URL` | `https://fjalingo.com` |
+
+**Vite envs are baked at build time** — after changing `VITE_API_URL` or `VITE_SITE_URL`
+on Vercel you must **Redeploy**, or the change has no effect (the old value stays in the
+bundle). Changing `FRONTEND_URL` on Fly restarts the backend automatically.
 
 ---
 

@@ -93,16 +93,16 @@
       "title": "Kushtet e Përdorimit",
       "operatorHeading": "Operatori i shërbimit",
       "sections": {
-        "intro": { "heading": "Hyrje", "body": "Këto kushte zbatohen për përdorimin e Fjalingo (fjalingo.al), një aplikacion web me lojëra gjuhësore për praktikimin e shqipes. Fjalingo është shërbim abonimi digjital dhe nuk është kurs apo shkollë. Duke përdorur shërbimin, përdoruesi pranon këto kushte." },
+        "intro": { "heading": "Hyrje", "body": "Këto kushte zbatohen për përdorimin e Fjalingo (fjalingo.com), një aplikacion web me lojëra gjuhësore për praktikimin e shqipes. Fjalingo është shërbim abonimi digjital dhe nuk është kurs apo shkollë. Duke përdorur shërbimin, përdoruesi pranon këto kushte." },
         "eligibility": { "heading": "Përshtatshmëria", "body": "Përdorimi i Fjalingo kërkon që përdoruesi të jetë në përputhje me moshën minimale të lejuar nga ligjet përkatëse. Për përdoruesit në BE zbatohet mosha e pëlqimit digjital (13–16 vjeç, sipas shtetit). Për përdoruesit në SHBA nën 13 vjeç zbatohet COPPA. Llogaritë e të miturve kanë kufizime shtesë dhe mbrohen sipas rregullave të sistemit." },
         "account": { "heading": "Llogaria", "body": "Përdoruesit mund të regjistrohen me email dhe fjalëkalim ose me Google Sign-In. Emri i përdoruesit zgjidhet nga vetë përdoruesi. Përdoruesi është përgjegjës për sigurinë e llogarisë së tij dhe për çdo aktivitet që ndodh në të." },
         "acceptableUse": { "heading": "Përdorimi i lejuar", "body": "Përdoruesit nuk duhet të abuzojnë me shërbimin, të ngacmojnë të tjerët, të imitojnë persona të tjerë, të përdorin mashtrime, të bëjnë scraping, ose të publikojnë përmbajtje të paligjshme. Shkeljet mund të çojnë në kufizim ose pezullim të llogarisë." },
         "subscription": { "heading": "Abonimi", "body": "Fjalingo ofron një plan Premium me abonim vjetor €25, i cili rinovohet automatikisht. Pagesat përpunohen nga Paddle, i cili vepron si Merchant of Record. Kontrata e blerjes krijohet midis përdoruesit dhe Paddle. Përdoruesi mund të anulojë abonimin në çdo kohë dhe qasja Premium mbetet aktive deri në fund të periudhës së paguar." },
-        "refund": { "heading": "Rimbursimet", "body": "Përdoruesit në BE/EEA kanë të drejtën ligjore të tërheqjes brenda 14 ditëve nga blerja, sipas ligjit për konsumatorët. Kërkesat për rimbursim trajtohen përmes Paddle si Merchant of Record ose duke kontaktuar [hello@fjalingo.al](mailto:hello@fjalingo.al). Jashtë të drejtave ligjore, rimbursimet shqyrtohen rast pas rasti." },
+        "refund": { "heading": "Rimbursimet", "body": "Përdoruesit në BE/EEA kanë të drejtën ligjore të tërheqjes brenda 14 ditëve nga blerja, sipas ligjit për konsumatorët. Kërkesat për rimbursim trajtohen përmes Paddle si Merchant of Record ose duke kontaktuar [hello@fjalingo.com](mailto:hello@fjalingo.com). Jashtë të drejtave ligjore, rimbursimet shqyrtohen rast pas rasti." },
         "liability": { "heading": "Kufizimi i përgjegjësisë", "body": "Shërbimi ofrohet siç është, pa garanci të veçanta për vazhdimësi ose rezultate specifike. Në masën e lejuar nga ligji, përgjegjësia e operatorit kufizohet dhe nuk përfshin dëme indirekte ose humbje të të dhënave." },
         "changes": { "heading": "Ndryshimet", "body": "Këto kushte mund të ndryshohen me njoftim në faqen e Fjalingo. Përdorimi i vazhdueshëm i shërbimit pas ndryshimeve nënkupton pranimin e kushteve të reja." },
         "law": { "heading": "Ligji i zbatueshëm", "body": "Këto kushte rregullohen nga ligjet e Republikës së Shqipërisë." },
-        "contact": { "heading": "Kontakt", "body": "Për pyetje rreth këtyre kushteve mund të kontaktoni në [hello@fjalingo.al](mailto:hello@fjalingo.al)." }
+        "contact": { "heading": "Kontakt", "body": "Për pyetje rreth këtyre kushteve mund të kontaktoni në [hello@fjalingo.com](mailto:hello@fjalingo.com)." }
       }
     },
     "privacy": {
@@ -119,7 +119,7 @@
         "retention": { "heading": "Ruajtja e të dhënave", "body": "Të dhënat ruhen për sa kohë që llogaria ekziston. Përdoruesi mund të kërkojë fshirje të llogarisë dhe të dhënave në çdo kohë." },
         "rights": { "heading": "Të drejtat e përdoruesit", "body": "Përdoruesit mund të kërkojnë akses, korrigjim, fshirje ose eksport të të dhënave të tyre duke kontaktuar në email. Përdoruesit kanë gjithashtu të drejtë të ankohen pranë autoritetit për mbrojtjen e të dhënave." },
         "security": { "heading": "Siguria", "body": "Fjalingo përdor masa sigurie për mbrojtjen e të dhënave, përfshirë ruajtje të fjalëkalimeve të hash-uar dhe komunikime të enkriptuara për mesazhet." },
-        "contact": { "heading": "Kontakt", "body": "Për pyetje mbi privatësinë kontaktoni në [hello@fjalingo.al](mailto:hello@fjalingo.al)." }
+        "contact": { "heading": "Kontakt", "body": "Për pyetje mbi privatësinë kontaktoni në [hello@fjalingo.com](mailto:hello@fjalingo.com)." }
       }
     },
     "refund": {
@@ -129,7 +129,7 @@
       "termsLink": "Kushtet e Përdorimit",
       "sections": {
         "policy": { "heading": "Politika", "body": "Përdoruesit në BE/EEA kanë të drejtën ligjore të tërheqjes brenda 14 ditëve nga blerja e abonimit, sipas ligjit për mbrojtjen e konsumatorit. Përtej kësaj periudhe, rimbursimet nuk janë të garantuara dhe shqyrtohen rast pas rasti." },
-        "howTo": { "heading": "Si të kërkosh", "body": "Kërkesat për rimbursim bëhen përmes Paddle (Merchant of Record) ose duke dërguar email në [hello@fjalingo.al](mailto:hello@fjalingo.al) me detajet e blerjes." }
+        "howTo": { "heading": "Si të kërkosh", "body": "Kërkesat për rimbursim bëhen përmes Paddle (Merchant of Record) ose duke dërguar email në [hello@fjalingo.com](mailto:hello@fjalingo.com) me detajet e blerjes." }
       }
     },
     "contact": {
