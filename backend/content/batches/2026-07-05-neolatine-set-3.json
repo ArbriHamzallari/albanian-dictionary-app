@@ -1,215 +1,215 @@
 {
-    "batch": "2026-07-05-neolatine-set-3",
-    "words": [
-      {
-        "borrowed_word": "Definitiv",
-        "correct_albanian": "përfundimtar",
-        "origin_language": "neolatine",
-        "word_type": "replace",
-        "difficulty": 2,
-        "definition_sq": "Që është i fundit dhe nuk ndryshon më.",
-        "examples": [
-          {
-            "sentence_loan": "Ky është vendimi definitiv.",
-            "sentence_clean": "Ky është vendimi përfundimtar."
-          }
-        ]
-      },
-      {
-        "borrowed_word": "Demarsh",
-        "correct_albanian": "përçapje",
-        "origin_language": "neolatine",
-        "word_type": "replace",
-        "difficulty": 3,
-        "definition_sq": "Veprim ose hap i ndërmarrë për të arritur një qëllim.",
-        "examples": [
-          {
-            "sentence_loan": "Filluan një demarsh diplomatik.",
-            "sentence_clean": "Filluan një përçapje diplomatike."
-          }
-        ]
-      },
-      {
-        "borrowed_word": "Destinacion",
-        "correct_albanian": "cak",
-        "origin_language": "neolatine",
-        "word_type": "replace",
-        "difficulty": 2,
-        "definition_sq": "Vendi ku synohet të arrihet gjatë një udhëtimi.",
-        "examples": [
-          {
-            "sentence_loan": "Ky është destinacioni ynë.",
-            "sentence_clean": "Ky është caku ynë."
-          }
-        ]
-      },
-      {
-        "borrowed_word": "Detaj",
-        "correct_albanian": "hollësi",
-        "origin_language": "neolatine",
-        "word_type": "replace",
-        "difficulty": 1,
-        "definition_sq": "Pjesë e vogël që plotëson tërësinë.",
-        "examples": [
-          {
-            "sentence_loan": "Më trego çdo detaj.",
-            "sentence_clean": "Më trego çdo hollësi."
-          }
-        ]
-      },
-      {
-        "borrowed_word": "Determinoj",
-        "correct_albanian": "përcaktoj",
-        "origin_language": "neolatine",
-        "word_type": "replace",
-        "difficulty": 2,
-        "definition_sq": "Vendos ose përcaktoj qartë diçka.",
-        "examples": [
-          {
-            "sentence_loan": "Duhet ta determinojmë drejtimin.",
-            "sentence_clean": "Duhet ta përcaktojmë drejtimin."
-          }
-        ]
-      },
-      {
-        "borrowed_word": "Deziluzion",
-        "correct_albanian": "zhgënjim",
-        "origin_language": "neolatine",
-        "word_type": "replace",
-        "difficulty": 2,
-        "definition_sq": "Ndjenjë që lind kur pritjet nuk përmbushen.",
-        "examples": [
-          {
-            "sentence_loan": "Pësova një deziluzion të madh.",
-            "sentence_clean": "Pësova një zhgënjim të madh."
-          }
-        ]
-      },
-      {
-        "borrowed_word": "Diferencë",
-        "correct_albanian": "ndryshim",
-        "origin_language": "neolatine",
-        "word_type": "replace",
-        "difficulty": 1,
-        "definition_sq": "Mosbarazi ose veçori që dallon dy gjëra.",
-        "examples": [
-          {
-            "sentence_loan": "Ka diferencë të madhe.",
-            "sentence_clean": "Ka ndryshim të madh."
-          }
-        ]
-      },
-      {
-        "borrowed_word": "Difuzion",
-        "correct_albanian": "shpërhapje",
-        "origin_language": "neolatine",
-        "word_type": "replace",
-        "difficulty": 3,
-        "definition_sq": "Përhapje graduale e një lënde, dukurie ose informacioni.",
-        "examples": [
-          {
-            "sentence_loan": "Difuzioni ndodhi shpejt.",
-            "sentence_clean": "Shpërhapja ndodhi shpejt."
-          }
-        ]
-      },
-      {
-        "borrowed_word": "Dimension",
-        "correct_albanian": "përmasë",
-        "origin_language": "neolatine",
-        "word_type": "replace",
-        "difficulty": 2,
-        "definition_sq": "Madhësia ose shtrirja e një objekti ose dukurie.",
-        "examples": [
-          {
-            "sentence_loan": "Dimensioni është i madh.",
-            "sentence_clean": "Përmasa është e madhe."
-          }
-        ]
-      },
-      {
-        "borrowed_word": "Direkt",
-        "correct_albanian": "i drejtpërdrejtë",
-        "origin_language": "neolatine",
-        "word_type": "replace",
-        "difficulty": 1,
-        "definition_sq": "Që bëhet pa ndërmjetës ose pa shmangie.",
-        "examples": [
-          {
-            "sentence_loan": "Fol direkt me të.",
-            "sentence_clean": "Fol drejtpërdrejt me të."
-          }
-        ]
-      },
-      {
-        "borrowed_word": "Distancë",
-        "correct_albanian": "largësi",
-        "origin_language": "neolatine",
-        "word_type": "replace",
-        "difficulty": 1,
-        "definition_sq": "Hapësira që ndan dy vende ose dy pika.",
-        "examples": [
-          {
-            "sentence_loan": "Distanca është e shkurtër.",
-            "sentence_clean": "Largësia është e shkurtër."
-          }
-        ]
-      },
-      {
-        "borrowed_word": "Divergjencë",
-        "correct_albanian": "mospajtim",
-        "origin_language": "neolatine",
-        "word_type": "replace",
-        "difficulty": 3,
-        "definition_sq": "Mungesë pajtimi ndërmjet mendimeve ose qëndrimeve.",
-        "examples": [
-          {
-            "sentence_loan": "Kishte divergjencë mendimesh.",
-            "sentence_clean": "Kishte mospajtim mendimesh."
-          }
-        ]
-      },
-      {
-        "borrowed_word": "Divorc",
-        "correct_albanian": "shkurorëzim",
-        "origin_language": "neolatine",
-        "word_type": "replace",
-        "difficulty": 2,
-        "definition_sq": "Përfundimi ligjor i martesës.",
-        "examples": [
-          {
-            "sentence_loan": "Ata kërkuan divorc.",
-            "sentence_clean": "Ata kërkuan shkurorëzim."
-          }
-        ]
-      },
-      {
-        "borrowed_word": "Dominoj",
-        "correct_albanian": "mbizotëroj",
-        "origin_language": "neolatine",
-        "word_type": "replace",
-        "difficulty": 2,
-        "definition_sq": "Jam më i fortë ose më i pranishëm se të tjerët.",
-        "examples": [
-          {
-            "sentence_loan": "Ngjyra blu dominon.",
-            "sentence_clean": "Ngjyra blu mbizotëron."
-          }
-        ]
-      },
-      {
-        "borrowed_word": "Eksperiencë",
-        "correct_albanian": "përvojë",
-        "origin_language": "neolatine",
-        "word_type": "replace",
-        "difficulty": 1,
-        "definition_sq": "Njohuri dhe aftësi të fituara nga jeta ose puna.",
-        "examples": [
-          {
-            "sentence_loan": "Ka shumë eksperiencë në këtë fushë.",
-            "sentence_clean": "Ka shumë përvojë në këtë fushë."
-          }
-        ]
-      }
-    ]
-  }
+  "batch": "2026-07-05-neolatine-set-3",
+  "words": [
+    {
+      "borrowed_word": "definitiv",
+      "correct_albanian": "përfundimtar",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 2,
+      "definition_sq": "Që është i fundit dhe nuk ndryshon më.",
+      "examples": [
+        {
+          "sentence_loan": "Ky është vendimi definitiv.",
+          "sentence_clean": "Ky është vendimi përfundimtar."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "demarsh",
+      "correct_albanian": "përçapje",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 3,
+      "definition_sq": "Veprim ose hap i ndërmarrë për të arritur një qëllim.",
+      "examples": [
+        {
+          "sentence_loan": "Filluan një demarsh diplomatik.",
+          "sentence_clean": "Filluan një përçapje diplomatike."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "destinacion",
+      "correct_albanian": "cak",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 2,
+      "definition_sq": "Vendi ku synohet të arrihet gjatë një udhëtimi.",
+      "examples": [
+        {
+          "sentence_loan": "Ky është destinacioni ynë.",
+          "sentence_clean": "Ky është caku ynë."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "detaj",
+      "correct_albanian": "hollësi",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 1,
+      "definition_sq": "Pjesë e vogël që plotëson tërësinë.",
+      "examples": [
+        {
+          "sentence_loan": "Më trego çdo detaj.",
+          "sentence_clean": "Më trego çdo hollësi."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "determinoj",
+      "correct_albanian": "përcaktoj",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 2,
+      "definition_sq": "Vendos ose përcaktoj qartë diçka.",
+      "examples": [
+        {
+          "sentence_loan": "Duhet ta determinojmë drejtimin.",
+          "sentence_clean": "Duhet ta përcaktojmë drejtimin."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "deziluzion",
+      "correct_albanian": "zhgënjim",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 2,
+      "definition_sq": "Ndjenjë që lind kur pritjet nuk përmbushen.",
+      "examples": [
+        {
+          "sentence_loan": "Pësova një deziluzion të madh.",
+          "sentence_clean": "Pësova një zhgënjim të madh."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "diferencë",
+      "correct_albanian": "ndryshim",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 1,
+      "definition_sq": "Mosbarazi ose veçori që dallon dy gjëra.",
+      "examples": [
+        {
+          "sentence_loan": "Ka diferencë të madhe.",
+          "sentence_clean": "Ka ndryshim të madh."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "difuzion",
+      "correct_albanian": "shpërhapje",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 3,
+      "definition_sq": "Përhapje graduale e një lënde, dukurie ose informacioni.",
+      "examples": [
+        {
+          "sentence_loan": "Difuzioni ndodhi shpejt.",
+          "sentence_clean": "Shpërhapja ndodhi shpejt."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "dimension",
+      "correct_albanian": "përmasë",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 2,
+      "definition_sq": "Madhësia ose shtrirja e një objekti ose dukurie.",
+      "examples": [
+        {
+          "sentence_loan": "Dimensioni është i madh.",
+          "sentence_clean": "Përmasa është e madhe."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "direkt",
+      "correct_albanian": "i drejtpërdrejtë",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 1,
+      "definition_sq": "Që bëhet pa ndërmjetës ose pa shmangie.",
+      "examples": [
+        {
+          "sentence_loan": "Fol direkt me të.",
+          "sentence_clean": "Fol drejtpërdrejt me të."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "distancë",
+      "correct_albanian": "largësi",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 1,
+      "definition_sq": "Hapësira që ndan dy vende ose dy pika.",
+      "examples": [
+        {
+          "sentence_loan": "Distanca është e shkurtër.",
+          "sentence_clean": "Largësia është e shkurtër."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "divergjencë",
+      "correct_albanian": "mospajtim",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 3,
+      "definition_sq": "Mungesë pajtimi ndërmjet mendimeve ose qëndrimeve.",
+      "examples": [
+        {
+          "sentence_loan": "Kishte divergjencë mendimesh.",
+          "sentence_clean": "Kishte mospajtim mendimesh."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "divorc",
+      "correct_albanian": "shkurorëzim",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 2,
+      "definition_sq": "Përfundimi ligjor i martesës.",
+      "examples": [
+        {
+          "sentence_loan": "Ata kërkuan divorc.",
+          "sentence_clean": "Ata kërkuan shkurorëzim."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "dominoj",
+      "correct_albanian": "mbizotëroj",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 2,
+      "definition_sq": "Jam më i fortë ose më i pranishëm se të tjerët.",
+      "examples": [
+        {
+          "sentence_loan": "Ngjyra blu dominon.",
+          "sentence_clean": "Ngjyra blu mbizotëron."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "eksperiencë",
+      "correct_albanian": "përvojë",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 1,
+      "definition_sq": "Njohuri dhe aftësi të fituara nga jeta ose puna.",
+      "examples": [
+        {
+          "sentence_loan": "Ka shumë eksperiencë në këtë fushë.",
+          "sentence_clean": "Ka shumë përvojë në këtë fushë."
+        }
+      ]
+    }
+  ]
+}

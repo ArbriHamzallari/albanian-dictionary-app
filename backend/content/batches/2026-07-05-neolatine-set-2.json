@@ -1,215 +1,215 @@
 {
-    "batch": "2026-07-05-neolatine-set-2",
-    "words": [
-      {
-        "borrowed_word": "Apel",
-        "correct_albanian": "thirrje",
-        "origin_language": "neolatine",
-        "word_type": "replace",
-        "difficulty": 1,
-        "definition_sq": "Kërkesë ose ftesë drejtuar të tjerëve për të vepruar ose për të ndihmuar.",
-        "examples": [
-          {
-            "sentence_loan": "Bëri apel për ndihmë.",
-            "sentence_clean": "Bëri thirrje për ndihmë."
-          }
-        ]
-      },
-      {
-        "borrowed_word": "Aplikim",
-        "correct_albanian": "zbatim",
-        "origin_language": "neolatine",
-        "word_type": "replace",
-        "difficulty": 2,
-        "definition_sq": "Vënia në praktikë e një rregulli, metode ose plani.",
-        "examples": [
-          {
-            "sentence_loan": "Aplikimi i ligjit vazhdon.",
-            "sentence_clean": "Zbatimi i ligjit vazhdon."
-          }
-        ]
-      },
-      {
-        "borrowed_word": "Aprovoj",
-        "correct_albanian": "miratoj",
-        "origin_language": "neolatine",
-        "word_type": "replace",
-        "difficulty": 1,
-        "definition_sq": "Jap pëlqimin zyrtar ose pranoj një propozim.",
-        "examples": [
-          {
-            "sentence_loan": "Komisioni e aprovoi projektin.",
-            "sentence_clean": "Komisioni e miratoi projektin."
-          }
-        ]
-      },
-      {
-        "borrowed_word": "Aspekt",
-        "correct_albanian": "anë",
-        "origin_language": "neolatine",
-        "word_type": "replace",
-        "difficulty": 1,
-        "definition_sq": "Pjesë ose këndvështrim i një çështjeje.",
-        "examples": [
-          {
-            "sentence_loan": "Diskutuam çdo aspekt.",
-            "sentence_clean": "Diskutuam çdo anë."
-          }
-        ]
-      },
-      {
-        "borrowed_word": "Avangardë",
-        "correct_albanian": "pararojë",
-        "origin_language": "neolatine",
-        "word_type": "replace",
-        "difficulty": 3,
-        "definition_sq": "Grup ose forcë që prin dhe hap rrugën për të tjerët.",
-        "examples": [
-          {
-            "sentence_loan": "Ishin avangardë e ndryshimit.",
-            "sentence_clean": "Ishin pararojë e ndryshimit."
-          }
-        ]
-      },
-      {
-        "borrowed_word": "Avantazh",
-        "correct_albanian": "epërsi",
-        "origin_language": "neolatine",
-        "word_type": "replace",
-        "difficulty": 1,
-        "definition_sq": "Gjendje që të jep përfitim ndaj të tjerëve.",
-        "examples": [
-          {
-            "sentence_loan": "Kjo të jep avantazh.",
-            "sentence_clean": "Kjo të jep epërsi."
-          }
-        ]
-      },
-      {
-        "borrowed_word": "Barrierë",
-        "correct_albanian": "pengesë",
-        "origin_language": "neolatine",
-        "word_type": "replace",
-        "difficulty": 1,
-        "definition_sq": "Diçka që pengon kalimin ose përparimin.",
-        "examples": [
-          {
-            "sentence_loan": "Gjuha ishte barrierë.",
-            "sentence_clean": "Gjuha ishte pengesë."
-          }
-        ]
-      },
-      {
-        "borrowed_word": "Bilateral",
-        "correct_albanian": "i dyanshëm",
-        "origin_language": "neolatine",
-        "word_type": "replace",
-        "difficulty": 2,
-        "definition_sq": "Që përfshin ose prek dy palë.",
-        "examples": [
-          {
-            "sentence_loan": "Nënshkruan marrëveshje bilaterale.",
-            "sentence_clean": "Nënshkruan marrëveshje të dyanshme."
-          }
-        ]
-      },
-      {
-        "borrowed_word": "Brutal",
-        "correct_albanian": "i vrazhdë",
-        "origin_language": "neolatine",
-        "word_type": "replace",
-        "difficulty": 2,
-        "definition_sq": "Që sillet ose vepron me ashpërsi dhe pa mëshirë.",
-        "examples": [
-          {
-            "sentence_loan": "Ishte shumë brutal.",
-            "sentence_clean": "Ishte shumë i vrazhdë."
-          }
-        ]
-      },
-      {
-        "borrowed_word": "Certifikatë",
-        "correct_albanian": "vërtetim",
-        "origin_language": "neolatine",
-        "word_type": "replace",
-        "difficulty": 2,
-        "definition_sq": "Dokument që dëshmon ose vërteton një fakt.",
-        "examples": [
-          {
-            "sentence_loan": "Mora certifikatën sot.",
-            "sentence_clean": "Mora vërtetimin sot."
-          }
-        ]
-      },
-      {
-        "borrowed_word": "Civilizim",
-        "correct_albanian": "qytetërim",
-        "origin_language": "neolatine",
-        "word_type": "replace",
-        "difficulty": 2,
-        "definition_sq": "Shkalla e zhvillimit kulturor dhe shoqëror të një populli.",
-        "examples": [
-          {
-            "sentence_loan": "Studiojmë civilizimin ilir.",
-            "sentence_clean": "Studiojmë qytetërimin ilir."
-          }
-        ]
-      },
-      {
-        "borrowed_word": "Decidoj",
-        "correct_albanian": "vendos",
-        "origin_language": "neolatine",
-        "word_type": "replace",
-        "difficulty": 1,
-        "definition_sq": "Marr një vendim pas shqyrtimit të mundësive.",
-        "examples": [
-          {
-            "sentence_loan": "Duhet të decidojmë sot.",
-            "sentence_clean": "Duhet të vendosim sot."
-          }
-        ]
-      },
-      {
-        "borrowed_word": "Deciziv",
-        "correct_albanian": "vendimtar",
-        "origin_language": "neolatine",
-        "word_type": "replace",
-        "difficulty": 2,
-        "definition_sq": "Që përcakton përfundimisht rrjedhën ose rezultatin.",
-        "examples": [
-          {
-            "sentence_loan": "Ishte moment deciziv.",
-            "sentence_clean": "Ishte moment vendimtar."
-          }
-        ]
-      },
-      {
-        "borrowed_word": "Dedikoj",
-        "correct_albanian": "kushtoj",
-        "origin_language": "neolatine",
-        "word_type": "replace",
-        "difficulty": 1,
-        "definition_sq": "Ia kushtoj dikujt ose diçkaje kohën, punën ose një vepër.",
-        "examples": [
-          {
-            "sentence_loan": "Ia dedikoi fitoren nënës.",
-            "sentence_clean": "Ia kushtoi fitoren nënës."
-          }
-        ]
-      },
-      {
-        "borrowed_word": "Definicion",
-        "correct_albanian": "përkufizim",
-        "origin_language": "neolatine",
-        "word_type": "replace",
-        "difficulty": 2,
-        "definition_sq": "Shpjegim i qartë dhe i saktë i kuptimit të një fjale ose nocioni.",
-        "examples": [
-          {
-            "sentence_loan": "Lexo definicionin me kujdes.",
-            "sentence_clean": "Lexo përkufizimin me kujdes."
-          }
-        ]
-      }
-    ]
-  }
+  "batch": "2026-07-05-neolatine-set-2",
+  "words": [
+    {
+      "borrowed_word": "apel",
+      "correct_albanian": "thirrje",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 1,
+      "definition_sq": "Kërkesë ose ftesë drejtuar të tjerëve për të vepruar ose për të ndihmuar.",
+      "examples": [
+        {
+          "sentence_loan": "Bëri apel për ndihmë.",
+          "sentence_clean": "Bëri thirrje për ndihmë."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "aplikim",
+      "correct_albanian": "zbatim",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 2,
+      "definition_sq": "Vënia në praktikë e një rregulli, metode ose plani.",
+      "examples": [
+        {
+          "sentence_loan": "Aplikimi i ligjit vazhdon.",
+          "sentence_clean": "Zbatimi i ligjit vazhdon."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "aprovoj",
+      "correct_albanian": "miratoj",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 1,
+      "definition_sq": "Jap pëlqimin zyrtar ose pranoj një propozim.",
+      "examples": [
+        {
+          "sentence_loan": "Komisioni e aprovoi projektin.",
+          "sentence_clean": "Komisioni e miratoi projektin."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "aspekt",
+      "correct_albanian": "anë",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 1,
+      "definition_sq": "Pjesë ose këndvështrim i një çështjeje.",
+      "examples": [
+        {
+          "sentence_loan": "Diskutuam çdo aspekt.",
+          "sentence_clean": "Diskutuam çdo anë."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "avangardë",
+      "correct_albanian": "pararojë",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 3,
+      "definition_sq": "Grup ose forcë që prin dhe hap rrugën për të tjerët.",
+      "examples": [
+        {
+          "sentence_loan": "Ishin avangardë e ndryshimit.",
+          "sentence_clean": "Ishin pararojë e ndryshimit."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "avantazh",
+      "correct_albanian": "epërsi",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 1,
+      "definition_sq": "Gjendje që të jep përfitim ndaj të tjerëve.",
+      "examples": [
+        {
+          "sentence_loan": "Kjo të jep avantazh.",
+          "sentence_clean": "Kjo të jep epërsi."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "barrierë",
+      "correct_albanian": "pengesë",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 1,
+      "definition_sq": "Diçka që pengon kalimin ose përparimin.",
+      "examples": [
+        {
+          "sentence_loan": "Gjuha ishte barrierë.",
+          "sentence_clean": "Gjuha ishte pengesë."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "bilateral",
+      "correct_albanian": "i dyanshëm",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 2,
+      "definition_sq": "Që përfshin ose prek dy palë.",
+      "examples": [
+        {
+          "sentence_loan": "Nënshkruan marrëveshje bilaterale.",
+          "sentence_clean": "Nënshkruan marrëveshje të dyanshme."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "brutal",
+      "correct_albanian": "i vrazhdë",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 2,
+      "definition_sq": "Që sillet ose vepron me ashpërsi dhe pa mëshirë.",
+      "examples": [
+        {
+          "sentence_loan": "Ishte shumë brutal.",
+          "sentence_clean": "Ishte shumë i vrazhdë."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "certifikatë",
+      "correct_albanian": "vërtetim",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 2,
+      "definition_sq": "Dokument që dëshmon ose vërteton një fakt.",
+      "examples": [
+        {
+          "sentence_loan": "Mora certifikatën sot.",
+          "sentence_clean": "Mora vërtetimin sot."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "civilizim",
+      "correct_albanian": "qytetërim",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 2,
+      "definition_sq": "Shkalla e zhvillimit kulturor dhe shoqëror të një populli.",
+      "examples": [
+        {
+          "sentence_loan": "Studiojmë civilizimin ilir.",
+          "sentence_clean": "Studiojmë qytetërimin ilir."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "decidoj",
+      "correct_albanian": "vendos",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 1,
+      "definition_sq": "Marr një vendim pas shqyrtimit të mundësive.",
+      "examples": [
+        {
+          "sentence_loan": "Duhet të decidojmë sot.",
+          "sentence_clean": "Duhet të vendosim sot."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "deciziv",
+      "correct_albanian": "vendimtar",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 2,
+      "definition_sq": "Që përcakton përfundimisht rrjedhën ose rezultatin.",
+      "examples": [
+        {
+          "sentence_loan": "Ishte moment deciziv.",
+          "sentence_clean": "Ishte moment vendimtar."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "dedikoj",
+      "correct_albanian": "kushtoj",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 1,
+      "definition_sq": "Ia kushtoj dikujt ose diçkaje kohën, punën ose një vepër.",
+      "examples": [
+        {
+          "sentence_loan": "Ia dedikoi fitoren nënës.",
+          "sentence_clean": "Ia kushtoi fitoren nënës."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "definicion",
+      "correct_albanian": "përkufizim",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 2,
+      "definition_sq": "Shpjegim i qartë dhe i saktë i kuptimit të një fjale ose nocioni.",
+      "examples": [
+        {
+          "sentence_loan": "Lexo definicionin me kujdes.",
+          "sentence_clean": "Lexo përkufizimin me kujdes."
+        }
+      ]
+    }
+  ]
+}

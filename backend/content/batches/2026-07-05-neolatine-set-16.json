@@ -1,229 +1,229 @@
 {
-    "batch": "2026-07-05-neolatine-set-16",
-    "words": [
-      {
-        "borrowed_word": "Konsiston",
-        "correct_albanian": "qëndron",
-        "origin_language": "neolatine",
-        "word_type": "replace",
-        "difficulty": 2,
-        "definition_sq": "E ka thelbin ose bazën te diçka.",
-        "examples": [
-          {
-            "sentence_loan": "Problemi konsiston te komunikimi.",
-            "sentence_clean": "Problemi qëndron te komunikimi."
-          }
-        ]
-      },
-      {
-        "borrowed_word": "Kontakt",
-        "correct_albanian": "takim",
-        "origin_language": "neolatine",
-        "word_type": "replace",
-        "difficulty": 1,
-        "definition_sq": "Lidhje ose takim ndërmjet njerëzve a palëve.",
-        "examples": [
-          {
-            "sentence_loan": "Kam kontakt me të.",
-            "sentence_clean": "Kam takim me të."
-          }
-        ]
-      },
-      {
-        "borrowed_word": "Kontemporan",
-        "correct_albanian": "bashkëkohor",
-        "origin_language": "neolatine",
-        "word_type": "replace",
-        "difficulty": 2,
-        "definition_sq": "Që i përket së njëjtës kohë ose epoke.",
-        "examples": [
-          {
-            "sentence_loan": "Ai është autor kontemporan.",
-            "sentence_clean": "Ai është autor bashkëkohor."
-          }
-        ]
-      },
-      {
-        "borrowed_word": "Koordinoj",
-        "correct_albanian": "bashkërendoj",
-        "origin_language": "neolatine",
-        "word_type": "replace",
-        "difficulty": 2,
-        "definition_sq": "Rendit dhe drejton veprimet që të zhvillohen në përputhje me njëra-tjetrën.",
-        "examples": [
-          {
-            "sentence_loan": "Duhet të koordinojmë punën.",
-            "sentence_clean": "Duhet të bashkërendojmë punën."
-          }
-        ]
-      },
-      {
-        "borrowed_word": "Korrent",
-        "correct_albanian": "rrymë",
-        "origin_language": "neolatine",
-        "word_type": "replace",
-        "difficulty": 1,
-        "definition_sq": "Lëvizja e energjisë elektrike nëpër përçues.",
-        "examples": [
-          {
-            "sentence_loan": "Sot nuk ka korrent.",
-            "sentence_clean": "Sot nuk ka rrymë."
-          }
-        ]
-      },
-      {
-        "borrowed_word": "Kualitet",
-        "correct_albanian": "cilësi",
-        "origin_language": "neolatine",
-        "word_type": "replace",
-        "difficulty": 1,
-        "definition_sq": "Tërësia e vetive që përcaktojnë vlerën e diçkaje.",
-        "examples": [
-          {
-            "sentence_loan": "Ky produkt ka kualitet.",
-            "sentence_clean": "Ky produkt ka cilësi."
-          }
-        ]
-      },
-      {
-        "borrowed_word": "Kuantitet",
-        "correct_albanian": "sasi",
-        "origin_language": "neolatine",
-        "word_type": "replace",
-        "difficulty": 2,
-        "definition_sq": "Masa ose numri i një sendi ose lënde.",
-        "examples": [
-          {
-            "sentence_loan": "Na duhet më shumë kuantitet.",
-            "sentence_clean": "Na duhet më shumë sasi."
-          }
-        ]
-      },
-      {
-        "borrowed_word": "Kurioz",
-        "correct_albanian": "kureshtar",
-        "origin_language": "neolatine",
-        "word_type": "replace",
-        "difficulty": 1,
-        "definition_sq": "Që dëshiron të dijë ose të mësojë më shumë.",
-        "examples": [
-          {
-            "sentence_loan": "Fëmija ishte shumë kurioz.",
-            "sentence_clean": "Fëmija ishte shumë kureshtar."
-          }
-        ]
-      },
-      {
-        "borrowed_word": "Legjislativ",
-        "correct_albanian": "ligjvënës",
-        "origin_language": "neolatine",
-        "word_type": "replace",
-        "difficulty": 3,
-        "definition_sq": "Që lidhet me hartimin dhe miratimin e ligjeve.",
-        "examples": [
-          {
-            "sentence_loan": "Organi legjislativ u mblodh.",
-            "sentence_clean": "Organi ligjvënës u mblodh."
-          }
-        ]
-      },
-      {
-        "borrowed_word": "Limituar",
-        "correct_albanian": "i kufizuar",
-        "origin_language": "neolatine",
-        "word_type": "replace",
-        "difficulty": 2,
-        "definition_sq": "Që ka kufij ose nuk shtrihet më tej.",
-        "examples": [
-          {
-            "sentence_loan": "Koha është e limituar.",
-            "sentence_clean": "Koha është e kufizuar."
-          }
-        ]
-      },
-      {
-        "borrowed_word": "Literaturë",
-        "correct_albanian": "letërsi",
-        "origin_language": "neolatine",
-        "word_type": "replace",
-        "difficulty": 1,
-        "definition_sq": "Tërësia e veprave të shkruara me vlerë artistike.",
-        "examples": [
-          {
-            "sentence_loan": "Më pëlqen literatura shqiptare.",
-            "sentence_clean": "Më pëlqen letërsia shqiptare."
-          }
-        ]
-      },
-      {
-        "borrowed_word": "Maksimal",
-        "correct_albanian": "më i lartë",
-        "origin_language": "neolatine",
-        "word_type": "replace",
-        "difficulty": 2,
-        "definition_sq": "Që arrin kufirin më të lartë të mundshëm.",
-        "examples": [
-          {
-            "sentence_loan": "Shpejtësia është maksimale.",
-            "sentence_clean": "Shpejtësia është më e larta."
-          }
-        ]
-      },
-      {
-        "borrowed_word": "Medicinë",
-        "correct_albanian": "mjekësi",
-        "origin_language": "neolatine",
-        "word_type": "replace",
-        "difficulty": 1,
-        "definition_sq": "Shkenca që merret me shëndetin dhe trajtimin e sëmundjeve.",
-        "examples": [
-          {
-            "sentence_loan": "Studion medicinë në universitet.",
-            "sentence_clean": "Studion mjekësi në universitet."
-          }
-        ]
-      },
-      {
-        "borrowed_word": "Minimal",
-        "correct_albanian": "më i ulët",
-        "origin_language": "neolatine",
-        "word_type": "replace",
-        "difficulty": 2,
-        "definition_sq": "Që është në shkallën më të ulët të mundshme.",
-        "examples": [
-          {
-            "sentence_loan": "Rreziku është minimal.",
-            "sentence_clean": "Rreziku është më i ulët."
-          }
-        ]
-      },
-      {
-        "borrowed_word": "Monument",
-        "correct_albanian": "përmendore",
-        "origin_language": "neolatine",
-        "word_type": "replace",
-        "difficulty": 1,
-        "definition_sq": "Vepër e ngritur për të kujtuar një person ose ngjarje.",
-        "examples": [
-          {
-            "sentence_loan": "Vizituam monumentin e heroit.",
-            "sentence_clean": "Vizituam përmendoren e heroit."
-          }
-        ]
-      },
-      {
-        "borrowed_word": "Mortalitet",
-        "correct_albanian": "vdekshmëri",
-        "origin_language": "neolatine",
-        "word_type": "replace",
-        "difficulty": 3,
-        "definition_sq": "Shkalla ose numri i vdekjeve në një popullsi gjatë një periudhe.",
-        "examples": [
-          {
-            "sentence_loan": "Mortaliteti ka rënë këtë vit.",
-            "sentence_clean": "Vdekshmëria ka rënë këtë vit."
-          }
-        ]
-      }
-    ]
-  }
+  "batch": "2026-07-05-neolatine-set-16",
+  "words": [
+    {
+      "borrowed_word": "konsiston",
+      "correct_albanian": "qëndron",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 2,
+      "definition_sq": "E ka thelbin ose bazën te diçka.",
+      "examples": [
+        {
+          "sentence_loan": "Problemi konsiston te komunikimi.",
+          "sentence_clean": "Problemi qëndron te komunikimi."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "kontakt",
+      "correct_albanian": "takim",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 1,
+      "definition_sq": "Lidhje ose takim ndërmjet njerëzve a palëve.",
+      "examples": [
+        {
+          "sentence_loan": "Kam kontakt me të.",
+          "sentence_clean": "Kam takim me të."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "kontemporan",
+      "correct_albanian": "bashkëkohor",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 2,
+      "definition_sq": "Që i përket së njëjtës kohë ose epoke.",
+      "examples": [
+        {
+          "sentence_loan": "Ai është autor kontemporan.",
+          "sentence_clean": "Ai është autor bashkëkohor."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "koordinoj",
+      "correct_albanian": "bashkërendoj",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 2,
+      "definition_sq": "Rendit dhe drejton veprimet që të zhvillohen në përputhje me njëra-tjetrën.",
+      "examples": [
+        {
+          "sentence_loan": "Duhet të koordinojmë punën.",
+          "sentence_clean": "Duhet të bashkërendojmë punën."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "korrent",
+      "correct_albanian": "rrymë",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 1,
+      "definition_sq": "Lëvizja e energjisë elektrike nëpër përçues.",
+      "examples": [
+        {
+          "sentence_loan": "Sot nuk ka korrent.",
+          "sentence_clean": "Sot nuk ka rrymë."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "kualitet",
+      "correct_albanian": "cilësi",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 1,
+      "definition_sq": "Tërësia e vetive që përcaktojnë vlerën e diçkaje.",
+      "examples": [
+        {
+          "sentence_loan": "Ky produkt ka kualitet.",
+          "sentence_clean": "Ky produkt ka cilësi."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "kuantitet",
+      "correct_albanian": "sasi",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 2,
+      "definition_sq": "Masa ose numri i një sendi ose lënde.",
+      "examples": [
+        {
+          "sentence_loan": "Na duhet më shumë kuantitet.",
+          "sentence_clean": "Na duhet më shumë sasi."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "kurioz",
+      "correct_albanian": "kureshtar",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 1,
+      "definition_sq": "Që dëshiron të dijë ose të mësojë më shumë.",
+      "examples": [
+        {
+          "sentence_loan": "Fëmija ishte shumë kurioz.",
+          "sentence_clean": "Fëmija ishte shumë kureshtar."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "legjislativ",
+      "correct_albanian": "ligjvënës",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 3,
+      "definition_sq": "Që lidhet me hartimin dhe miratimin e ligjeve.",
+      "examples": [
+        {
+          "sentence_loan": "Organi legjislativ u mblodh.",
+          "sentence_clean": "Organi ligjvënës u mblodh."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "limituar",
+      "correct_albanian": "i kufizuar",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 2,
+      "definition_sq": "Që ka kufij ose nuk shtrihet më tej.",
+      "examples": [
+        {
+          "sentence_loan": "Koha është e limituar.",
+          "sentence_clean": "Koha është e kufizuar."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "literaturë",
+      "correct_albanian": "letërsi",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 1,
+      "definition_sq": "Tërësia e veprave të shkruara me vlerë artistike.",
+      "examples": [
+        {
+          "sentence_loan": "Më pëlqen literatura shqiptare.",
+          "sentence_clean": "Më pëlqen letërsia shqiptare."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "maksimal",
+      "correct_albanian": "më i lartë",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 2,
+      "definition_sq": "Që arrin kufirin më të lartë të mundshëm.",
+      "examples": [
+        {
+          "sentence_loan": "Shpejtësia është maksimale.",
+          "sentence_clean": "Shpejtësia është më e larta."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "medicinë",
+      "correct_albanian": "mjekësi",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 1,
+      "definition_sq": "Shkenca që merret me shëndetin dhe trajtimin e sëmundjeve.",
+      "examples": [
+        {
+          "sentence_loan": "Studion medicinë në universitet.",
+          "sentence_clean": "Studion mjekësi në universitet."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "minimal",
+      "correct_albanian": "më i ulët",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 2,
+      "definition_sq": "Që është në shkallën më të ulët të mundshme.",
+      "examples": [
+        {
+          "sentence_loan": "Rreziku është minimal.",
+          "sentence_clean": "Rreziku është më i ulët."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "monument",
+      "correct_albanian": "përmendore",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 1,
+      "definition_sq": "Vepër e ngritur për të kujtuar një person ose ngjarje.",
+      "examples": [
+        {
+          "sentence_loan": "Vizituam monumentin e heroit.",
+          "sentence_clean": "Vizituam përmendoren e heroit."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "mortalitet",
+      "correct_albanian": "vdekshmëri",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 3,
+      "definition_sq": "Shkalla ose numri i vdekjeve në një popullsi gjatë një periudhe.",
+      "examples": [
+        {
+          "sentence_loan": "Mortaliteti ka rënë këtë vit.",
+          "sentence_clean": "Vdekshmëria ka rënë këtë vit."
+        }
+      ]
+    }
+  ]
+}

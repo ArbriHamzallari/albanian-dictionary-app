@@ -1,215 +1,215 @@
 {
-    "batch": "2026-07-05-neolatine-set-7",
-    "words": [
-      {
-        "borrowed_word": "Insistoj",
-        "correct_albanian": "këmbëngul",
-        "origin_language": "neolatine",
-        "word_type": "replace",
-        "difficulty": 1,
-        "definition_sq": "Nuk heq dorë nga një mendim ose kërkesë.",
-        "examples": [
-          {
-            "sentence_loan": "Ai insistoi deri në fund.",
-            "sentence_clean": "Ai këmbënguli deri në fund."
-          }
-        ]
-      },
-      {
-        "borrowed_word": "Internacional",
-        "correct_albanian": "ndërkombëtar",
-        "origin_language": "neolatine",
-        "word_type": "replace",
-        "difficulty": 1,
-        "definition_sq": "Që lidhet ose përfshin më shumë se një shtet.",
-        "examples": [
-          {
-            "sentence_loan": "Turneu ishte internacional.",
-            "sentence_clean": "Turneu ishte ndërkombëtar."
-          }
-        ]
-      },
-      {
-        "borrowed_word": "Intoksikohem",
-        "correct_albanian": "helmohem",
-        "origin_language": "neolatine",
-        "word_type": "replace",
-        "difficulty": 2,
-        "definition_sq": "Pësoj helmim nga ushqimi, kimikatet ose lëndë të tjera.",
-        "examples": [
-          {
-            "sentence_loan": "U intoksikua nga ushqimi.",
-            "sentence_clean": "U helmua nga ushqimi."
-          }
-        ]
-      },
-      {
-        "borrowed_word": "Introduksion",
-        "correct_albanian": "hyrje",
-        "origin_language": "neolatine",
-        "word_type": "replace",
-        "difficulty": 2,
-        "definition_sq": "Pjesa e parë që paraqet temën ose përmbajtjen.",
-        "examples": [
-          {
-            "sentence_loan": "Lexo introduksionin e librit.",
-            "sentence_clean": "Lexo hyrjen e librit."
-          }
-        ]
-      },
-      {
-        "borrowed_word": "Kaligrafi",
-        "correct_albanian": "bukurshkrim",
-        "origin_language": "neolatine",
-        "word_type": "replace",
-        "difficulty": 3,
-        "definition_sq": "Arti i të shkruarit bukur dhe me kujdes.",
-        "examples": [
-          {
-            "sentence_loan": "Ajo mëson kaligrafi.",
-            "sentence_clean": "Ajo mëson bukurshkrim."
-          }
-        ]
-      },
-      {
-        "borrowed_word": "Kauzë",
-        "correct_albanian": "çështje",
-        "origin_language": "neolatine",
-        "word_type": "replace",
-        "difficulty": 2,
-        "definition_sq": "Qëllim ose çështje për të cilën angazhohet dikush.",
-        "examples": [
-          {
-            "sentence_loan": "Lufton për një kauzë të drejtë.",
-            "sentence_clean": "Lufton për një çështje të drejtë."
-          }
-        ]
-      },
-      {
-        "borrowed_word": "Koincidon",
-        "correct_albanian": "përkon",
-        "origin_language": "neolatine",
-        "word_type": "replace",
-        "difficulty": 2,
-        "definition_sq": "Ndodh në të njëjtën kohë ose përputhet me diçka tjetër.",
-        "examples": [
-          {
-            "sentence_loan": "Takimi koincidon me festën.",
-            "sentence_clean": "Takimi përkon me festën."
-          }
-        ]
-      },
-      {
-        "borrowed_word": "Kolektiv",
-        "correct_albanian": "i përbashkët",
-        "origin_language": "neolatine",
-        "word_type": "replace",
-        "difficulty": 2,
-        "definition_sq": "Që i përket ose kryhet nga një grup njerëzish.",
-        "examples": [
-          {
-            "sentence_loan": "Morën një vendim kolektiv.",
-            "sentence_clean": "Morën një vendim të përbashkët."
-          }
-        ]
-      },
-      {
-        "borrowed_word": "Komplikoj",
-        "correct_albanian": "ndërlikoj",
-        "origin_language": "neolatine",
-        "word_type": "replace",
-        "difficulty": 2,
-        "definition_sq": "E bëj një gjë më të vështirë ose më të ndërlikuar.",
-        "examples": [
-          {
-            "sentence_loan": "Mos e kompliko situatën.",
-            "sentence_clean": "Mos e ndërliko situatën."
-          }
-        ]
-      },
-      {
-        "borrowed_word": "Koncentroj",
-        "correct_albanian": "përqendroj",
-        "origin_language": "neolatine",
-        "word_type": "replace",
-        "difficulty": 1,
-        "definition_sq": "Drejtoj vëmendjen ose përpjekjet në një pikë të vetme.",
-        "examples": [
-          {
-            "sentence_loan": "Koncentrohu te detyra.",
-            "sentence_clean": "Përqendrohu te detyra."
-          }
-        ]
-      },
-      {
-        "borrowed_word": "Kondicionoj",
-        "correct_albanian": "kushtëzoj",
-        "origin_language": "neolatine",
-        "word_type": "replace",
-        "difficulty": 3,
-        "definition_sq": "E bëj të varet nga një kusht ose rrethanë.",
-        "examples": [
-          {
-            "sentence_loan": "Vendimi kondicionohet nga buxheti.",
-            "sentence_clean": "Vendimi kushtëzohet nga buxheti."
-          }
-        ]
-      },
-      {
-        "borrowed_word": "Konfondoj",
-        "correct_albanian": "ngatërroj",
-        "origin_language": "neolatine",
-        "word_type": "replace",
-        "difficulty": 2,
-        "definition_sq": "Shkaktoj paqartësi ose e bëj dikë të mos dallojë drejt.",
-        "examples": [
-          {
-            "sentence_loan": "Mos më konfondo me emrat.",
-            "sentence_clean": "Mos më ngatërro me emrat."
-          }
-        ]
-      },
-      {
-        "borrowed_word": "Konfrontoj",
-        "correct_albanian": "ballafaqoj",
-        "origin_language": "neolatine",
-        "word_type": "replace",
-        "difficulty": 2,
-        "definition_sq": "Vendos përballë dikë ose diçka për ta krahasuar ose sqaruar.",
-        "examples": [
-          {
-            "sentence_loan": "Duhet t'i konfrontojmë faktet.",
-            "sentence_clean": "Duhet t'i ballafaqojmë faktet."
-          }
-        ]
-      },
-      {
-        "borrowed_word": "Konkluzion",
-        "correct_albanian": "përfundim",
-        "origin_language": "neolatine",
-        "word_type": "replace",
-        "difficulty": 1,
-        "definition_sq": "Mendimi ose rezultati përfundimtar i nxjerrë pas shqyrtimit.",
-        "examples": [
-          {
-            "sentence_loan": "Arritëm në të njëjtin konkluzion.",
-            "sentence_clean": "Arritëm në të njëjtin përfundim."
-          }
-        ]
-      },
-      {
-        "borrowed_word": "Konsideroj",
-        "correct_albanian": "e quaj",
-        "origin_language": "neolatine",
-        "word_type": "replace",
-        "difficulty": 2,
-        "definition_sq": "E shoh ose e vlerësoj dikë a diçka në një mënyrë të caktuar.",
-        "examples": [
-          {
-            "sentence_loan": "E konsideroj mik të mirë.",
-            "sentence_clean": "E quaj mik të mirë."
-          }
-        ]
-      }
-    ]
-  }
+  "batch": "2026-07-05-neolatine-set-7",
+  "words": [
+    {
+      "borrowed_word": "insistoj",
+      "correct_albanian": "këmbëngul",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 1,
+      "definition_sq": "Nuk heq dorë nga një mendim ose kërkesë.",
+      "examples": [
+        {
+          "sentence_loan": "Ai insistoi deri në fund.",
+          "sentence_clean": "Ai këmbënguli deri në fund."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "internacional",
+      "correct_albanian": "ndërkombëtar",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 1,
+      "definition_sq": "Që lidhet ose përfshin më shumë se një shtet.",
+      "examples": [
+        {
+          "sentence_loan": "Turneu ishte internacional.",
+          "sentence_clean": "Turneu ishte ndërkombëtar."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "intoksikohem",
+      "correct_albanian": "helmohem",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 2,
+      "definition_sq": "Pësoj helmim nga ushqimi, kimikatet ose lëndë të tjera.",
+      "examples": [
+        {
+          "sentence_loan": "U intoksikua nga ushqimi.",
+          "sentence_clean": "U helmua nga ushqimi."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "introduksion",
+      "correct_albanian": "hyrje",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 2,
+      "definition_sq": "Pjesa e parë që paraqet temën ose përmbajtjen.",
+      "examples": [
+        {
+          "sentence_loan": "Lexo introduksionin e librit.",
+          "sentence_clean": "Lexo hyrjen e librit."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "kaligrafi",
+      "correct_albanian": "bukurshkrim",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 3,
+      "definition_sq": "Arti i të shkruarit bukur dhe me kujdes.",
+      "examples": [
+        {
+          "sentence_loan": "Ajo mëson kaligrafi.",
+          "sentence_clean": "Ajo mëson bukurshkrim."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "kauzë",
+      "correct_albanian": "çështje",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 2,
+      "definition_sq": "Qëllim ose çështje për të cilën angazhohet dikush.",
+      "examples": [
+        {
+          "sentence_loan": "Lufton për një kauzë të drejtë.",
+          "sentence_clean": "Lufton për një çështje të drejtë."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "koincidon",
+      "correct_albanian": "përkon",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 2,
+      "definition_sq": "Ndodh në të njëjtën kohë ose përputhet me diçka tjetër.",
+      "examples": [
+        {
+          "sentence_loan": "Takimi koincidon me festën.",
+          "sentence_clean": "Takimi përkon me festën."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "kolektiv",
+      "correct_albanian": "i përbashkët",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 2,
+      "definition_sq": "Që i përket ose kryhet nga një grup njerëzish.",
+      "examples": [
+        {
+          "sentence_loan": "Morën një vendim kolektiv.",
+          "sentence_clean": "Morën një vendim të përbashkët."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "komplikoj",
+      "correct_albanian": "ndërlikoj",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 2,
+      "definition_sq": "E bëj një gjë më të vështirë ose më të ndërlikuar.",
+      "examples": [
+        {
+          "sentence_loan": "Mos e kompliko situatën.",
+          "sentence_clean": "Mos e ndërliko situatën."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "koncentroj",
+      "correct_albanian": "përqendroj",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 1,
+      "definition_sq": "Drejtoj vëmendjen ose përpjekjet në një pikë të vetme.",
+      "examples": [
+        {
+          "sentence_loan": "Koncentrohu te detyra.",
+          "sentence_clean": "Përqendrohu te detyra."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "kondicionoj",
+      "correct_albanian": "kushtëzoj",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 3,
+      "definition_sq": "E bëj të varet nga një kusht ose rrethanë.",
+      "examples": [
+        {
+          "sentence_loan": "Vendimi kondicionohet nga buxheti.",
+          "sentence_clean": "Vendimi kushtëzohet nga buxheti."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "konfondoj",
+      "correct_albanian": "ngatërroj",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 2,
+      "definition_sq": "Shkaktoj paqartësi ose e bëj dikë të mos dallojë drejt.",
+      "examples": [
+        {
+          "sentence_loan": "Mos më konfondo me emrat.",
+          "sentence_clean": "Mos më ngatërro me emrat."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "konfrontoj",
+      "correct_albanian": "ballafaqoj",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 2,
+      "definition_sq": "Vendos përballë dikë ose diçka për ta krahasuar ose sqaruar.",
+      "examples": [
+        {
+          "sentence_loan": "Duhet t'i konfrontojmë faktet.",
+          "sentence_clean": "Duhet t'i ballafaqojmë faktet."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "konkluzion",
+      "correct_albanian": "përfundim",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 1,
+      "definition_sq": "Mendimi ose rezultati përfundimtar i nxjerrë pas shqyrtimit.",
+      "examples": [
+        {
+          "sentence_loan": "Arritëm në të njëjtin konkluzion.",
+          "sentence_clean": "Arritëm në të njëjtin përfundim."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "konsideroj",
+      "correct_albanian": "e quaj",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 2,
+      "definition_sq": "E shoh ose e vlerësoj dikë a diçka në një mënyrë të caktuar.",
+      "examples": [
+        {
+          "sentence_loan": "E konsideroj mik të mirë.",
+          "sentence_clean": "E quaj mik të mirë."
+        }
+      ]
+    }
+  ]
+}
