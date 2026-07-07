@@ -166,6 +166,13 @@ Optional frontend env vars (set alongside `VITE_API_URL` if used):
 The SPA rewrite (so `/kerko`, `/kuizi`, `/admin` don't 404 on hard refresh) and the
 security headers are handled by `frontend/vercel.json` — no dashboard config needed.
 
+> **CSP note:** the inline theme script in `frontend/index.html` (the dark-mode FOUC
+> guard) is hash-pinned in `frontend/vercel.json`'s `script-src` directive. If you edit
+> that script, the browser will block it and Chrome's console error will print the new
+> `sha256-…` hash — update it in `vercel.json` in the **same PR**, or the theme won't
+> apply in production. `connect-src` names the API host directly (`https://api.fjalingo.com`);
+> update it there if the API origin changes.
+
 > **Vercel Hobby tier prohibits commercial use.** Upgrade the project to **Pro** before
 > launching the paid Paddle tier.
 

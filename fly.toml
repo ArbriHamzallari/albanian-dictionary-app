@@ -24,12 +24,15 @@ primary_region = "ams"
   min_machines_running = 1
   processes = ["app"]
 
+  # /api/health does a DB round-trip; a cold Supabase TLS handshake on the app's
+  # first query can exceed a tight timeout, which fails the check and crash-loops
+  # the machine. Give it room to warm up and answer.
   [[http_service.checks]]
-    grace_period = "10s"
+    grace_period = "30s"
     interval = "15s"
     method = "GET"
     path = "/api/health"
-    timeout = "2s"
+    timeout = "5s"
 
 [[vm]]
   memory = "512mb"
