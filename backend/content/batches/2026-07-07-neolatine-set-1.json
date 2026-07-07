@@ -1,0 +1,495 @@
+{
+  "batch": "2026-07-07-neolatine-set-1",
+  "words": [
+    {
+      "borrowed_word": "eksperiencë",
+      "correct_albanian": "përvojë",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 1,
+      "definition_sq": "Njohuri ose shkathtësi e fituar nga puna dhe jeta.",
+      "examples": [
+        {
+          "sentence_loan": "Kam shumë eksperiencë në këtë punë.",
+          "sentence_clean": "Kam shumë përvojë në këtë punë."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "aktivitet",
+      "correct_albanian": "veprimtari",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 1,
+      "definition_sq": "Punë ose veprim i organizuar për një qëllim të caktuar.",
+      "examples": [
+        {
+          "sentence_loan": "Shkolla organizoi një aktivitet sportiv.",
+          "sentence_clean": "Shkolla organizoi një veprimtari sportive."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "ambient",
+      "correct_albanian": "mjedis",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 1,
+      "definition_sq": "Hapësira ose rrethi ku zhvillohet një veprim.",
+      "examples": [
+        {
+          "sentence_loan": "Ky ambient është shumë i qetë.",
+          "sentence_clean": "Ky mjedis është shumë i qetë."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "argument",
+      "correct_albanian": "arsyetim",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 2,
+      "definition_sq": "Shpjegim që përdoret për të mbështetur një mendim.",
+      "examples": [
+        {
+          "sentence_loan": "Argumenti yt ishte bindës.",
+          "sentence_clean": "Arsyetimi yt ishte bindës."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "central",
+      "correct_albanian": "qendror",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 1,
+      "definition_sq": "Që ndodhet në qendër ose lidhet me të.",
+      "examples": [
+        {
+          "sentence_loan": "Sheshi central ishte plot.",
+          "sentence_clean": "Sheshi qendror ishte plot."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "detaj",
+      "correct_albanian": "hollësi",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 1,
+      "definition_sq": "Pjesë e vogël që plotëson tërësinë.",
+      "examples": [
+        {
+          "sentence_loan": "Më trego çdo detaj.",
+          "sentence_clean": "Më trego çdo hollësi."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "direkt",
+      "correct_albanian": "drejtpërdrejt",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 1,
+      "definition_sq": "Pa ndërmjetës ose pa shmangie.",
+      "examples": [
+        {
+          "sentence_loan": "Fol direkt me të.",
+          "sentence_clean": "Fol drejtpërdrejt me të."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "diskutim",
+      "correct_albanian": "shqyrtim",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 2,
+      "definition_sq": "Bisedë për të trajtuar një çështje.",
+      "examples": [
+        {
+          "sentence_loan": "Pati shumë diskutim për këtë temë.",
+          "sentence_clean": "Pati shumë shqyrtim për këtë temë."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "ekzakt",
+      "correct_albanian": "i saktë",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 1,
+      "definition_sq": "Që është pa gabime dhe i përpiktë.",
+      "examples": [
+        {
+          "sentence_loan": "Më jep një numër ekzakt.",
+          "sentence_clean": "Më jep një numër të saktë."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "event",
+      "correct_albanian": "veprimtari",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 1,
+      "definition_sq": "Ngjarje e organizuar për një rast të caktuar.",
+      "examples": [
+        {
+          "sentence_loan": "Do të marr pjesë në një event.",
+          "sentence_clean": "Do të marr pjesë në një veprimtari."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "final",
+      "correct_albanian": "përfundimtar",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 1,
+      "definition_sq": "Që vjen në fund dhe mbyll diçka.",
+      "examples": [
+        {
+          "sentence_loan": "Ky është vendimi final.",
+          "sentence_clean": "Ky është vendimi përfundimtar."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "fundamental",
+      "correct_albanian": "themelor",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 2,
+      "definition_sq": "Që përbën bazën e diçkaje.",
+      "examples": [
+        {
+          "sentence_loan": "Ky është një rregull fundamental.",
+          "sentence_clean": "Ky është një rregull themelor."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "global",
+      "correct_albanian": "botëror",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 1,
+      "definition_sq": "Që përfshin gjithë botën.",
+      "examples": [
+        {
+          "sentence_loan": "Problemi është global.",
+          "sentence_clean": "Problemi është botëror."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "human",
+      "correct_albanian": "njerëzor",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 1,
+      "definition_sq": "Që lidhet me njeriun.",
+      "examples": [
+        {
+          "sentence_loan": "Është një gjest human.",
+          "sentence_clean": "Është një gjest njerëzor."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "informacion",
+      "correct_albanian": "të dhëna",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 1,
+      "definition_sq": "Njohuri ose njoftime për një çështje.",
+      "examples": [
+        {
+          "sentence_loan": "Kam nevojë për më shumë informacion.",
+          "sentence_clean": "Kam nevojë për më shumë të dhëna."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "interesant",
+      "correct_albanian": "tërheqës",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 1,
+      "definition_sq": "Që zgjon kureshtje ose vëmendje.",
+      "examples": [
+        {
+          "sentence_loan": "Ishte një libër interesant.",
+          "sentence_clean": "Ishte një libër tërheqës."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "komplet",
+      "correct_albanian": "i plotë",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 1,
+      "definition_sq": "Që nuk i mungon asgjë.",
+      "examples": [
+        {
+          "sentence_loan": "Dokumenti është komplet.",
+          "sentence_clean": "Dokumenti është i plotë."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "komplikim",
+      "correct_albanian": "ndërlikim",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 2,
+      "definition_sq": "Vështirësi që e bën një gjë më të ndërlikuar.",
+      "examples": [
+        {
+          "sentence_loan": "Pati një komplikim gjatë punës.",
+          "sentence_clean": "Pati një ndërlikim gjatë punës."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "komunikim",
+      "correct_albanian": "bashkëbisedim",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 2,
+      "definition_sq": "Shkëmbim mendimesh ose informacioni.",
+      "examples": [
+        {
+          "sentence_loan": "Komunikimi është i rëndësishëm.",
+          "sentence_clean": "Bashkëbisedimi është i rëndësishëm."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "konkret",
+      "correct_albanian": "i qartë",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 1,
+      "definition_sq": "Që shprehet pa paqartësi.",
+      "examples": [
+        {
+          "sentence_loan": "Jep një shembull konkret.",
+          "sentence_clean": "Jep një shembull të qartë."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "konstruktiv",
+      "correct_albanian": "ndërtues",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 2,
+      "definition_sq": "Që ndihmon për përmirësim.",
+      "examples": [
+        {
+          "sentence_loan": "Kritika ishte konstruktive.",
+          "sentence_clean": "Kritika ishte ndërtuese."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "kontroll",
+      "correct_albanian": "mbikëqyrje",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 1,
+      "definition_sq": "Vëzhgim për të siguruar që gjithçka shkon si duhet.",
+      "examples": [
+        {
+          "sentence_loan": "Makina kaloi në kontroll.",
+          "sentence_clean": "Makina kaloi në mbikëqyrje."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "maksimum",
+      "correct_albanian": "më së shumti",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 2,
+      "definition_sq": "Shkalla më e lartë e mundshme.",
+      "examples": [
+        {
+          "sentence_loan": "Mund të presim maksimum dhjetë minuta.",
+          "sentence_clean": "Mund të presim më së shumti dhjetë minuta."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "minimum",
+      "correct_albanian": "më së paku",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 2,
+      "definition_sq": "Shkalla më e ulët e mundshme.",
+      "examples": [
+        {
+          "sentence_loan": "Duhet minimum një orë.",
+          "sentence_clean": "Duhet më së paku një orë."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "moment",
+      "correct_albanian": "çast",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 1,
+      "definition_sq": "Pjesë shumë e shkurtër e kohës.",
+      "examples": [
+        {
+          "sentence_loan": "Prit edhe një moment.",
+          "sentence_clean": "Prit edhe një çast."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "normal",
+      "correct_albanian": "i zakonshëm",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 1,
+      "definition_sq": "Që është si zakonisht.",
+      "examples": [
+        {
+          "sentence_loan": "Është krejt normal.",
+          "sentence_clean": "Është krejt i zakonshëm."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "ofroj",
+      "correct_albanian": "parashtroj",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 2,
+      "definition_sq": "Jap ose vë në dispozicion diçka.",
+      "examples": [
+        {
+          "sentence_loan": "Ai ofroi ndihmë.",
+          "sentence_clean": "Ai parashtroi ndihmë."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "pozicion",
+      "correct_albanian": "vend",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 1,
+      "definition_sq": "Vendi ku ndodhet dikush ose diçka.",
+      "examples": [
+        {
+          "sentence_loan": "Ndrysho pozicion.",
+          "sentence_clean": "Ndrysho vend."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "preferoj",
+      "correct_albanian": "parapëlqej",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 1,
+      "definition_sq": "Pëlqej diçka më shumë se të tjerat.",
+      "examples": [
+        {
+          "sentence_loan": "Preferoj çajin.",
+          "sentence_clean": "Parapëlqej çajin."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "prezent",
+      "correct_albanian": "i pranishëm",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 1,
+      "definition_sq": "Që ndodhet në një vend ose takim.",
+      "examples": [
+        {
+          "sentence_loan": "Ai ishte prezent në mbledhje.",
+          "sentence_clean": "Ai ishte i pranishëm në mbledhje."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "proces",
+      "correct_albanian": "rrjedhë",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 2,
+      "definition_sq": "Ecuri me hapa të lidhur mes tyre.",
+      "examples": [
+        {
+          "sentence_loan": "Procesi vazhdon.",
+          "sentence_clean": "Rrjedha vazhdon."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "profesion",
+      "correct_albanian": "zanat",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 1,
+      "definition_sq": "Punë që ushtrohet si mënyrë jetese.",
+      "examples": [
+        {
+          "sentence_loan": "Mësuesia është profesioni i saj.",
+          "sentence_clean": "Mësuesia është zanati i saj."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "rezultat",
+      "correct_albanian": "përfundim",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 1,
+      "definition_sq": "Ajo që arrihet pas një pune ose veprimi.",
+      "examples": [
+        {
+          "sentence_loan": "Rezultati ishte i mirë.",
+          "sentence_clean": "Përfundimi ishte i mirë."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "tradicional",
+      "correct_albanian": "zakonor",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 2,
+      "definition_sq": "Që përcillet nga brezi në brez.",
+      "examples": [
+        {
+          "sentence_loan": "Është një gatim tradicional.",
+          "sentence_clean": "Është një gatim zakonor."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "version",
+      "correct_albanian": "variant",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 2,
+      "definition_sq": "Formë e ndryshme e së njëjtës gjë.",
+      "examples": [
+        {
+          "sentence_loan": "Po përdor versionin e ri.",
+          "sentence_clean": "Po përdor variantin e ri."
+        }
+      ]
+    }
+  ]
+}

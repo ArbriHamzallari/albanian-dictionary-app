@@ -1,0 +1,215 @@
+{
+  "batch": "2026-07-05-neolatine-set-6",
+  "words": [
+    {
+      "borrowed_word": "frekuentoj",
+      "correct_albanian": "ndjek",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 2,
+      "definition_sq": "Shkoj rregullisht në një vend ose marr pjesë vazhdimisht në një veprimtari.",
+      "examples": [
+        {
+          "sentence_loan": "Frekuentoj kursin çdo javë.",
+          "sentence_clean": "Ndjek kursin çdo javë."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "hezitoj",
+      "correct_albanian": "ngurroj",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 1,
+      "definition_sq": "Nuk veproj menjëherë për shkak të pasigurisë ose druajtjes.",
+      "examples": [
+        {
+          "sentence_loan": "Mos hezito të pyesësh.",
+          "sentence_clean": "Mos ngurro të pyesësh."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "identik",
+      "correct_albanian": "i njëjtë",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 1,
+      "definition_sq": "Që është plotësisht i njëjtë me një tjetër.",
+      "examples": [
+        {
+          "sentence_loan": "Këto dy foto janë identike.",
+          "sentence_clean": "Këto dy foto janë të njëjta."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "imagjinoj",
+      "correct_albanian": "përfytyroj",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 2,
+      "definition_sq": "Krijoj në mendje një pamje, ide ose situatë.",
+      "examples": [
+        {
+          "sentence_loan": "E imagjinoj veten atje.",
+          "sentence_clean": "E përfytyroj veten atje."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "imperativ",
+      "correct_albanian": "i domosdoshëm",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 3,
+      "definition_sq": "Që duhet bërë patjetër ose nuk mund të shmanget.",
+      "examples": [
+        {
+          "sentence_loan": "Është imperativ të veprojmë.",
+          "sentence_clean": "Është e domosdoshme të veprojmë."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "implikim",
+      "correct_albanian": "pasojë",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 3,
+      "definition_sq": "Rezultat ose rrjedhojë që vjen nga një veprim ose rrethanë.",
+      "examples": [
+        {
+          "sentence_loan": "Ky vendim ka implikime të mëdha.",
+          "sentence_clean": "Ky vendim ka pasoja të mëdha."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "impozant",
+      "correct_albanian": "madhështor",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 2,
+      "definition_sq": "Që lë mbresë të fortë për nga madhësia ose bukuria.",
+      "examples": [
+        {
+          "sentence_loan": "Ndërtesa ishte impozante.",
+          "sentence_clean": "Ndërtesa ishte madhështore."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "inauguroj",
+      "correct_albanian": "përuroj",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 2,
+      "definition_sq": "Hap zyrtarisht një vepër ose veprimtari të re.",
+      "examples": [
+        {
+          "sentence_loan": "Sot inaugurojmë shkollën e re.",
+          "sentence_clean": "Sot përurojmë shkollën e re."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "indeks",
+      "correct_albanian": "tregues",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 2,
+      "definition_sq": "Shenjë ose numër që tregon gjendjen ose ndryshimin e diçkaje.",
+      "examples": [
+        {
+          "sentence_loan": "Indeksi i çmimeve u rrit.",
+          "sentence_clean": "Treguesi i çmimeve u rrit."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "indinjatë",
+      "correct_albanian": "zemërim",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 3,
+      "definition_sq": "Zemërim i fortë përballë një padrejtësie.",
+      "examples": [
+        {
+          "sentence_loan": "Lajmi shkaktoi indinjatë.",
+          "sentence_clean": "Lajmi shkaktoi zemërim."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "indipendencë",
+      "correct_albanian": "pavarësi",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 1,
+      "definition_sq": "Gjendja e të qenit i lirë dhe jo i varur nga të tjerët.",
+      "examples": [
+        {
+          "sentence_loan": "Vendi fitoi indipendencën.",
+          "sentence_clean": "Vendi fitoi pavarësinë."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "influencoj",
+      "correct_albanian": "ndikoj",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 1,
+      "definition_sq": "Ushtroj ndikim mbi mendimin ose sjelljen e dikujt.",
+      "examples": [
+        {
+          "sentence_loan": "Ai më influencoi shumë.",
+          "sentence_clean": "Ai më ndikoi shumë."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "influencë",
+      "correct_albanian": "ndikim",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 1,
+      "definition_sq": "Fuqi për të ndikuar në mendimin ose sjelljen e dikujt.",
+      "examples": [
+        {
+          "sentence_loan": "Ka shumë influencë tek të rinjtë.",
+          "sentence_clean": "Ka shumë ndikim tek të rinjtë."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "iniciativë",
+      "correct_albanian": "nismë",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 2,
+      "definition_sq": "Veprim i ndërmarrë me vullnetin e vet për një qëllim.",
+      "examples": [
+        {
+          "sentence_loan": "Mori iniciativë për projektin.",
+          "sentence_clean": "Mori nismë për projektin."
+        }
+      ]
+    },
+    {
+      "borrowed_word": "injorancë",
+      "correct_albanian": "padituri",
+      "origin_language": "neolatine",
+      "word_type": "replace",
+      "difficulty": 2,
+      "definition_sq": "Mungesë njohurish ose dijesh për një çështje.",
+      "examples": [
+        {
+          "sentence_loan": "Injoranca sjell gabime.",
+          "sentence_clean": "Padituria sjell gabime."
+        }
+      ]
+    }
+  ]
+}
