@@ -1,0 +1,92 @@
+name: CI
+
+# Guards main: runs the backend test suite (incl. Paddle signature tests) and a
+# production dependency audit, and builds the frontend, on every PR and on pushes
+# to main. Node is pinned to 22 to match the Dockerfile (node:22-alpine).
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# Cancel superseded runs on the same ref (e.g. new push to an open PR).
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    name: Backend (test + audit)
+    runs-on: ubuntu-latest
+
+    # Two of the tests (quiz-scoring, lesson-submit) register real rows through the
+    # API and need a live Postgres. db-guard.js refuses any non-local host, so the
+    # service is reached at localhost — which also makes src/utils/db.js skip SSL.
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: fjalingo_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/fjalingo_test
+      JWT_SECRET: ci-test-jwt-secret-at-least-32-characters-long
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: backend
+        run: npm ci
+
+      - name: Run migrations
+        working-directory: backend
+        run: npm run migrate
+
+      - name: Seed baseline data
+        working-directory: backend
+        run: npm run seed
+
+      - name: Test
+        working-directory: backend
+        run: npm test
+
+      - name: Audit production dependencies
+        working-directory: backend
+        run: npm audit --omit=dev --audit-level=high
+
+  frontend:
+    name: Frontend (build)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Build
+        working-directory: frontend
+        run: npm run build
