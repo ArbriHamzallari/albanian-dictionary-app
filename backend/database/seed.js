@@ -506,12 +506,19 @@ const seed = async () => {
     );
 
     for (const word of words) {
+      // Seed words are all English-layer replace words, so they populate the
+      // content-model columns (origin_language / word_type / difficulty) the games
+      // read. Without this the question factory would find zero eligible words.
       const wordResult = await client.query(
         `INSERT INTO words
-         (borrowed_word, correct_albanian, category, is_verified, added_by)
-         VALUES ($1, $2, $3, true, $4)
+         (borrowed_word, correct_albanian, category, origin_language, word_type, difficulty, is_verified, added_by)
+         VALUES ($1, $2, $3, 'anglisht', 'replace', 1, true, $4)
          ON CONFLICT (borrowed_word)
-         DO UPDATE SET correct_albanian = EXCLUDED.correct_albanian, category = EXCLUDED.category
+         DO UPDATE SET correct_albanian = EXCLUDED.correct_albanian,
+                       category = EXCLUDED.category,
+                       origin_language = EXCLUDED.origin_language,
+                       word_type = EXCLUDED.word_type,
+                       difficulty = EXCLUDED.difficulty
          RETURNING *`,
         [word.borrowed_word, word.correct_albanian, word.category, adminResult.rows[0].id]
       );
@@ -547,33 +554,8 @@ const seed = async () => {
       );
     }
 
-    const allWords = await client.query(
-      'SELECT id, borrowed_word, correct_albanian FROM words ORDER BY id'
-    );
-    for (const word of allWords.rows) {
-      const wrongAnswers = allWords.rows
-        .filter((other) => other.id !== word.id)
-        .map((other) => other.correct_albanian)
-        .slice(0, 3);
-      if (wrongAnswers.length < 1) {
-        continue;
-      }
-
-      await client.query('DELETE FROM quiz_questions WHERE word_id = $1', [word.id]);
-      await client.query(
-        `INSERT INTO quiz_questions
-         (word_id, question_text, correct_answer, wrong_answer_1, wrong_answer_2, wrong_answer_3, is_active)
-         VALUES ($1, $2, $3, $4, $5, $6, true)`,
-        [
-          word.id,
-          word.borrowed_word,
-          word.correct_albanian,
-          wrongAnswers[0],
-          wrongAnswers[1] || wrongAnswers[0],
-          wrongAnswers[2] || wrongAnswers[0],
-        ]
-      );
-    }
+    // Quiz questions are no longer pre-baked into a legacy table — the question
+    // factory (GAME-0) generates them from the content model at session start.
 
     // Dev-only: starter curriculum (units -> lessons -> exercises).
     if (!isProduction) {
