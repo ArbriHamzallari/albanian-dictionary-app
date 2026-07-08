@@ -187,21 +187,31 @@ const submitQuiz = async (req, res, next) => {
       );
       stats = levelResult.rows[0];
 
-      // Streak milestone — unlock via the shared helper (FEAT-3) so quiz and the
-      // /profile unlock endpoint write achievements through one path.
-      let achievementUnlocked = null;
-      if (stats.streak >= 7) {
-        const unlocked = await unlockAchievementByKey(client, userUuid, '7_day_streak');
-        if (unlocked) {
-          achievementUnlocked = '7_day_streak';
-          // The helper awarded XP and re-levelled — re-read the authoritative row.
-          const refreshed = await client.query(
-            'SELECT * FROM user_stats WHERE user_id = $1',
-            [userUuid]
-          );
-          stats = refreshed.rows[0];
+      // Quiz + streak milestones — all through the shared helper (FEAT-3) so quiz
+      // and the /profile unlock endpoint write achievements through one path.
+      // Server-authoritative: the client never mints these. total_quizzes and
+      // streak were just incremented above, so they reflect this attempt.
+      const achievementsUnlocked = [];
+      const tryUnlock = async (key) => {
+        if (await unlockAchievementByKey(client, userUuid, key)) {
+          achievementsUnlocked.push(key);
         }
+      };
+
+      await tryUnlock('first_quiz');
+      if (stats.total_quizzes >= 10) await tryUnlock('quiz_master');
+      if (totalQuestions > 0 && correctAnswers === totalQuestions) await tryUnlock('perfect_quiz');
+      if (stats.streak >= 7) await tryUnlock('7_day_streak');
+
+      if (achievementsUnlocked.length) {
+        // The helper awarded XP and re-levelled — re-read the authoritative row.
+        const refreshed = await client.query(
+          'SELECT * FROM user_stats WHERE user_id = $1',
+          [userUuid]
+        );
+        stats = refreshed.rows[0];
       }
+      const achievementUnlocked = achievementsUnlocked[0] || null;
 
       await client.query(
         `INSERT INTO quiz_attempts (user_id, score, total_questions, correct_answers)
@@ -222,6 +232,7 @@ const submitQuiz = async (req, res, next) => {
         correctAnswers,
         totalQuestions,
         achievementUnlocked,
+        achievementsUnlocked,
       });
     } catch (err) {
       await client.query('ROLLBACK');

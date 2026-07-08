@@ -148,5 +148,9 @@ test('grades server-side and awards zero xp for all-wrong answers', async () => 
   assert.equal(submitted.status, 200);
   assert.equal(submitted.data.correctAnswers, 0);
   assert.equal(submitted.data.score, 0);
-  assert.equal(submitted.data.stats.xp, xpBefore);
+  // Quiz grading awards no XP for wrong answers. The only XP change here is the
+  // one-time "first quiz completed" achievement (+50) — completing counts even
+  // when every answer is wrong — proving grading itself stays at zero.
+  assert.ok(submitted.data.achievementsUnlocked.includes('first_quiz'));
+  assert.equal(submitted.data.stats.xp, xpBefore + 50);
 });
