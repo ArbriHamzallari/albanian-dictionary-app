@@ -28,7 +28,8 @@ guess.
 ## Locked decisions — do NOT relitigate
 - Stack stays: React 18 + Vite + Tailwind · Node/Express · Postgres (Supabase managed).
 - Hosting: **frontend Vercel, backend Fly.io, DB Supabase.** One deploy path each.
-- **Paddle** billing, single SKU: €25/year Premium. Merchant is Arbri Hamzallari
+- **Paddle** billing, one product with two prices: €25/year (hero) + €5/month
+  (anchor) Premium — annual saves ~58% (PRICE-2). Merchant is Arbri Hamzallari
   (sole proprietor), brand Fjalingo.
 - No hearts, no lives, no gems, no ads. Rewards = XP, streaks, achievements, league
   rank, cosmetic avatars only.

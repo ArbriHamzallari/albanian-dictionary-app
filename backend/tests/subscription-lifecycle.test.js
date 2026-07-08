@@ -141,6 +141,21 @@ test('applySubscriptionEvent: unattributable event changes nothing and does not 
   assert.equal(client.calls.length, 0);
 });
 
+test('applySubscriptionEvent: is price-agnostic — a plan switch keeps premium (PRICE-2)', async () => {
+  // Dual pricing (annual/monthly) is one product with two prices. Switching plans
+  // changes the subscription's price id, never the entitlement logic: the applier
+  // keys off status + user, so a monthly subscription grants premium exactly like
+  // annual, and the price id never reaches the entitlements row.
+  const monthly = subscription('active', future);
+  monthly.items = [{ price: { id: 'pri_monthly_5eur' } }];
+  const client = stubClient();
+  const outcome = await applySubscriptionEvent(client, 'subscription.updated', monthly, OCCURRED_AT);
+  assert.deepEqual(outcome, { applied: true, status: 'active' });
+  const insert = entitlementInsert(client);
+  assert.ok(insert, 'writes the entitlement regardless of price');
+  assert.ok(!JSON.stringify(insert.values).includes('pri_monthly_5eur'), 'price id never touches entitlements');
+});
+
 test('applySubscriptionEvent: deleted user is acknowledged and never written (SEC-DELETE)', async () => {
   // A validly-attributed event for a user who has since erased their account:
   // must skip the entitlement write (its FK would fail) and report unknown_user
