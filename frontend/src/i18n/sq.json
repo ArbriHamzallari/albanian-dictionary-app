@@ -418,19 +418,19 @@
     "friendsCta": "Shiko",
     "deleteAccount": {
       "title": "Fshi llogarinë",
-      "description": "Fshirja është e përhershme dhe do të heqë të gjitha të dhënat e tua, përfshirë përparimin, serinë, miqtë, bisedat dhe arritjet; nuk mund të zhbëhet.",
-      "premiumNotice": "Nëse ke Premium, fshirja e llogarisë nuk e anulon abonimin. Anuloje fillimisht.",
+      "description": "Fshirja e llogarisë është e përhershme dhe nuk mund të zhbëhet. Do të fshihen përgjithmonë përparimi, arritjet, miqtë, mesazhet dhe të gjitha të dhënat e tua.",
+      "premiumNotice": "Nëse ke një abonim Premium aktiv, fshirja e llogarisë nuk e anulon atë. Anuloje fillimisht nga cilësimet e faturimit:",
       "premiumCancelCta": "Anulo abonimin",
       "button": "Fshi llogarinë",
-      "dialogTitle": "Je i sigurt?",
-      "dialogDescription": "Pasi ta fshish llogarinë, të gjitha të dhënat e tua do të humbasin përgjithmonë dhe nuk mund të rikthehen.",
+      "dialogTitle": "Fshi llogarinë",
+      "dialogDescription": "Ky veprim nuk mund të zhbëhet. Llogaria dhe të gjitha të dhënat e tua do të fshihen përgjithmonë.",
       "confirm": "Fshi përgjithmonë",
-      "typeToConfirm": "Shkruaj emrin tënd të përdoruesit {word} për të vazhduar.",
-      "passwordLabel": "Fjalëkalimi",
-      "googleReauth": "Vërteto identitetin duke përdorur butonin e Google më poshtë.",
-      "identityFailed": "Verifikimi dështoi. Kontrollo fjalëkalimin ose provo përsëri.",
+      "typeToConfirm": "Shkruaj \"{word}\" për të konfirmuar",
+      "passwordLabel": "Fjalëkalimi aktual",
+      "googleReauth": "Verifiko identitetin tënd me Google.",
+      "identityFailed": "Identiteti nuk u konfirmua. Provo përsëri.",
       "confirmMismatch": "Emri i përdoruesit nuk përputhet.",
-      "error": "Fshirja e llogarisë dështoi. Provo përsëri më vonë."
+      "error": "Ndodhi një gabim. Provo përsëri."
     }
   },
   "premium": {
@@ -442,15 +442,15 @@
     "hero": "Zhblloko të gjitha botët e Fjalingos dhe mëso pa kufi. Mund ta anulosh kur të duash.",
     "priceDetail": "€25/vit, faturuar përmes Paddle. Anulo kur të duash dhe ruaj qasjen deri në fund të periudhës së paguar.",
     "plans": {
-      "annualName": "TODO_SQ_premium_plans_annualName",
-      "monthlyName": "TODO_SQ_premium_plans_monthlyName",
-      "annualPrice": "TODO_SQ_premium_plans_annualPrice",
-      "annualPerMonth": "TODO_SQ_premium_plans_annualPerMonth",
-      "monthlyPrice": "TODO_SQ_premium_plans_monthlyPrice",
-      "savingsBadge": "TODO_SQ_premium_plans_savingsBadge",
-      "selectAria": "TODO_SQ_premium_plans_selectAria"
+      "annualName": "Vjetor",
+      "monthlyName": "Mujor",
+      "annualPrice": "€25/vit",
+      "annualPerMonth": "≈ €2.08/muaj",
+      "monthlyPrice": "€5/muaj",
+      "savingsBadge": "Kurse 58%",
+      "selectAria": "Zgjidh planin e abonimit"
     },
-    "cancelAnytime": "TODO_SQ_premium_cancelAnytime",
+    "cancelAnytime": "Anulo kur të duash",
     "freeCta": "Fillo falas",
     "compare": {
       "freeTitle": "Falas",
@@ -557,7 +557,7 @@
   },
   "premiumButton": {
     "cta": "Bëhu Premium · 25 EUR/vit",
-    "ctaGeneric": "TODO_SQ_premiumButton_ctaGeneric",
+    "ctaGeneric": "Fillo Premium",
     "loading": "Duke hapur…",
     "error": "Pagesa Premium nuk u hap. Provoni përsëri."
   },
