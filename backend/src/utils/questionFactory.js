@@ -9,6 +9,9 @@ const ORIGIN_CODES = ['neolatine', 'anglisht', 'turqisht', 'greqisht', 'sllavish
 // or not-yet-implemented type throws (a coding bug, never client input).
 const QUESTION_TYPES = ['translate', 'match', 'fill_blank', 'spot_loanword'];
 
+// A match question presents this many borrowed↔Albanian pairs to tap together.
+const MATCH_PAIRS_PER_QUESTION = 5;
+
 // Raised when the content model can't supply enough eligible words for the request.
 // A content problem, not a code problem — the caller turns it into a clean "not
 // enough content yet" response rather than a generic 500.
@@ -140,6 +143,65 @@ function buildTranslateQuestions(words, count) {
   return questions;
 }
 
+// GAME-2 (Çifto fjalët): a recognize-level question of MATCH_PAIRS_PER_QUESTION
+// borrowed↔Albanian pairs drawn from the SAME origin and one difficulty band
+// (adjacent difficulties only — never random). Payload = a left column (borrowed,
+// stable order) + a right column (Albanian, shuffled server-side). The stored
+// `answer` is the correct leftId→rightId index mapping (the grading truth).
+//
+// Each tile also carries a hidden `pairId` so the renderer can give immediate
+// lock/shake feedback per pair WITHOUT a server round-trip. This is a deliberate,
+// safe exception to "answers never reach the client": the server still grades the
+// submitted mapping against `answer`, and a "correct" submission is identical to
+// actually solving the board — there is no way to mint XP without producing the real
+// mapping, so nothing is exploitable. (translate answers stay fully hidden.)
+function buildMatchQuestions(words, count) {
+  if (words.length < MATCH_PAIRS_PER_QUESTION) {
+    throw new QuestionPoolError(
+      `match: only ${words.length} eligible words (need >= ${MATCH_PAIRS_PER_QUESTION})`
+    );
+  }
+
+  const questions = [];
+  const maxAttempts = count * 20; // sampling can miss the pair/dedupe rules; cap it
+  let attempts = 0;
+  while (questions.length < count && attempts < maxAttempts) {
+    attempts += 1;
+
+    // One difficulty band per question (adjacent difficulties only).
+    const anchor = words[Math.floor(Math.random() * words.length)].difficulty;
+    const band = words.filter((w) => Math.abs(w.difficulty - anchor) <= 1);
+    if (band.length < MATCH_PAIRS_PER_QUESTION) continue;
+
+    const picked = shuffle(band).slice(0, MATCH_PAIRS_PER_QUESTION);
+    // Distinct Albanian values, else the right column would be ambiguous to grade.
+    if (new Set(picked.map((w) => normalize(w.correct_albanian))).size !== picked.length) continue;
+
+    // left keeps picked order; pairId === leftId. right is a shuffle carrying pairId.
+    const left = picked.map((w, i) => ({ id: i, text: w.borrowed_word, pairId: i }));
+    const rightOrder = shuffle(picked.map((w, i) => ({ word: w, pairId: i })));
+    const right = rightOrder.map((r, j) => ({ id: j, text: r.word.correct_albanian, pairId: r.pairId }));
+
+    // Correct mapping: leftId (= pairId) -> the rightId holding that pairId.
+    const answer = {};
+    rightOrder.forEach((r, j) => { answer[r.pairId] = j; });
+
+    questions.push({
+      type: 'match',
+      word_ids: picked.map((w) => w.id),
+      prompt: { left, right },
+      answer,
+    });
+  }
+
+  if (questions.length < count) {
+    throw new QuestionPoolError(
+      `match: built only ${questions.length}/${count} questions from ${words.length} words`
+    );
+  }
+  return questions;
+}
+
 // Produce `count` question objects of the requested `types` from the content model.
 // GAME-0 serves a single type (`translate`); mixing/ordering multiple types into a
 // ramped session is GAME-5's composer, not here. `idx` is assigned last and is the
@@ -160,6 +222,8 @@ async function buildQuestions({ origin, count, types = ['translate'] }) {
         built = built.concat(buildTranslateQuestions(words, count));
         break;
       case 'match':
+        built = built.concat(buildMatchQuestions(words, count));
+        break;
       case 'fill_blank':
       case 'spot_loanword':
         throw new Error(`buildQuestions: question type "${type}" is not implemented yet`);
@@ -173,4 +237,10 @@ async function buildQuestions({ origin, count, types = ['translate'] }) {
   return questions;
 }
 
-module.exports = { buildQuestions, QuestionPoolError, ORIGIN_CODES, QUESTION_TYPES };
+module.exports = {
+  buildQuestions,
+  QuestionPoolError,
+  ORIGIN_CODES,
+  QUESTION_TYPES,
+  MATCH_PAIRS_PER_QUESTION,
+};

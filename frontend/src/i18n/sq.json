@@ -257,6 +257,9 @@
       "submitRetry": "Rezultati nuk u ruajt në server. Provo ta ruash përsëri.",
       "retryButton": "Provo ta ruash përsëri"
     },
+    "match": {
+      "instruction": "Përputh çdo fjalë të huazuar me fjalën shqipe."
+    },
     "review": {
       "heading": "Shiko përgjigjet",
       "yourAnswer": "Përgjigjja jote:",
