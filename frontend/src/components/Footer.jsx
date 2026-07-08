@@ -49,7 +49,7 @@ const Footer = () => {
           <div>
             <h4 className="font-bold text-heading dark:text-dark-text mb-3">{t('footer.contactHeading')}</h4>
             <p className="text-sm font-semibold text-muted dark:text-dark-muted">
-              hello@fjalingo.com
+              fjalingo.al@gmail.com
             </p>
             <div className="mt-4 flex items-center gap-4">
               <a

@@ -2,7 +2,7 @@
 
 ## Reporting a vulnerability
 
-Please report security issues privately to **security@fjalingo.com**.
+Please report security issues privately to **fjalingo.al@gmail.com**.
 
 - Do **not** open a public GitHub issue for security reports.
 - Include steps to reproduce, affected endpoint/page, and impact.

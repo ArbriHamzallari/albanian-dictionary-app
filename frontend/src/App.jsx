@@ -3,6 +3,7 @@ import { Route, Routes, useLocation, Link } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import Header from './components/Header.jsx';
 import Footer from './components/Footer.jsx';
+import AchievementToast from './components/AchievementToast.jsx';
 import MobileNav from './components/MobileNav.jsx';
 import OnboardingTour from './components/Onboarding.jsx';
 import { useAuth } from './context/AuthContext.jsx';
@@ -190,6 +191,7 @@ const App = () => {
         </div>
       )}
       {showChrome && <MobileNav />}
+      {showChrome && <AchievementToast />}
 
       <AnimatePresence>
         {showOnboarding && !isAdminRoute && !isDesign && !isOnboarding && (
