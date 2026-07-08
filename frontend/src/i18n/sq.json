@@ -441,6 +441,16 @@
     "seoDesc": "Mëso pa kufi me Fjalingo Premium. Zhblloko të gjitha njësitë, përsërit gabimet dhe ruaj serinë tënde.",
     "hero": "Zhblloko të gjitha botët e Fjalingos dhe mëso pa kufi. Mund ta anulosh kur të duash.",
     "priceDetail": "€25/vit, faturuar përmes Paddle. Anulo kur të duash dhe ruaj qasjen deri në fund të periudhës së paguar.",
+    "plans": {
+      "annualName": "TODO_SQ_premium_plans_annualName",
+      "monthlyName": "TODO_SQ_premium_plans_monthlyName",
+      "annualPrice": "TODO_SQ_premium_plans_annualPrice",
+      "annualPerMonth": "TODO_SQ_premium_plans_annualPerMonth",
+      "monthlyPrice": "TODO_SQ_premium_plans_monthlyPrice",
+      "savingsBadge": "TODO_SQ_premium_plans_savingsBadge",
+      "selectAria": "TODO_SQ_premium_plans_selectAria"
+    },
+    "cancelAnytime": "TODO_SQ_premium_cancelAnytime",
     "freeCta": "Fillo falas",
     "compare": {
       "freeTitle": "Falas",
@@ -547,6 +557,7 @@
   },
   "premiumButton": {
     "cta": "Bëhu Premium · 25 EUR/vit",
+    "ctaGeneric": "TODO_SQ_premiumButton_ctaGeneric",
     "loading": "Duke hapur…",
     "error": "Pagesa Premium nuk u hap. Provoni përsëri."
   },

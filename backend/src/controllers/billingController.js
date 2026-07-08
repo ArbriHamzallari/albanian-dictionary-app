@@ -9,6 +9,17 @@ function checkoutSigningSecret() {
   return process.env.PADDLE_CHECKOUT_SECRET || process.env.JWT_SECRET;
 }
 
+// Dual pricing (PRICE-2): one Paddle product, two prices. Annual is the hero,
+// monthly is the anchor. PADDLE_PREMIUM_PRICE_ID is still read as the annual
+// fallback so a not-yet-renamed prod secret keeps checkout working. Monthly is
+// optional — if it is unset the page degrades to annual-only rather than breaking.
+function premiumPriceIds() {
+  return {
+    annual: process.env.PADDLE_PRICE_ID_ANNUAL || process.env.PADDLE_PREMIUM_PRICE_ID || null,
+    monthly: process.env.PADDLE_PRICE_ID_MONTHLY || null,
+  };
+}
+
 function assertPaddleSandbox() {
   const environment = process.env.PADDLE_ENVIRONMENT || 'sandbox';
   if (environment !== 'sandbox') {
@@ -37,9 +48,9 @@ async function checkoutConfig(req, res, next) {
     assertPaddleSandbox();
 
     const clientToken = process.env.PADDLE_CLIENT_TOKEN;
-    const priceId = process.env.PADDLE_PREMIUM_PRICE_ID;
+    const { annual, monthly } = premiumPriceIds();
     const secret = checkoutSigningSecret();
-    if (!clientToken || !priceId || !secret) {
+    if (!clientToken || !annual || !secret) {
       return res.status(503).json({ message: 'Paddle sandbox checkout is not configured.' });
     }
 
@@ -56,7 +67,12 @@ async function checkoutConfig(req, res, next) {
     return res.json({
       environment: process.env.PADDLE_ENVIRONMENT || 'sandbox',
       clientToken,
-      items: [{ priceId, quantity: 1 }],
+      // Both plans; the frontend opens checkout with the chosen one's priceId.
+      // Monthly is included only when configured.
+      plans: {
+        annual: { priceId: annual },
+        ...(monthly ? { monthly: { priceId: monthly } } : {}),
+      },
       customer: { email: userResult.rows[0].email },
       customData: {
         user_uuid: req.user.uuid,

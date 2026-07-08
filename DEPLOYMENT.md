@@ -60,7 +60,8 @@ fly secrets set `
   CRON_SECRET="your-long-random-cron-secret" `
   PADDLE_ENVIRONMENT=sandbox `
   PADDLE_CLIENT_TOKEN="test_..." `
-  PADDLE_PREMIUM_PRICE_ID="pri_..." `
+  PADDLE_PRICE_ID_ANNUAL="pri_..." `
+  PADDLE_PRICE_ID_MONTHLY="pri_..." `
   PADDLE_WEBHOOK_SECRET="your_webhook_secret"
 ```
 
@@ -268,9 +269,10 @@ node scripts/smoke-test.js https://albanian-dictionary-app.fly.dev
 | `JWT_SECRET` | Yes | Signs auth tokens; use `openssl rand -hex 32` |
 | `FRONTEND_URL` | Yes | Production frontend (Vercel) origin for CORS (e.g. `https://your-app.vercel.app`) |
 | `CRON_SECRET` | Yes | Shared secret for the daily cron (`x-cron-secret` header on `POST /api/cron/daily`); `openssl rand -hex 32` |
-| `PADDLE_ENVIRONMENT` | Yes | `sandbox` until live billing; `production` after Paddle verification. Must be exactly `sandbox` or `production`. Single source of truth for the checkout environment — the frontend reads it from `/billing/checkout-config`, there is **no** frontend Paddle env var. Set `production` alongside the live `PADDLE_CLIENT_TOKEN` / `PADDLE_PREMIUM_PRICE_ID`. |
+| `PADDLE_ENVIRONMENT` | Yes | `sandbox` until live billing; `production` after Paddle verification. Must be exactly `sandbox` or `production`. Single source of truth for the checkout environment — the frontend reads it from `/billing/checkout-config`, there is **no** frontend Paddle env var. Set `production` alongside the live `PADDLE_CLIENT_TOKEN` / price ids. |
 | `PADDLE_CLIENT_TOKEN` | Yes | Paddle client-side token for checkout |
-| `PADDLE_PREMIUM_PRICE_ID` | Yes | Paddle price ID for €25/year Premium |
+| `PADDLE_PRICE_ID_ANNUAL` | Yes | Paddle price ID for the €25/year Premium plan (the hero). Falls back to legacy `PADDLE_PREMIUM_PRICE_ID` if set, so an un-renamed secret keeps working. |
+| `PADDLE_PRICE_ID_MONTHLY` | Recommended | Paddle price ID for the €5/month Premium plan (the anchor). If unset, the pricing page shows annual-only. |
 | `PADDLE_WEBHOOK_SECRET` | Yes | Verifies Paddle webhook signatures |
 
 Do **not** echo real values in logs, commits, or docs.

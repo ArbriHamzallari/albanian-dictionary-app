@@ -39,7 +39,7 @@ const EnglishAbout = () => (
   <div className="max-w-3xl mx-auto px-6 py-12">
     <Seo
       title="Fjalingo — Speak real Albanian"
-      description="Fjalingo helps Albanians — at home and in the diaspora — swap borrowed words for authentic Albanian, wrapped in a daily habit. Free tier plus a €25/year Premium."
+      description="Fjalingo helps Albanians — at home and in the diaspora — swap borrowed words for authentic Albanian, wrapped in a daily habit. Free tier plus Premium at €25/year or €5/month."
       path="/en"
     />
 
@@ -57,10 +57,11 @@ const EnglishAbout = () => (
 
     <h2 className="text-2xl font-extrabold text-heading dark:text-dark-text mb-3">Pricing</h2>
     <p className="text-body dark:text-dark-muted font-medium leading-relaxed mb-8">
-      Fjalingo is free to start. Premium is a single subscription:{' '}
-      <strong className="text-heading dark:text-dark-text">€25 per year</strong>, billed
-      annually through Paddle. You can cancel anytime; your Premium access continues until the
-      end of the paid period. EU customers have a 14-day right of withdrawal — see the{' '}
+      Fjalingo is free to start. Premium is one subscription with two plans:{' '}
+      <strong className="text-heading dark:text-dark-text">€25 per year</strong> or{' '}
+      <strong className="text-heading dark:text-dark-text">€5 per month</strong>, billed through
+      Paddle. The annual plan saves about 58%. You can cancel anytime; your Premium access
+      continues until the end of the paid period. EU customers have a 14-day right of withdrawal — see the{' '}
       <Link to="/rimbursimi" className="font-bold text-fjalingo-green hover:text-fjalingo-green-dark">
         refund policy
       </Link>
@@ -77,7 +78,7 @@ const EnglishAbout = () => (
         <List items={FREE} />
       </div>
       <div className="card border-fjalingo-purple/40">
-        <h3 className="text-lg font-black text-fjalingo-purple mb-4">Premium — €25/year</h3>
+        <h3 className="text-lg font-black text-fjalingo-purple mb-4">Premium — €25/year or €5/month</h3>
         <List items={PREMIUM} />
       </div>
     </div>

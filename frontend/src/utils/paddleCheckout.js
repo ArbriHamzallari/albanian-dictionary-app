@@ -24,8 +24,14 @@ function loadPaddleScript() {
 
 // `config` comes from GET /billing/checkout-config (the single source of truth for the
 // Paddle environment + token). `theme` is the app's current UI theme ('dark' | 'light').
-export async function openPremiumCheckout(config, theme) {
+// `priceId` is the chosen plan's Paddle price id (annual or monthly); it defaults to
+// the annual plan so any single-CTA caller keeps working (PRICE-2 dual pricing).
+export async function openPremiumCheckout(config, theme, priceId = config.plans?.annual?.priceId) {
   const Paddle = await loadPaddleScript();
+
+  if (!priceId) {
+    throw new Error('openPremiumCheckout: no priceId (checkout-config returned no plan).');
+  }
 
   // Paddle.js v2: call Environment.set only for sandbox; omitting it defaults to
   // production. Fail fast on any unexpected value so we never silently ship the wrong env.
@@ -39,7 +45,7 @@ export async function openPremiumCheckout(config, theme) {
 
   Paddle.Initialize({ token: config.clientToken });
   Paddle.Checkout.open({
-    items: config.items,
+    items: [{ priceId, quantity: 1 }],
     customer: config.customer,
     customData: config.customData,
     settings: {
