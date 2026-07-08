@@ -94,14 +94,18 @@ test('rejects answers that do not match the served quiz session', async () => {
   assert.ok(started.data.sessionId);
   assert.ok(Array.isArray(started.data.questions));
   assert.ok(started.data.questions.length > 0);
+  // Start never leaks the grading answer to the client.
+  assert.ok(started.data.questions.every((q) => q.answer === undefined));
 
+  // Answers that don't line up with the served session (here: every answer points
+  // at the same question idx) are rejected server-side.
   const mismatch = await api('/api/progress/quiz', {
     method: 'POST',
     token,
     body: {
       sessionId: started.data.sessionId,
       answers: started.data.questions.map((question) => ({
-        questionId: question.id + 999999,
+        idx: 0,
         answer: question.options[0],
       })),
     },
@@ -139,8 +143,8 @@ test('grades server-side and awards zero xp for all-wrong answers', async () => 
     body: {
       sessionId: started.data.sessionId,
       answers: started.data.questions.map((question) => ({
-        questionId: question.id,
-        answer: `definitely-wrong-${question.id}`,
+        idx: question.idx,
+        answer: `definitely-wrong-${question.idx}`,
       })),
     },
   });

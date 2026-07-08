@@ -100,8 +100,24 @@ const adminUserUpdateSchema = Joi.object({
 
 const QUIZ_QUESTIONS_PER_SESSION = 10;
 
+// The six origin worlds (mirrors words.origin_language CHECK / questionFactory
+// ORIGIN_CODES). A locked taxonomy, so it is safe to inline here.
+const ORIGIN_CODES = ['neolatine', 'anglisht', 'turqisht', 'greqisht', 'sllavisht', 'gjermanisht'];
+const QUESTION_TYPES = ['translate', 'match', 'fill_blank', 'spot_loanword'];
+
+// GAME-0: an optional origin world (defaults to the free anglisht world) and the
+// question types to serve. The premium-world gate is enforced in the controller,
+// not here — Joi only validates shape.
+const startQuizSchema = Joi.object({
+  origin: Joi.string().valid(...ORIGIN_CODES).default('anglisht'),
+  types: Joi.array().items(Joi.string().valid(...QUESTION_TYPES)).min(1).default(['translate']),
+}).options({ stripUnknown: true });
+
+// Answers are keyed by the question's `idx` in the served session (not a DB id).
+// `answer` is the chosen option string for `translate`; GAME-2/3 extend this shape
+// for mapping/index answers.
 const quizAnswerSchema = Joi.object({
-  questionId: Joi.number().integer().positive().required(),
+  idx: Joi.number().integer().min(0).max(QUIZ_QUESTIONS_PER_SESSION - 1).required(),
   answer: Joi.string().trim().max(255).required(),
 });
 
@@ -146,6 +162,9 @@ module.exports = {
   guestUpgradeSchema,
   profileUpdateSchema,
   adminUserUpdateSchema,
+  startQuizSchema,
   quizSubmitSchema,
   QUIZ_QUESTIONS_PER_SESSION,
+  ORIGIN_CODES,
+  QUESTION_TYPES,
 };

@@ -1,57 +1,55 @@
 const pool = require('../utils/db');
-const { quizSubmitSchema, QUIZ_QUESTIONS_PER_SESSION } = require('../utils/validation');
+const { quizSubmitSchema, startQuizSchema, QUIZ_QUESTIONS_PER_SESSION } = require('../utils/validation');
+const { buildQuestions, QuestionPoolError } = require('../utils/questionFactory');
+const { hasUnlimitedAccess } = require('../utils/access');
 const { unlockAchievementByKey } = require('../utils/achievements');
 
 const LEVEL_FORMULA_SQL = `floor(sqrt((xp::numeric)/100))::int + 1`;
 
-function shuffleArray(arr) {
-  const copy = [...arr];
-  for (let i = copy.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [copy[i], copy[j]] = [copy[j], copy[i]];
-  }
-  return copy;
-}
-
 function normalizeAnswer(value) {
-  return typeof value === 'string' ? value.trim() : '';
+  return typeof value === 'string' ? value.trim().toLowerCase() : '';
 }
 
-function gradeAnswers(questionIds, answerRows, submittedAnswers) {
-  const correctByQuestionId = new Map(
-    answerRows.map((row) => [row.id, normalizeAnswer(row.correct_answer)])
-  );
-
-  if (correctByQuestionId.size !== questionIds.length) {
-    return { error: 'Pyetjet e kuizit nuk përputhen me sesionin.' };
+// Grade one submitted answer against its stored question. The stored `answer` is
+// the grading truth — set server-side at start, never trusted from the client.
+// GAME-0 handles `translate` only; match/fill_blank/spot_loanword land in GAME-2/3/4.
+function gradeOne(question, submittedAnswer) {
+  switch (question.type) {
+    case 'translate':
+      return normalizeAnswer(submittedAnswer) === normalizeAnswer(question.answer);
+    default:
+      // A stored session with a type we can't grade yet awards no credit rather
+      // than throwing — but this should be unreachable while only translate ships.
+      return false;
   }
+}
 
-  const submittedIds = submittedAnswers.map((a) => a.questionId);
-  const uniqueSubmittedIds = new Set(submittedIds);
-  if (uniqueSubmittedIds.size !== submittedIds.length) {
+// Grade the whole submission against the session's stored question objects (the
+// JSONB served at start). Answers are matched by `idx`, never by anything the
+// client could forge into a different question.
+function gradeAnswers(storedQuestions, submittedAnswers) {
+  const byIdx = new Map(storedQuestions.map((q) => [q.idx, q]));
+
+  const submittedIdxs = submittedAnswers.map((a) => a.idx);
+  if (new Set(submittedIdxs).size !== submittedIdxs.length) {
     return { error: 'Përgjigjet e kuizit përmbajnë pyetje të përsëritura.' };
   }
 
-  const expectedIds = new Set(questionIds);
   if (
-    submittedIds.length !== questionIds.length
-    || !submittedIds.every((id) => expectedIds.has(id))
+    submittedIdxs.length !== storedQuestions.length
+    || !submittedIdxs.every((idx) => byIdx.has(idx))
   ) {
     return { error: 'Përgjigjet e kuizit nuk përputhen me pyetjet e shërbyera.' };
   }
 
   let correctAnswers = 0;
   for (const submitted of submittedAnswers) {
-    const expected = correctByQuestionId.get(submitted.questionId);
-    if (expected == null) {
-      return { error: 'Përgjigjet e kuizit nuk përputhen me pyetjet e shërbyera.' };
-    }
-    if (normalizeAnswer(submitted.answer) === expected) {
+    if (gradeOne(byIdx.get(submitted.idx), submitted.answer)) {
       correctAnswers += 1;
     }
   }
 
-  const totalQuestions = questionIds.length;
+  const totalQuestions = storedQuestions.length;
   correctAnswers = Math.min(correctAnswers, totalQuestions);
 
   return {
@@ -64,43 +62,47 @@ function gradeAnswers(questionIds, answerRows, submittedAnswers) {
 
 const startQuiz = async (req, res, next) => {
   try {
+    const { error, value } = startQuizSchema.validate(req.body || {});
+    if (error) {
+      return res.status(400).json({ message: 'Të dhënat e kuizit janë të pavlefshme.' });
+    }
+    const { origin, types } = value;
     const userUuid = req.user.uuid;
 
-    const availableResult = await pool.query(
-      `SELECT COUNT(*)::int AS count FROM quiz_questions WHERE is_active = true`
-    );
-    if (availableResult.rows[0].count < 4) {
-      return res.status(503).json({ message: 'Kuizi nuk është i disponueshëm.' });
+    // Server-side world gate: the free tier plays ONLY the anglisht world; every
+    // other origin is Premium. Admins and premium users play any origin. This lives
+    // here (not just in route middleware) so the origin itself is authorized —
+    // req.entitlement is populated by the isPremium middleware on the route.
+    if (origin !== 'anglisht' && !hasUnlimitedAccess(req.user, req.entitlement?.isPremium)) {
+      return res.status(403).json({ message: 'Ky funksion kërkon Premium.', code: 'PREMIUM_REQUIRED' });
     }
 
-    const questionsResult = await pool.query(
-      `SELECT id, question_text, correct_answer, wrong_answer_1, wrong_answer_2, wrong_answer_3
-       FROM quiz_questions
-       WHERE is_active = true
-       ORDER BY random()
-       LIMIT $1`,
-      [QUIZ_QUESTIONS_PER_SESSION]
-    );
+    let questions;
+    try {
+      questions = await buildQuestions({ origin, count: QUIZ_QUESTIONS_PER_SESSION, types });
+    } catch (err) {
+      if (err instanceof QuestionPoolError) {
+        // Content is too thin for this origin — an honest empty state, not a 500.
+        console.warn(`Quiz start blocked: ${err.message}`);
+        return res.status(503).json({ message: 'Kuizi nuk është i disponueshëm.', code: 'NOT_ENOUGH_CONTENT' });
+      }
+      throw err;
+    }
 
-    const questionIds = questionsResult.rows.map((row) => row.id);
     const sessionResult = await pool.query(
-      `INSERT INTO quiz_sessions (user_id, question_ids, expires_at)
-       VALUES ($1, $2, now() + interval '1 hour')
+      `INSERT INTO quiz_sessions (user_id, questions, expires_at)
+       VALUES ($1, $2::jsonb, now() + interval '1 hour')
        RETURNING id`,
-      [userUuid, questionIds]
+      [userUuid, JSON.stringify(questions)]
     );
 
-    const questions = questionsResult.rows.map((row) => ({
-      id: row.id,
-      borrowed_word: row.question_text,
-      options: shuffleArray(
-        [row.correct_answer, row.wrong_answer_1, row.wrong_answer_2, row.wrong_answer_3].filter(Boolean)
-      ),
-    }));
+    // Strip the grading truth before questions reach the client.
+    const clientQuestions = questions.map(({ answer, ...rest }) => rest);
 
     return res.json({
       sessionId: sessionResult.rows[0].id,
-      questions,
+      origin,
+      questions: clientQuestions,
     });
   } catch (err) {
     return next(err);
@@ -122,7 +124,7 @@ const submitQuiz = async (req, res, next) => {
       await client.query('BEGIN');
 
       const sessionResult = await client.query(
-        `SELECT id, question_ids
+        `SELECT id, questions
          FROM quiz_sessions
          WHERE id = $1
            AND user_id = $2
@@ -137,15 +139,9 @@ const submitQuiz = async (req, res, next) => {
         return res.status(400).json({ message: 'Sesioni i kuizit është i pavlefshëm ose ka skaduar.' });
       }
 
-      const questionIds = sessionResult.rows[0].question_ids;
-      const answerRowsResult = await client.query(
-        `SELECT id, correct_answer
-         FROM quiz_questions
-         WHERE id = ANY($1::int[])`,
-        [questionIds]
-      );
-
-      const graded = gradeAnswers(questionIds, answerRowsResult.rows, answers);
+      // The session's stored questions (JSONB) are the grading truth.
+      const storedQuestions = sessionResult.rows[0].questions;
+      const graded = gradeAnswers(storedQuestions, answers);
       if (graded.error) {
         await client.query('ROLLBACK');
         return res.status(400).json({ message: graded.error });
