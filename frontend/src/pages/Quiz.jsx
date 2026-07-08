@@ -22,7 +22,7 @@ function shuffleArray(arr) {
 }
 
 const Quiz = () => {
-  const { isLoggedIn, getGuestProgress, saveGuestProgress, loadUser } = useAuth();
+  const { isLoggedIn, getGuestProgress, saveGuestProgress, loadUser, enqueueAchievements } = useAuth();
   const navigate = useNavigate();
 
   const [questions, setQuestions] = useState([]);
@@ -148,7 +148,10 @@ const Quiz = () => {
       setScore(earnedScore);
       setResultConfirmed(true);
       setSubmitError('');
-      loadUser();
+      await loadUser();
+      if (res.data.achievementsUnlocked?.length) {
+        enqueueAchievements(res.data.achievementsUnlocked);
+      }
       if (earnedCorrect === questions.length) {
         confetti({ particleCount: 150, spread: 100, origin: { y: 0.5 } });
       }
