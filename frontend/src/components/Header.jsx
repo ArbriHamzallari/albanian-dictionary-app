@@ -38,7 +38,10 @@ const Header = () => {
     { to: '/kuizi', label: t('nav.quiz') },
     { to: '/arritjet', label: t('nav.achievements') },
     { to: '/renditja', label: t('nav.leaderboard') },
-    ...(isLoggedIn && !isAdmin ? [
+    // Friends/Chats are Premium features, but every logged-in user sees the link:
+    // free users get the upgrade prompt on the page, admins (unlimited access) and
+    // premium users get the real thing. Admins must see it to test Premium.
+    ...(isLoggedIn ? [
       { to: '/miqte', label: t('nav.friends') },
       { to: '/bisedat', label: t('nav.chats') },
     ] : []),
