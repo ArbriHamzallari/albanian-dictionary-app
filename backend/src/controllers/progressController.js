@@ -26,27 +26,44 @@ function gradeOne(question, submittedAnswer) {
 
 // Grade the whole submission against the session's stored question objects (the
 // JSONB served at start). Answers are matched by `idx`, never by anything the
-// client could forge into a different question.
+// client could forge into a different question. Also returns a per-question
+// `review` (GAME-1 teaching moment): correct answer, the user's answer, and the
+// stored teach block (definition + example pair + slug) for the results screen —
+// this data is server-side only and never present in the /quiz/start payload.
 function gradeAnswers(storedQuestions, submittedAnswers) {
-  const byIdx = new Map(storedQuestions.map((q) => [q.idx, q]));
+  const submittedByIdx = new Map(submittedAnswers.map((a) => [a.idx, a]));
 
   const submittedIdxs = submittedAnswers.map((a) => a.idx);
   if (new Set(submittedIdxs).size !== submittedIdxs.length) {
     return { error: 'Përgjigjet e kuizit përmbajnë pyetje të përsëritura.' };
   }
 
+  const knownIdxs = new Set(storedQuestions.map((q) => q.idx));
   if (
     submittedIdxs.length !== storedQuestions.length
-    || !submittedIdxs.every((idx) => byIdx.has(idx))
+    || !submittedIdxs.every((idx) => knownIdxs.has(idx))
   ) {
     return { error: 'Përgjigjet e kuizit nuk përputhen me pyetjet e shërbyera.' };
   }
 
   let correctAnswers = 0;
-  for (const submitted of submittedAnswers) {
-    if (gradeOne(byIdx.get(submitted.idx), submitted.answer)) {
-      correctAnswers += 1;
-    }
+  const review = [];
+  const ordered = [...storedQuestions].sort((a, b) => a.idx - b.idx);
+  for (const question of ordered) {
+    const submitted = submittedByIdx.get(question.idx);
+    const isCorrect = gradeOne(question, submitted.answer);
+    if (isCorrect) correctAnswers += 1;
+
+    review.push({
+      idx: question.idx,
+      borrowed_word: question.teach?.borrowed_word ?? question.prompt?.borrowed_word ?? null,
+      correct_answer: question.answer,
+      your_answer: submitted.answer,
+      correct: isCorrect,
+      definition_sq: question.teach?.definition_sq ?? null,
+      example: question.teach?.example ?? null,
+      slug: question.teach?.slug ?? null,
+    });
   }
 
   const totalQuestions = storedQuestions.length;
@@ -57,6 +74,7 @@ function gradeAnswers(storedQuestions, submittedAnswers) {
     correctAnswers,
     score: correctAnswers * 100,
     xpGain: correctAnswers * 100,
+    review,
   };
 }
 
@@ -96,8 +114,10 @@ const startQuiz = async (req, res, next) => {
       [userUuid, JSON.stringify(questions)]
     );
 
-    // Strip the grading truth before questions reach the client.
-    const clientQuestions = questions.map(({ answer, ...rest }) => rest);
+    // Strip the grading truth (answer) AND the teach block (it reveals the answer:
+    // correct word + definition + example) before questions reach the client. The
+    // teach block is served only in the submit response.
+    const clientQuestions = questions.map(({ answer, teach, ...rest }) => rest);
 
     return res.json({
       sessionId: sessionResult.rows[0].id,
@@ -227,6 +247,7 @@ const submitQuiz = async (req, res, next) => {
         score,
         correctAnswers,
         totalQuestions,
+        review: graded.review,
         achievementUnlocked,
         achievementsUnlocked,
       });

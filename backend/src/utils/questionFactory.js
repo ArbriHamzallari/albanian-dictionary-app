@@ -38,7 +38,7 @@ function normalize(value) {
 // design; they are never quizzed as an error.
 async function fetchReplaceWords(origin) {
   const { rows } = await pool.query(
-    `SELECT id, borrowed_word, correct_albanian, difficulty
+    `SELECT id, borrowed_word, correct_albanian, difficulty, slug
        FROM words
       WHERE origin_language = $1
         AND word_type = 'replace'
@@ -47,6 +47,51 @@ async function fetchReplaceWords(origin) {
     [origin]
   );
   return rows;
+}
+
+// GAME-1 teaching block: the primary definition and ONE example pair per target
+// word, plus the slug for the "Mëso më shumë" link. Reuses the same tables/shape as
+// the word-detail endpoint (definitions ordered by definition_order, first example
+// by id). Attached to the stored question but STRIPPED on start (it reveals the
+// answer); it is served only in the submit response. Words with no definition/example
+// simply carry null — never a blocker for translate.
+async function attachTranslateTeaching(questions, words) {
+  const translateQuestions = questions.filter((q) => q.type === 'translate');
+  if (!translateQuestions.length) return;
+
+  const wordById = new Map(words.map((w) => [w.id, w]));
+  const ids = translateQuestions.map((q) => q.word_id);
+
+  const [defs, examples] = await Promise.all([
+    pool.query(
+      `SELECT DISTINCT ON (word_id) word_id, definition_text
+         FROM definitions WHERE word_id = ANY($1)
+        ORDER BY word_id, definition_order ASC`,
+      [ids]
+    ),
+    pool.query(
+      `SELECT DISTINCT ON (word_id) word_id, sentence_loan, sentence_clean
+         FROM word_examples WHERE word_id = ANY($1)
+        ORDER BY word_id, id ASC`,
+      [ids]
+    ),
+  ]);
+
+  const defByWord = new Map(defs.rows.map((r) => [r.word_id, r.definition_text]));
+  const exampleByWord = new Map(
+    examples.rows.map((r) => [r.word_id, { loan: r.sentence_loan, clean: r.sentence_clean }])
+  );
+
+  for (const q of translateQuestions) {
+    const word = wordById.get(q.word_id);
+    q.teach = {
+      slug: word?.slug ?? null,
+      borrowed_word: q.prompt.borrowed_word,
+      correct_albanian: q.answer,
+      definition_sq: defByWord.get(q.word_id) ?? null,
+      example: exampleByWord.get(q.word_id) ?? null,
+    };
+  }
 }
 
 // GAME-1 shape: show the borrowed word, choose the correct Albanian among three
@@ -123,7 +168,9 @@ async function buildQuestions({ origin, count, types = ['translate'] }) {
     }
   }
 
-  return built.slice(0, count).map((question, idx) => ({ idx, ...question }));
+  const questions = built.slice(0, count).map((question, idx) => ({ idx, ...question }));
+  await attachTranslateTeaching(questions, words);
+  return questions;
 }
 
 module.exports = { buildQuestions, QuestionPoolError, ORIGIN_CODES, QUESTION_TYPES };

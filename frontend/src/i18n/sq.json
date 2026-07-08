@@ -257,6 +257,12 @@
       "submitRetry": "Rezultati nuk u ruajt në server. Provo ta ruash përsëri.",
       "retryButton": "Provo ta ruash përsëri"
     },
+    "review": {
+      "heading": "Shiko përgjigjet",
+      "yourAnswer": "Përgjigjja jote:",
+      "correctAnswer": "Përgjigjja e saktë:",
+      "learnMore": "Mëso më shumë"
+    },
     "guestModal": {
       "title": "Ruaje progresin!",
       "desc": "Krijo profil dhe fito shpërblim çdo ditë për 7 ditë rresht!",
