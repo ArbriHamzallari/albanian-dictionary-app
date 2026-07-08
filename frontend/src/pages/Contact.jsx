@@ -3,7 +3,7 @@ import { t } from '../i18n/index.js';
 
 // The contact point Paddle requires: a reachable email plus the operator's legal
 // identity. The email matches the one in the footer.
-const CONTACT_EMAIL = 'hello@fjalingo.com';
+const CONTACT_EMAIL = 'fjalingo.al@gmail.com';
 
 const Contact = () => (
   <LegalPage

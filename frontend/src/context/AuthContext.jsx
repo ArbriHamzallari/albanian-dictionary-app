@@ -18,6 +18,16 @@ function getBrowserTimeZone() {
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);       // { profile, stats, rank, achievements }
   const [loading, setLoading] = useState(true);
+  // Queue of achievement keys freshly unlocked this session, consumed by the
+  // global <AchievementToast/> so quiz completions and searches get a celebration.
+  const [recentAchievements, setRecentAchievements] = useState([]);
+  const enqueueAchievements = useCallback((keys) => {
+    const clean = (Array.isArray(keys) ? keys : [keys]).filter(Boolean);
+    if (clean.length) setRecentAchievements((q) => [...q, ...clean]);
+  }, []);
+  const dismissAchievement = useCallback(() => {
+    setRecentAchievements((q) => q.slice(1));
+  }, []);
 
   // Load the current user from the session cookie. The JWT is never in JS.
   //
@@ -156,6 +166,7 @@ export function AuthProvider({ children }) {
       const res = await api.post('/profile/achievements/unlock', { key });
       if (res.data?.unlocked) {
         await loadUser();
+        enqueueAchievements([res.data.key || key]);
       }
     } catch (err) {
       console.error('Achievement unlock failed:', key, err);
@@ -239,6 +250,9 @@ export function AuthProvider({ children }) {
         deleteAccount,
         updateUserProfile,
         unlockAchievement,
+        recentAchievements,
+        enqueueAchievements,
+        dismissAchievement,
         guestUpgrade,
         loadUser,
         getGuestProgress,
