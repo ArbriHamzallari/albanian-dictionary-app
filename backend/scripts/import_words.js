@@ -33,6 +33,11 @@ const REPLACEMENT_CHAR = '�'; // decoding failure => diacritics aren't real UT
 const exampleSchema = Joi.object({
   sentence_loan: Joi.string().trim().min(1).required(),
   sentence_clean: Joi.string().trim().min(1).required(),
+  // GAME-3: the EXACT surface form to blank in sentence_clean (handles Albanian
+  // inflection — often differs from the lemma correct_albanian). Required so every
+  // replace example is fill-blank-ready. A structural check below enforces that it
+  // actually appears in sentence_clean (no fuzzy matching).
+  blank_form: Joi.string().trim().min(1).required(),
 });
 
 const wordSchema = Joi.object({
@@ -114,6 +119,21 @@ function validateBatch(raw) {
     }
   });
 
+  // GAME-3: blank_form must be blankable — the exact surface form has to occur in
+  // sentence_clean (case-insensitive). A mismatch is a content error, never fuzzy-fixed.
+  words.forEach((w, i) => {
+    const examples = Array.isArray(w?.examples) ? w.examples : [];
+    examples.forEach((ex, j) => {
+      const form = typeof ex?.blank_form === 'string' ? ex.blank_form.trim() : '';
+      const clean = typeof ex?.sentence_clean === 'string' ? ex.sentence_clean : '';
+      if (form && clean && !clean.toLowerCase().includes(form.toLowerCase())) {
+        violations.push(
+          `words[${i}] ("${w?.borrowed_word ?? '?'}") → examples[${j}].blank_form: "${form}" does not appear in sentence_clean "${clean}".`
+        );
+      }
+    });
+  });
+
   // Diacritics must be real UTF-8 — a replacement char means the source was mis-encoded.
   const scanSq = (obj, label) => {
     for (const [k, v] of Object.entries(obj || {})) {
@@ -181,8 +201,8 @@ async function importWords(client, words) {
     await client.query('DELETE FROM word_examples WHERE word_id = $1', [id]);
     for (const ex of w.examples) {
       await client.query(
-        `INSERT INTO word_examples (word_id, sentence_loan, sentence_clean) VALUES ($1, $2, $3)`,
-        [id, ex.sentence_loan, ex.sentence_clean]
+        `INSERT INTO word_examples (word_id, sentence_loan, sentence_clean, blank_form) VALUES ($1, $2, $3, $4)`,
+        [id, ex.sentence_loan, ex.sentence_clean, ex.blank_form]
       );
       examplesWritten += 1;
     }
