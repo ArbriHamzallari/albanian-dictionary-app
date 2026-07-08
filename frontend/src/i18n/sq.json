@@ -533,9 +533,9 @@
     "viewLeague": "Shiko ligën"
   },
   "achievementToast": {
-    "eyebrow": "TODO_SQ_achievementToast_eyebrow",
-    "fallbackTitle": "TODO_SQ_achievementToast_fallbackTitle",
-    "viewCta": "TODO_SQ_achievementToast_viewCta"
+    "eyebrow": "ARRITJE E RE",
+    "fallbackTitle": "Arritje e zhbllokuar!",
+    "viewCta": "Shih arritjet"
   },
   "adminLogin": {
     "title": "Hyrje Admin",
