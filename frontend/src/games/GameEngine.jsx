@@ -9,6 +9,7 @@ import Parrot from '../components/mascot/Parrot.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import { t } from '../i18n/index.js';
 import Translate from './renderers/Translate.jsx';
+import ReviewList from './ReviewList.jsx';
 
 const TOTAL_QUESTIONS = 10;
 
@@ -48,6 +49,8 @@ const GameEngine = ({ origin = null }) => {
   const [showGuestModal, setShowGuestModal] = useState(false);
   const [sessionId, setSessionId] = useState(null);
   const [answers, setAnswers] = useState([]);
+  // Per-question teaching review (GAME-1), returned by the server on submit.
+  const [review, setReview] = useState([]);
   // Submit-time error is kept separate from `error`: `error` swaps in the full-page
   // error view, which must NOT happen on the results screen. A failed submit shows
   // an inline banner and the results stay visible.
@@ -74,6 +77,7 @@ const GameEngine = ({ origin = null }) => {
       setResultConfirmed(false);
       setSessionId(null);
       setAnswers([]);
+      setReview([]);
 
       if (isLoggedIn) {
         // The origin scopes the world; omitting it lets the backend default to the
@@ -167,6 +171,7 @@ const GameEngine = ({ origin = null }) => {
       const earnedScore = res.data.score ?? 0;
       setCorrect(earnedCorrect);
       setScore(earnedScore);
+      setReview(res.data.review || []);
       setResultConfirmed(true);
       setSubmitError('');
       await loadUser();
@@ -314,6 +319,9 @@ const GameEngine = ({ origin = null }) => {
               </div>
             </div>
           </div>
+
+          {/* GAME-1 teaching review — one card per question (server sessions only) */}
+          <ReviewList review={review} />
 
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <button onClick={buildQuestions} className="btn-primary inline-flex items-center gap-2">

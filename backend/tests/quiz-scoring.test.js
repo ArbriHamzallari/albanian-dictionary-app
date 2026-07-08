@@ -152,6 +152,11 @@ test('grades server-side and awards zero xp for all-wrong answers', async () => 
   assert.equal(submitted.status, 200);
   assert.equal(submitted.data.correctAnswers, 0);
   assert.equal(submitted.data.score, 0);
+  // GAME-1: submit returns a per-question teaching review; start never does.
+  assert.ok(Array.isArray(submitted.data.review));
+  assert.equal(submitted.data.review.length, started.data.questions.length);
+  assert.ok(submitted.data.review.every((r) => typeof r.correct_answer === 'string' && r.correct === false));
+  assert.equal(started.data.review, undefined);
   // Quiz grading awards no XP for wrong answers. The only XP change here is the
   // one-time "first quiz completed" achievement (+50) — completing counts even
   // when every answer is wrong — proving grading itself stays at zero.
