@@ -10,6 +10,7 @@ import { useAuth } from '../context/AuthContext.jsx';
 import { t } from '../i18n/index.js';
 import Translate from './renderers/Translate.jsx';
 import MatchPairs from './renderers/MatchPairs.jsx';
+import FillBlank from './renderers/FillBlank.jsx';
 import ReviewList from './ReviewList.jsx';
 
 const TOTAL_QUESTIONS = 10;
@@ -416,7 +417,7 @@ const GameEngine = ({ origin = null }) => {
         </div>
       </div>
 
-      {/* Current question — one renderer per type (translate, match) */}
+      {/* Current question — one renderer per type (translate, match, fill_blank) */}
       <AnimatePresence mode="wait">
         <motion.div
           key={current}
@@ -429,6 +430,14 @@ const GameEngine = ({ origin = null }) => {
             <MatchPairs
               question={question}
               onComplete={handleAnswer}
+              onNext={nextQuestion}
+              isLast={current + 1 >= questions.length}
+            />
+          ) : question.type === 'fill_blank' ? (
+            <FillBlank
+              question={question}
+              answered={status === 'answered'}
+              onAnswer={handleAnswer}
               onNext={nextQuestion}
               isLast={current + 1 >= questions.length}
             />

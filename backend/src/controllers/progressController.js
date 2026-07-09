@@ -60,9 +60,13 @@ function gradeOne(question, submittedAnswer) {
       return { correct: normalizeAnswer(submittedAnswer) === normalizeAnswer(question.answer) };
     case 'match':
       return gradeMatch(question, submittedAnswer);
+    case 'fill_blank':
+      // The submitted answer is the chosen word-bank INDEX; the stored answer is the
+      // correct index. Anything not exactly equal (incl. out-of-range) is incorrect.
+      return { correct: Number.isInteger(submittedAnswer) && submittedAnswer === question.answer };
     default:
       // A stored session with a type we can't grade awards no credit rather than
-      // throwing — unreachable while only translate + match ship.
+      // throwing — unreachable while translate + match + fill_blank ship.
       return { correct: false };
   }
 }
@@ -100,14 +104,17 @@ function gradeAnswers(storedQuestions, submittedAnswers) {
     }
     if (graded.correct) correctAnswers += 1;
 
-    // The teaching review is translate-only (word + definition + example pair). Match
-    // has no single-word teach block, so it contributes to the score but not the list.
-    if (question.type === 'translate') {
+    // The teaching review covers the single-word teaching types (translate,
+    // fill_blank). Match has no single-word teach block, so it scores but is not
+    // listed. fill_blank answers are bank INDEXES — resolve them to the shown words.
+    if (question.type === 'translate' || question.type === 'fill_blank') {
+      const isFill = question.type === 'fill_blank';
+      const bank = question.prompt?.bank;
       review.push({
         idx: question.idx,
         borrowed_word: question.teach?.borrowed_word ?? question.prompt?.borrowed_word ?? null,
-        correct_answer: question.answer,
-        your_answer: submitted.answer,
+        correct_answer: isFill ? (question.teach?.correct_albanian ?? bank?.[question.answer] ?? null) : question.answer,
+        your_answer: isFill ? (bank?.[submitted.answer] ?? '—') : submitted.answer,
         correct: graded.correct,
         definition_sq: question.teach?.definition_sq ?? null,
         example: question.teach?.example ?? null,
