@@ -61,8 +61,9 @@ function gradeOne(question, submittedAnswer) {
     case 'match':
       return gradeMatch(question, submittedAnswer);
     case 'fill_blank':
-      // The submitted answer is the chosen word-bank INDEX; the stored answer is the
-      // correct index. Anything not exactly equal (incl. out-of-range) is incorrect.
+    case 'spot_loanword':
+      // fill_blank: the chosen word-bank INDEX. spot_loanword: the tapped token INDEX.
+      // Both grade against the stored correct index; out-of-range / non-integer fails.
       return { correct: Number.isInteger(submittedAnswer) && submittedAnswer === question.answer };
     default:
       // A stored session with a type we can't grade awards no credit rather than
@@ -105,16 +106,30 @@ function gradeAnswers(storedQuestions, submittedAnswers) {
     if (graded.correct) correctAnswers += 1;
 
     // The teaching review covers the single-word teaching types (translate,
-    // fill_blank). Match has no single-word teach block, so it scores but is not
-    // listed. fill_blank answers are bank INDEXES — resolve them to the shown words.
-    if (question.type === 'translate' || question.type === 'fill_blank') {
-      const isFill = question.type === 'fill_blank';
-      const bank = question.prompt?.bank;
+    // fill_blank, spot_loanword) — each reuses the same review card (word + your/
+    // correct answer + loan/clean pair + link). Match has no single-word teach block,
+    // so it scores but is not listed. fill_blank/spot answers are INDEXES — resolve
+    // them back to the words/tokens actually shown.
+    if (question.type === 'translate' || question.type === 'fill_blank' || question.type === 'spot_loanword') {
+      let correctText;
+      let yourText;
+      if (question.type === 'translate') {
+        correctText = question.answer;
+        yourText = submitted.answer;
+      } else if (question.type === 'fill_blank') {
+        const bank = question.prompt?.bank;
+        correctText = question.teach?.correct_albanian ?? bank?.[question.answer] ?? null;
+        yourText = bank?.[submitted.answer] ?? '—';
+      } else { // spot_loanword
+        const tokens = question.prompt?.tokens;
+        correctText = tokens?.[question.answer] ?? question.teach?.borrowed_word ?? null;
+        yourText = tokens?.[submitted.answer] ?? '—';
+      }
       review.push({
         idx: question.idx,
         borrowed_word: question.teach?.borrowed_word ?? question.prompt?.borrowed_word ?? null,
-        correct_answer: isFill ? (question.teach?.correct_albanian ?? bank?.[question.answer] ?? null) : question.answer,
-        your_answer: isFill ? (bank?.[submitted.answer] ?? '—') : submitted.answer,
+        correct_answer: correctText,
+        your_answer: yourText,
         correct: graded.correct,
         definition_sq: question.teach?.definition_sq ?? null,
         example: question.teach?.example ?? null,

@@ -11,6 +11,7 @@ import { t } from '../i18n/index.js';
 import Translate from './renderers/Translate.jsx';
 import MatchPairs from './renderers/MatchPairs.jsx';
 import FillBlank from './renderers/FillBlank.jsx';
+import SpotLoanword from './renderers/SpotLoanword.jsx';
 import ReviewList from './ReviewList.jsx';
 
 const TOTAL_QUESTIONS = 10;
@@ -435,6 +436,14 @@ const GameEngine = ({ origin = null }) => {
             />
           ) : question.type === 'fill_blank' ? (
             <FillBlank
+              question={question}
+              answered={status === 'answered'}
+              onAnswer={handleAnswer}
+              onNext={nextQuestion}
+              isLast={current + 1 >= questions.length}
+            />
+          ) : question.type === 'spot_loanword' ? (
+            <SpotLoanword
               question={question}
               answered={status === 'answered'}
               onAnswer={handleAnswer}

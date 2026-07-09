@@ -289,6 +289,83 @@ async function buildFillBlankQuestions(origin, words, count) {
   return questions;
 }
 
+// Tokenizer rule for spot-the-loanword (stated per the task): split on WHITESPACE
+// only. Punctuation stays attached to its token for display; a token's "core" (outer
+// punctuation stripped, inner apostrophes/hyphens kept) is what we match the loanword
+// against. This keeps Albanian apostrophe-words ("t'i", "s'e") and loan-suffix
+// attachments ("Manager-i", "budget-in") as single tappable tokens — splitting on
+// apostrophe or hyphen would shatter real words. Verified against imported sentences.
+const EDGE_PUNCT = /^[.,;:!?"'“”‘’«»…()[\]]+|[.,;:!?"'“”‘’«»…()[\]]+$/g;
+function tokenCore(token) {
+  return token.replace(EDGE_PUNCT, '');
+}
+function tokenizeLoan(sentence) {
+  return sentence.split(/\s+/).filter(Boolean);
+}
+// Index of the token that IS the loanword: prefer an exact core match, else the first
+// token whose core contains the borrowed word (catches "Manager-i" ⊃ "manager").
+// Returns -1 if not found or the borrowed form is multiword (one target per v1).
+function findLoanwordIndex(tokens, borrowedWord) {
+  const bw = borrowedWord.trim().toLowerCase();
+  if (!bw || bw.includes(' ')) return -1;
+  const cores = tokens.map((t) => tokenCore(t).toLowerCase());
+  const exact = cores.findIndex((c) => c === bw);
+  if (exact >= 0) return exact;
+  return cores.findIndex((c) => c.includes(bw));
+}
+
+// GAME-4 (Gjej fjalën e huazuar) — the signature mechanic: show a real loan sentence
+// and have the learner tap the foreign word. Tokenized SERVER-side so grading is exact
+// and the answer index never reaches the client. Only examples whose sentence_loan
+// contains a locatable borrowed token qualify; stored answer = that token index.
+async function buildSpotLoanwordQuestions(origin, count) {
+  const { rows: candidates } = await pool.query(
+    `SELECT w.id AS word_id, w.borrowed_word, w.correct_albanian, w.difficulty, w.slug,
+            we.sentence_loan, we.sentence_clean
+       FROM words w
+       JOIN word_examples we ON we.word_id = w.id
+      WHERE w.origin_language = $1
+        AND w.word_type = 'replace'
+        AND w.correct_albanian IS NOT NULL`,
+    [origin]
+  );
+  if (!candidates.length) {
+    throw new QuestionPoolError(`spot_loanword: no examples for "${origin}"`);
+  }
+
+  const questions = [];
+  const usedWordIds = new Set();
+  for (const cand of shuffle(candidates)) {
+    if (questions.length >= count) break;
+    if (usedWordIds.has(cand.word_id)) continue;
+
+    const tokens = tokenizeLoan(cand.sentence_loan);
+    const answer = findLoanwordIndex(tokens, cand.borrowed_word);
+    if (answer < 0) continue; // loanword inflected past recognition, or multiword — skip
+
+    usedWordIds.add(cand.word_id);
+    questions.push({
+      type: 'spot_loanword',
+      word_id: cand.word_id,
+      prompt: { tokens },
+      answer,
+      teach: {
+        borrowed_word: cand.borrowed_word,
+        correct_albanian: cand.correct_albanian,
+        slug: cand.slug,
+        example: { loan: cand.sentence_loan, clean: cand.sentence_clean },
+      },
+    });
+  }
+
+  if (questions.length < count) {
+    throw new QuestionPoolError(
+      `spot_loanword: built only ${questions.length}/${count} from ${candidates.length} examples for "${origin}"`
+    );
+  }
+  return questions;
+}
+
 // Produce `count` question objects of the requested `types` from the content model.
 // GAME-0 serves a single type (`translate`); mixing/ordering multiple types into a
 // ramped session is GAME-5's composer, not here. `idx` is assigned last and is the
@@ -315,7 +392,8 @@ async function buildQuestions({ origin, count, types = ['translate'] }) {
         built = built.concat(await buildFillBlankQuestions(origin, words, count));
         break;
       case 'spot_loanword':
-        throw new Error(`buildQuestions: question type "${type}" is not implemented yet`);
+        built = built.concat(await buildSpotLoanwordQuestions(origin, count));
+        break;
       default:
         throw new Error(`buildQuestions: unknown question type "${type}"`);
     }
