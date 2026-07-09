@@ -11,7 +11,8 @@
       "examples": [
         {
           "sentence_loan": "Problemi konsiston te komunikimi.",
-          "sentence_clean": "Problemi qëndron te komunikimi."
+          "sentence_clean": "Problemi qëndron te komunikimi.",
+          "blank_form": "qëndron"
         }
       ]
     },
@@ -25,7 +26,8 @@
       "examples": [
         {
           "sentence_loan": "Kam kontakt me të.",
-          "sentence_clean": "Kam takim me të."
+          "sentence_clean": "Kam takim me të.",
+          "blank_form": "takim"
         }
       ]
     },
@@ -39,7 +41,8 @@
       "examples": [
         {
           "sentence_loan": "Ai është autor kontemporan.",
-          "sentence_clean": "Ai është autor bashkëkohor."
+          "sentence_clean": "Ai është autor bashkëkohor.",
+          "blank_form": "bashkëkohor"
         }
       ]
     },
@@ -53,7 +56,8 @@
       "examples": [
         {
           "sentence_loan": "Duhet të koordinojmë punën.",
-          "sentence_clean": "Duhet të bashkërendojmë punën."
+          "sentence_clean": "Duhet të bashkërendojmë punën.",
+          "blank_form": "bashkërendojmë"
         }
       ]
     },
@@ -67,7 +71,8 @@
       "examples": [
         {
           "sentence_loan": "Sot nuk ka korrent.",
-          "sentence_clean": "Sot nuk ka rrymë."
+          "sentence_clean": "Sot nuk ka rrymë.",
+          "blank_form": "rrymë"
         }
       ]
     },
@@ -81,7 +86,8 @@
       "examples": [
         {
           "sentence_loan": "Ky produkt ka kualitet.",
-          "sentence_clean": "Ky produkt ka cilësi."
+          "sentence_clean": "Ky produkt ka cilësi.",
+          "blank_form": "cilësi"
         }
       ]
     },
@@ -95,7 +101,8 @@
       "examples": [
         {
           "sentence_loan": "Na duhet më shumë kuantitet.",
-          "sentence_clean": "Na duhet më shumë sasi."
+          "sentence_clean": "Na duhet më shumë sasi.",
+          "blank_form": "sasi"
         }
       ]
     },
@@ -109,7 +116,8 @@
       "examples": [
         {
           "sentence_loan": "Fëmija ishte shumë kurioz.",
-          "sentence_clean": "Fëmija ishte shumë kureshtar."
+          "sentence_clean": "Fëmija ishte shumë kureshtar.",
+          "blank_form": "kureshtar"
         }
       ]
     },
@@ -123,7 +131,8 @@
       "examples": [
         {
           "sentence_loan": "Organi legjislativ u mblodh.",
-          "sentence_clean": "Organi ligjvënës u mblodh."
+          "sentence_clean": "Organi ligjvënës u mblodh.",
+          "blank_form": "ligjvënës"
         }
       ]
     },
@@ -137,7 +146,8 @@
       "examples": [
         {
           "sentence_loan": "Koha është e limituar.",
-          "sentence_clean": "Koha është e kufizuar."
+          "sentence_clean": "Koha është e kufizuar.",
+          "blank_form": "e kufizuar"
         }
       ]
     },
@@ -151,7 +161,8 @@
       "examples": [
         {
           "sentence_loan": "Më pëlqen literatura shqiptare.",
-          "sentence_clean": "Më pëlqen letërsia shqiptare."
+          "sentence_clean": "Më pëlqen letërsia shqiptare.",
+          "blank_form": "letërsia"
         }
       ]
     },
@@ -165,7 +176,8 @@
       "examples": [
         {
           "sentence_loan": "Shpejtësia është maksimale.",
-          "sentence_clean": "Shpejtësia është më e larta."
+          "sentence_clean": "Shpejtësia është më e larta.",
+          "blank_form": "më e larta"
         }
       ]
     },
@@ -179,7 +191,8 @@
       "examples": [
         {
           "sentence_loan": "Studion medicinë në universitet.",
-          "sentence_clean": "Studion mjekësi në universitet."
+          "sentence_clean": "Studion mjekësi në universitet.",
+          "blank_form": "mjekësi"
         }
       ]
     },
@@ -193,7 +206,8 @@
       "examples": [
         {
           "sentence_loan": "Rreziku është minimal.",
-          "sentence_clean": "Rreziku është më i ulët."
+          "sentence_clean": "Rreziku është më i ulët.",
+          "blank_form": "më i ulët"
         }
       ]
     },
@@ -207,7 +221,8 @@
       "examples": [
         {
           "sentence_loan": "Vizituam monumentin e heroit.",
-          "sentence_clean": "Vizituam përmendoren e heroit."
+          "sentence_clean": "Vizituam përmendoren e heroit.",
+          "blank_form": "përmendoren"
         }
       ]
     },
@@ -221,7 +236,8 @@
       "examples": [
         {
           "sentence_loan": "Mortaliteti ka rënë këtë vit.",
-          "sentence_clean": "Vdekshmëria ka rënë këtë vit."
+          "sentence_clean": "Vdekshmëria ka rënë këtë vit.",
+          "blank_form": "Vdekshmëria"
         }
       ]
     }

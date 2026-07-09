@@ -11,7 +11,8 @@
       "examples": [
         {
           "sentence_loan": "Sot kemi mysafir.",
-          "sentence_clean": "Sot kemi të ftuar."
+          "sentence_clean": "Sot kemi të ftuar.",
+          "blank_form": "të ftuar"
         }
       ]
     },
@@ -34,7 +35,8 @@
       "examples": [
         {
           "sentence_loan": "Ai është ortaku im.",
-          "sentence_clean": "Ai është bashkëpronari im."
+          "sentence_clean": "Ai është bashkëpronari im.",
+          "blank_form": "bashkëpronari"
         }
       ]
     },
@@ -48,7 +50,8 @@
       "examples": [
         {
           "sentence_loan": "U ul në oturak.",
-          "sentence_clean": "U ul në stol."
+          "sentence_clean": "U ul në stol.",
+          "blank_form": "stol"
         }
       ]
     },
@@ -80,7 +83,8 @@
       "examples": [
         {
           "sentence_loan": "Veshi papuçet.",
-          "sentence_clean": "Veshi shapkat."
+          "sentence_clean": "Veshi shapkat.",
+          "blank_form": "shapkat"
         }
       ]
     },
@@ -103,7 +107,8 @@
       "examples": [
         {
           "sentence_loan": "Shkova në pazar.",
-          "sentence_clean": "Shkova në treg."
+          "sentence_clean": "Shkova në treg.",
+          "blank_form": "treg"
         }
       ]
     },
@@ -117,7 +122,8 @@
       "examples": [
         {
           "sentence_loan": "Pehlivani fitoi garën.",
-          "sentence_clean": "Mundësi fitoi garën."
+          "sentence_clean": "Mundësi fitoi garën.",
+          "blank_form": "Mundësi"
         }
       ]
     },
@@ -131,7 +137,8 @@
       "examples": [
         {
           "sentence_loan": "Hape penxheren.",
-          "sentence_clean": "Hape dritaren."
+          "sentence_clean": "Hape dritaren.",
+          "blank_form": "dritaren"
         }
       ]
     },
@@ -145,7 +152,8 @@
       "examples": [
         {
           "sentence_loan": "I preu perçet.",
-          "sentence_clean": "I preu balluket."
+          "sentence_clean": "I preu balluket.",
+          "blank_form": "balluket"
         }
       ]
     },
@@ -168,7 +176,8 @@
       "examples": [
         {
           "sentence_loan": "Jam pishman për këtë.",
-          "sentence_clean": "Jam i penduar për këtë."
+          "sentence_clean": "Jam i penduar për këtë.",
+          "blank_form": "i penduar"
         }
       ]
     },
@@ -191,7 +200,8 @@
       "examples": [
         {
           "sentence_loan": "U bë qamet në rrugë.",
-          "sentence_clean": "U bë katastrofë në rrugë."
+          "sentence_clean": "U bë katastrofë në rrugë.",
+          "blank_form": "katastrofë"
         }
       ]
     }

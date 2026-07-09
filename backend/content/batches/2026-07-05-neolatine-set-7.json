@@ -11,7 +11,8 @@
       "examples": [
         {
           "sentence_loan": "Ai insistoi deri në fund.",
-          "sentence_clean": "Ai këmbënguli deri në fund."
+          "sentence_clean": "Ai këmbënguli deri në fund.",
+          "blank_form": "këmbënguli"
         }
       ]
     },
@@ -25,7 +26,8 @@
       "examples": [
         {
           "sentence_loan": "Turneu ishte internacional.",
-          "sentence_clean": "Turneu ishte ndërkombëtar."
+          "sentence_clean": "Turneu ishte ndërkombëtar.",
+          "blank_form": "ndërkombëtar"
         }
       ]
     },
@@ -39,7 +41,8 @@
       "examples": [
         {
           "sentence_loan": "U intoksikua nga ushqimi.",
-          "sentence_clean": "U helmua nga ushqimi."
+          "sentence_clean": "U helmua nga ushqimi.",
+          "blank_form": "helmua"
         }
       ]
     },
@@ -53,7 +56,8 @@
       "examples": [
         {
           "sentence_loan": "Lexo introduksionin e librit.",
-          "sentence_clean": "Lexo hyrjen e librit."
+          "sentence_clean": "Lexo hyrjen e librit.",
+          "blank_form": "hyrjen"
         }
       ]
     },
@@ -67,7 +71,8 @@
       "examples": [
         {
           "sentence_loan": "Ajo mëson kaligrafi.",
-          "sentence_clean": "Ajo mëson bukurshkrim."
+          "sentence_clean": "Ajo mëson bukurshkrim.",
+          "blank_form": "bukurshkrim"
         }
       ]
     },
@@ -81,7 +86,8 @@
       "examples": [
         {
           "sentence_loan": "Lufton për një kauzë të drejtë.",
-          "sentence_clean": "Lufton për një çështje të drejtë."
+          "sentence_clean": "Lufton për një çështje të drejtë.",
+          "blank_form": "çështje"
         }
       ]
     },
@@ -95,7 +101,8 @@
       "examples": [
         {
           "sentence_loan": "Takimi koincidon me festën.",
-          "sentence_clean": "Takimi përkon me festën."
+          "sentence_clean": "Takimi përkon me festën.",
+          "blank_form": "përkon"
         }
       ]
     },
@@ -109,7 +116,8 @@
       "examples": [
         {
           "sentence_loan": "Morën një vendim kolektiv.",
-          "sentence_clean": "Morën një vendim të përbashkët."
+          "sentence_clean": "Morën një vendim të përbashkët.",
+          "blank_form": "të përbashkët"
         }
       ]
     },
@@ -123,7 +131,8 @@
       "examples": [
         {
           "sentence_loan": "Mos e kompliko situatën.",
-          "sentence_clean": "Mos e ndërliko situatën."
+          "sentence_clean": "Mos e ndërliko situatën.",
+          "blank_form": "ndërliko"
         }
       ]
     },
@@ -137,7 +146,8 @@
       "examples": [
         {
           "sentence_loan": "Koncentrohu te detyra.",
-          "sentence_clean": "Përqendrohu te detyra."
+          "sentence_clean": "Përqendrohu te detyra.",
+          "blank_form": "Përqendrohu"
         }
       ]
     },
@@ -151,7 +161,8 @@
       "examples": [
         {
           "sentence_loan": "Vendimi kondicionohet nga buxheti.",
-          "sentence_clean": "Vendimi kushtëzohet nga buxheti."
+          "sentence_clean": "Vendimi kushtëzohet nga buxheti.",
+          "blank_form": "kushtëzohet"
         }
       ]
     },
@@ -165,7 +176,8 @@
       "examples": [
         {
           "sentence_loan": "Mos më konfondo me emrat.",
-          "sentence_clean": "Mos më ngatërro me emrat."
+          "sentence_clean": "Mos më ngatërro me emrat.",
+          "blank_form": "ngatërro"
         }
       ]
     },
@@ -179,7 +191,8 @@
       "examples": [
         {
           "sentence_loan": "Duhet t'i konfrontojmë faktet.",
-          "sentence_clean": "Duhet t'i ballafaqojmë faktet."
+          "sentence_clean": "Duhet t'i ballafaqojmë faktet.",
+          "blank_form": "ballafaqojmë"
         }
       ]
     },
@@ -193,7 +206,8 @@
       "examples": [
         {
           "sentence_loan": "Arritëm në të njëjtin konkluzion.",
-          "sentence_clean": "Arritëm në të njëjtin përfundim."
+          "sentence_clean": "Arritëm në të njëjtin përfundim.",
+          "blank_form": "përfundim"
         }
       ]
     },
@@ -207,7 +221,8 @@
       "examples": [
         {
           "sentence_loan": "E konsideroj mik të mirë.",
-          "sentence_clean": "E quaj mik të mirë."
+          "sentence_clean": "E quaj mik të mirë.",
+          "blank_form": "quaj"
         }
       ]
     }

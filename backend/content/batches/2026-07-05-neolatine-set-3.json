@@ -11,7 +11,8 @@
       "examples": [
         {
           "sentence_loan": "Ky është vendimi definitiv.",
-          "sentence_clean": "Ky është vendimi përfundimtar."
+          "sentence_clean": "Ky është vendimi përfundimtar.",
+          "blank_form": "përfundimtar"
         }
       ]
     },
@@ -25,7 +26,8 @@
       "examples": [
         {
           "sentence_loan": "Filluan një demarsh diplomatik.",
-          "sentence_clean": "Filluan një përçapje diplomatike."
+          "sentence_clean": "Filluan një përçapje diplomatike.",
+          "blank_form": "përçapje"
         }
       ]
     },
@@ -39,7 +41,8 @@
       "examples": [
         {
           "sentence_loan": "Ky është destinacioni ynë.",
-          "sentence_clean": "Ky është caku ynë."
+          "sentence_clean": "Ky është caku ynë.",
+          "blank_form": "caku"
         }
       ]
     },
@@ -53,7 +56,8 @@
       "examples": [
         {
           "sentence_loan": "Më trego çdo detaj.",
-          "sentence_clean": "Më trego çdo hollësi."
+          "sentence_clean": "Më trego çdo hollësi.",
+          "blank_form": "hollësi"
         }
       ]
     },
@@ -67,7 +71,8 @@
       "examples": [
         {
           "sentence_loan": "Duhet ta determinojmë drejtimin.",
-          "sentence_clean": "Duhet ta përcaktojmë drejtimin."
+          "sentence_clean": "Duhet ta përcaktojmë drejtimin.",
+          "blank_form": "përcaktojmë"
         }
       ]
     },
@@ -81,7 +86,8 @@
       "examples": [
         {
           "sentence_loan": "Pësova një deziluzion të madh.",
-          "sentence_clean": "Pësova një zhgënjim të madh."
+          "sentence_clean": "Pësova një zhgënjim të madh.",
+          "blank_form": "zhgënjim"
         }
       ]
     },
@@ -95,7 +101,8 @@
       "examples": [
         {
           "sentence_loan": "Ka diferencë të madhe.",
-          "sentence_clean": "Ka ndryshim të madh."
+          "sentence_clean": "Ka ndryshim të madh.",
+          "blank_form": "ndryshim"
         }
       ]
     },
@@ -109,7 +116,8 @@
       "examples": [
         {
           "sentence_loan": "Difuzioni ndodhi shpejt.",
-          "sentence_clean": "Shpërhapja ndodhi shpejt."
+          "sentence_clean": "Shpërhapja ndodhi shpejt.",
+          "blank_form": "Shpërhapja"
         }
       ]
     },
@@ -123,7 +131,8 @@
       "examples": [
         {
           "sentence_loan": "Dimensioni është i madh.",
-          "sentence_clean": "Përmasa është e madhe."
+          "sentence_clean": "Përmasa është e madhe.",
+          "blank_form": "Përmasa"
         }
       ]
     },
@@ -137,7 +146,8 @@
       "examples": [
         {
           "sentence_loan": "Fol direkt me të.",
-          "sentence_clean": "Fol drejtpërdrejt me të."
+          "sentence_clean": "Fol drejtpërdrejt me të.",
+          "blank_form": "drejtpërdrejt"
         }
       ]
     },
@@ -151,7 +161,8 @@
       "examples": [
         {
           "sentence_loan": "Distanca është e shkurtër.",
-          "sentence_clean": "Largësia është e shkurtër."
+          "sentence_clean": "Largësia është e shkurtër.",
+          "blank_form": "Largësia"
         }
       ]
     },
@@ -165,7 +176,8 @@
       "examples": [
         {
           "sentence_loan": "Kishte divergjencë mendimesh.",
-          "sentence_clean": "Kishte mospajtim mendimesh."
+          "sentence_clean": "Kishte mospajtim mendimesh.",
+          "blank_form": "mospajtim"
         }
       ]
     },
@@ -179,7 +191,8 @@
       "examples": [
         {
           "sentence_loan": "Ata kërkuan divorc.",
-          "sentence_clean": "Ata kërkuan shkurorëzim."
+          "sentence_clean": "Ata kërkuan shkurorëzim.",
+          "blank_form": "shkurorëzim"
         }
       ]
     },
@@ -193,7 +206,8 @@
       "examples": [
         {
           "sentence_loan": "Ngjyra blu dominon.",
-          "sentence_clean": "Ngjyra blu mbizotëron."
+          "sentence_clean": "Ngjyra blu mbizotëron.",
+          "blank_form": "mbizotëron"
         }
       ]
     },
@@ -207,7 +221,8 @@
       "examples": [
         {
           "sentence_loan": "Ka shumë eksperiencë në këtë fushë.",
-          "sentence_clean": "Ka shumë përvojë në këtë fushë."
+          "sentence_clean": "Ka shumë përvojë në këtë fushë.",
+          "blank_form": "përvojë"
         }
       ]
     }
