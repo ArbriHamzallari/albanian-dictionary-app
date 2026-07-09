@@ -105,12 +105,13 @@ const QUIZ_QUESTIONS_PER_SESSION = 10;
 const ORIGIN_CODES = ['neolatine', 'anglisht', 'turqisht', 'greqisht', 'sllavisht', 'gjermanisht'];
 const QUESTION_TYPES = ['translate', 'match', 'fill_blank', 'spot_loanword'];
 
-// GAME-0: an optional origin world (defaults to the free anglisht world) and the
-// question types to serve. The premium-world gate is enforced in the controller,
-// not here — Joi only validates shape.
+// GAME-0/5: an optional origin world (defaults to the free anglisht world). `types`
+// is OPTIONAL and, when omitted, the controller composes a ramped mixed session
+// (GAME-5); when provided it builds that single/explicit type set (used by tests and
+// direct API calls). The premium-world gate is enforced in the controller.
 const startQuizSchema = Joi.object({
   origin: Joi.string().valid(...ORIGIN_CODES).default('anglisht'),
-  types: Joi.array().items(Joi.string().valid(...QUESTION_TYPES)).min(1).default(['translate']),
+  types: Joi.array().items(Joi.string().valid(...QUESTION_TYPES)).min(1),
 }).options({ stripUnknown: true });
 
 const MATCH_PAIRS_PER_QUESTION = 5;

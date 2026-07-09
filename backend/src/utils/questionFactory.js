@@ -12,6 +12,21 @@ const QUESTION_TYPES = ['translate', 'match', 'fill_blank', 'spot_loanword'];
 // A match question presents this many borrowed↔Albanian pairs to tap together.
 const MATCH_PAIRS_PER_QUESTION = 5;
 
+// A composed session must reach this many questions or the origin isn't ready yet
+// (the composer throws → the UI shows the honest "not enough content" state).
+const MIN_SESSION_QUESTIONS = 6;
+
+// A full session's per-type quota, in ramp order (recognize → produce → awareness).
+// Thin/example-less origins simply build fewer (or none) of a type — never cross-origin,
+// never random. anglisht (free) fills all four; neolatine/turqisht have no fill_blank
+// yet, so they compose from match/translate/spot.
+const SESSION_PLAN = [
+  { type: 'match', want: 2 },
+  { type: 'translate', want: 2 },
+  { type: 'fill_blank', want: 3 },
+  { type: 'spot_loanword', want: 3 },
+];
+
 // Raised when the content model can't supply enough eligible words for the request.
 // A content problem, not a code problem — the caller turns it into a clean "not
 // enough content yet" response rather than a generic 500.
@@ -404,10 +419,58 @@ async function buildQuestions({ origin, count, types = ['translate'] }) {
   return questions;
 }
 
+// GAME-5 composer: assemble ONE origin's ramped session — recognize (match, translate)
+// → produce (fill_blank) → awareness (spot_loanword), in that order (easy → hard). Each
+// type is built best-effort: a type whose pool is too thin (or has no examples) simply
+// contributes nothing (QuestionPoolError swallowed), NEVER cross-origin content and
+// NEVER random distractors. If the whole session can't reach MIN_SESSION_QUESTIONS the
+// origin isn't ready — throw so the UI shows the honest empty state.
+async function composeSession({ origin }) {
+  if (!ORIGIN_CODES.includes(origin)) {
+    throw new Error(`composeSession: unknown origin "${origin}"`);
+  }
+  const words = await fetchReplaceWords(origin);
+
+  const tryBuild = async (build) => {
+    try {
+      return await build();
+    } catch (err) {
+      if (err instanceof QuestionPoolError) return []; // thin pool for THIS type — skip it
+      throw err;
+    }
+  };
+
+  const ordered = [];
+  for (const { type, want } of SESSION_PLAN) {
+    let batch = [];
+    switch (type) {
+      case 'match': batch = await tryBuild(() => buildMatchQuestions(words, want)); break;
+      case 'translate': batch = await tryBuild(() => buildTranslateQuestions(words, want)); break;
+      case 'fill_blank': batch = await tryBuild(() => buildFillBlankQuestions(origin, words, want)); break;
+      case 'spot_loanword': batch = await tryBuild(() => buildSpotLoanwordQuestions(origin, want)); break;
+      default: throw new Error(`composeSession: unknown plan type "${type}"`);
+    }
+    ordered.push(...batch);
+  }
+
+  if (ordered.length < MIN_SESSION_QUESTIONS) {
+    throw new QuestionPoolError(
+      `compose: origin "${origin}" yields only ${ordered.length} questions (< ${MIN_SESSION_QUESTIONS})`
+    );
+  }
+
+  // idx encodes the final ramp order — the client plays them in this sequence.
+  const questions = ordered.map((question, idx) => ({ idx, ...question }));
+  await attachTranslateTeaching(questions, words);
+  return questions;
+}
+
 module.exports = {
   buildQuestions,
+  composeSession,
   QuestionPoolError,
   ORIGIN_CODES,
   QUESTION_TYPES,
   MATCH_PAIRS_PER_QUESTION,
+  MIN_SESSION_QUESTIONS,
 };
