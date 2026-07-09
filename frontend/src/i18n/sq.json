@@ -151,8 +151,8 @@
       "promise": "Fjalingo të ndihmon t'i kthesh fjalët e huazuara në shqipen e vërtetë — me lojë, jo me mësim.",
       "ctaPrimary": "Fillo falas",
       "ctaSecondary": "Si funksionon",
-      "ctaDemo": "TODO_SQ_home_hero_ctaDemo",
-      "microline": "TODO_SQ_home_hero_microline"
+      "ctaDemo": "Provo pyetjen",
+      "microline": "Rikthe fjalët shqipe që i ke gjithmonë brenda vetes."
     },
     "how": {
       "heading": "Si funksionon",
@@ -209,99 +209,99 @@
       "seeAll": "Shiko të gjitha"
     },
     "proof": {
-      "wordsLabel": "TODO_SQ_home_proof_wordsLabel",
-      "worldsLabel": "TODO_SQ_home_proof_worldsLabel",
-      "adsLabel": "TODO_SQ_home_proof_adsLabel",
-      "heartsLabel": "TODO_SQ_home_proof_heartsLabel"
+      "wordsLabel": "fjalë",
+      "worldsLabel": "botë",
+      "adsLabel": "reklama",
+      "heartsLabel": "jeta"
     },
     "path": {
-      "eyebrow": "TODO_SQ_home_path_eyebrow",
-      "heading": "TODO_SQ_home_path_heading",
-      "lead": "TODO_SQ_home_path_lead",
-      "freeBadge": "TODO_SQ_home_path_freeBadge",
-      "premiumBadge": "TODO_SQ_home_path_premiumBadge",
-      "wordsLabel": "TODO_SQ_home_path_wordsLabel",
-      "open": "TODO_SQ_home_path_open"
+      "eyebrow": "RRUGËTIMI YT",
+      "heading": "Zbulo historinë e fjalëve",
+      "lead": "Çdo fjalë ka një rrugëtim — eksploro nga erdhën dhe gjej fjalët e tua shqipe.",
+      "freeBadge": "Falas përgjithmonë",
+      "premiumBadge": "Premium",
+      "wordsLabel": "fjalë",
+      "open": "Hap"
     },
     "features": {
-      "eyebrow": "TODO_SQ_home_features_eyebrow",
-      "heading": "TODO_SQ_home_features_heading",
-      "lead": "TODO_SQ_home_features_lead",
+      "eyebrow": "SI FUNKSIONON",
+      "heading": "Mëso duke luajtur",
+      "lead": "Sfida të shkurtra, shpërblime dhe lojëra që ta bëjnë shqipen më tënden çdo ditë.",
       "streaks": {
-        "title": "TODO_SQ_home_features_streaks_title",
-        "desc": "TODO_SQ_home_features_streaks_desc"
+        "title": "Varg ditësh",
+        "desc": "Luaj çdo ditë dhe ndërto ritmin tënd. Çdo ditë të afron me më shumë fjalë shqipe."
       },
       "achievements": {
-        "title": "TODO_SQ_home_features_achievements_title",
-        "desc": "TODO_SQ_home_features_achievements_desc"
+        "title": "Arritje",
+        "desc": "Zhblloko arritje ndërsa zbulon fjalë të reja dhe përmirëson njohuritë e tua."
       },
       "challenge": {
-        "title": "TODO_SQ_home_features_challenge_title",
-        "desc": "TODO_SQ_home_features_challenge_desc"
+        "title": "Sfida e ditës",
+        "desc": "Një sfidë e re çdo ditë për të mbajtur gjallë lidhjen me gjuhën."
       },
       "celebrations": {
-        "title": "TODO_SQ_home_features_celebrations_title",
-        "desc": "TODO_SQ_home_features_celebrations_desc"
+        "title": "Festime",
+        "desc": "Fito dhe festo përparimin tënd me ndihmën e nuskës së Fjalingos."
       }
     },
     "showcase": {
-      "heading": "TODO_SQ_home_showcase_heading",
+      "heading": "Një lojë për shqipen",
       "level": {
-        "title": "TODO_SQ_home_showcase_level_title",
-        "desc": "TODO_SQ_home_showcase_level_desc"
+        "title": "Nivele të reja",
+        "desc": "Përparon me ritmin tënd dhe sheh sa shumë fjalë ke rikthyer."
       },
       "types": {
-        "title": "TODO_SQ_home_showcase_types_title",
-        "desc": "TODO_SQ_home_showcase_types_desc"
+        "title": "Katër lojëra",
+        "desc": "Gjej fjalët e huazuara, zgjidh të saktën, plotëso boshllëqet dhe çifto fjalët."
       },
       "win": {
-        "title": "TODO_SQ_home_showcase_win_title",
-        "desc": "TODO_SQ_home_showcase_win_desc"
+        "title": "Çdo fitore vlen",
+        "desc": "Çdo përgjigje e saktë të afron me një shqipe më të pasur."
       }
     },
     "demo": {
-      "eyebrow": "TODO_SQ_home_demo_eyebrow",
-      "heading": "TODO_SQ_home_demo_heading",
-      "correct": "TODO_SQ_home_demo_correct",
-      "wrong": "TODO_SQ_home_demo_wrong",
-      "answerLabel": "TODO_SQ_home_demo_answerLabel",
-      "cta": "TODO_SQ_home_demo_cta",
-      "another": "TODO_SQ_home_demo_another",
-      "retry": "TODO_SQ_home_demo_retry",
-      "loadError": "TODO_SQ_home_demo_loadError"
+      "eyebrow": "PROVO TANI",
+      "heading": "Gjej fjalën shqipe",
+      "correct": "Saktë!",
+      "wrong": "Pothuajse!",
+      "answerLabel": "Fjala shqipe:",
+      "cta": "Fillo",
+      "another": "Një tjetër",
+      "retry": "Provo përsëri",
+      "loadError": "Pyetja nuk u ngarkua. Provo përsëri."
     },
     "trust": {
-      "eyebrow": "TODO_SQ_home_trust_eyebrow",
-      "heading": "TODO_SQ_home_trust_heading",
-      "lead": "TODO_SQ_home_trust_lead",
+      "eyebrow": "PAQË MENDORE",
+      "heading": "E sigurt për të gjithë",
+      "lead": "Fjalingo është krijuar për të mësuar lirshëm, pa reklama dhe pa presion.",
       "ads": {
-        "title": "TODO_SQ_home_trust_ads_title",
-        "desc": "TODO_SQ_home_trust_ads_desc"
+        "title": "Pa reklama",
+        "desc": "Asnjë reklamë, kurrë. Përqendrohu vetëm te loja dhe fjalët e reja."
       },
       "hearts": {
-        "title": "TODO_SQ_home_trust_hearts_title",
-        "desc": "TODO_SQ_home_trust_hearts_desc"
+        "title": "Pa kufizime",
+        "desc": "Pa zemra, pa jetë dhe pa pritje. Luaj sa herë të duash."
       },
       "safety": {
-        "title": "TODO_SQ_home_trust_safety_title",
-        "desc": "TODO_SQ_home_trust_safety_desc"
+        "title": "Siguri për fëmijët",
+        "desc": "Regjistrimet mbrohen me verifikim moshe. Profilet e të miturve janë private dhe ligat përdorin pseudonime."
       },
       "messages": {
-        "title": "TODO_SQ_home_trust_messages_title",
-        "desc": "TODO_SQ_home_trust_messages_desc"
+        "title": "Mesazhe të mbrojtura",
+        "desc": "Vetëm miqtë e pranuar mund të komunikojnë me fraza të zgjedhura, pa mesazhe të lira mes të panjohurve."
       },
       "server": {
-        "title": "TODO_SQ_home_trust_server_title",
-        "desc": "TODO_SQ_home_trust_server_desc"
+        "title": "Progres i ruajtur",
+        "desc": "Përparimi yt ruhet në server. Ndrysho pajisje ose humb telefonin — asgjë nuk humbet."
       },
       "cancel": {
-        "title": "TODO_SQ_home_trust_cancel_title",
-        "desc": "TODO_SQ_home_trust_cancel_desc"
+        "title": "Anulo kur të duash",
+        "desc": "Premium mund të anulohet në çdo kohë. Kontrolli mbetet gjithmonë te ti."
       }
     },
     "pricing": {
-      "text": "TODO_SQ_home_pricing_text",
-      "cta": "TODO_SQ_home_pricing_cta"
+      "text": "Bota Anglisht është falas përgjithmonë. Një abonim (€25/vit) hap të gjitha botët. Anulo kur të duash.",
+      "cta": "Shiko Premium"
     }
   },
   "premiumHome": {
