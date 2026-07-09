@@ -10,17 +10,60 @@ function normalizeAnswer(value) {
   return typeof value === 'string' ? value.trim().toLowerCase() : '';
 }
 
-// Grade one submitted answer against its stored question. The stored `answer` is
-// the grading truth — set server-side at start, never trusted from the client.
-// GAME-0 handles `translate` only; match/fill_blank/spot_loanword land in GAME-2/3/4.
+// Grade a match answer: the submitted leftId->rightId mapping against the stored
+// correct mapping. Returns `{ error }` for a MALFORMED mapping (→ 400: wrong size,
+// out-of-range or duplicate right indices, unknown left key) and `{ correct }` for a
+// well-formed one (correct only if it equals the stored mapping exactly). Since the
+// renderer only locks correct pairs, a completed board always submits the correct
+// mapping; the server re-verifies rather than trusting it.
+function gradeMatch(question, submittedAnswer) {
+  const expected = question.answer;
+  if (!expected || typeof expected !== 'object') {
+    return { error: 'Pyetja e çiftimit është e dëmtuar.' };
+  }
+  if (!submittedAnswer || typeof submittedAnswer !== 'object' || Array.isArray(submittedAnswer)) {
+    return { error: 'Përgjigja e çiftimit është e pavlefshme.' };
+  }
+
+  const expectedKeys = Object.keys(expected);
+  const submittedKeys = Object.keys(submittedAnswer);
+  if (submittedKeys.length !== expectedKeys.length) {
+    return { error: 'Përgjigja e çiftimit është e paplotë ose e tepërt.' };
+  }
+
+  const usedRight = new Set();
+  for (const key of expectedKeys) {
+    if (!(key in submittedAnswer)) {
+      return { error: 'Përgjigja e çiftimit nuk përputhet me pyetjen.' };
+    }
+    const rightIdx = submittedAnswer[key];
+    if (!Number.isInteger(rightIdx) || rightIdx < 0 || rightIdx >= expectedKeys.length) {
+      return { error: 'Përgjigja e çiftimit është e pavlefshme.' };
+    }
+    if (usedRight.has(rightIdx)) {
+      return { error: 'Përgjigja e çiftimit ka çifte të dyfishta.' };
+    }
+    usedRight.add(rightIdx);
+  }
+
+  const correct = expectedKeys.every((key) => submittedAnswer[key] === expected[key]);
+  return { correct };
+}
+
+// Grade one submitted answer against its stored question. The stored `answer` is the
+// grading truth — set server-side at start, never trusted from the client. Returns
+// `{ correct }`, or `{ error }` when the submission is structurally malformed (→ 400).
+// GAME-0 translate + GAME-2 match; fill_blank/spot_loanword land in GAME-3/4.
 function gradeOne(question, submittedAnswer) {
   switch (question.type) {
     case 'translate':
-      return normalizeAnswer(submittedAnswer) === normalizeAnswer(question.answer);
+      return { correct: normalizeAnswer(submittedAnswer) === normalizeAnswer(question.answer) };
+    case 'match':
+      return gradeMatch(question, submittedAnswer);
     default:
-      // A stored session with a type we can't grade yet awards no credit rather
-      // than throwing — but this should be unreachable while only translate ships.
-      return false;
+      // A stored session with a type we can't grade awards no credit rather than
+      // throwing — unreachable while only translate + match ship.
+      return { correct: false };
   }
 }
 
@@ -51,19 +94,26 @@ function gradeAnswers(storedQuestions, submittedAnswers) {
   const ordered = [...storedQuestions].sort((a, b) => a.idx - b.idx);
   for (const question of ordered) {
     const submitted = submittedByIdx.get(question.idx);
-    const isCorrect = gradeOne(question, submitted.answer);
-    if (isCorrect) correctAnswers += 1;
+    const graded = gradeOne(question, submitted.answer);
+    if (graded.error) {
+      return { error: graded.error };
+    }
+    if (graded.correct) correctAnswers += 1;
 
-    review.push({
-      idx: question.idx,
-      borrowed_word: question.teach?.borrowed_word ?? question.prompt?.borrowed_word ?? null,
-      correct_answer: question.answer,
-      your_answer: submitted.answer,
-      correct: isCorrect,
-      definition_sq: question.teach?.definition_sq ?? null,
-      example: question.teach?.example ?? null,
-      slug: question.teach?.slug ?? null,
-    });
+    // The teaching review is translate-only (word + definition + example pair). Match
+    // has no single-word teach block, so it contributes to the score but not the list.
+    if (question.type === 'translate') {
+      review.push({
+        idx: question.idx,
+        borrowed_word: question.teach?.borrowed_word ?? question.prompt?.borrowed_word ?? null,
+        correct_answer: question.answer,
+        your_answer: submitted.answer,
+        correct: graded.correct,
+        definition_sq: question.teach?.definition_sq ?? null,
+        example: question.teach?.example ?? null,
+        slug: question.teach?.slug ?? null,
+      });
+    }
   }
 
   const totalQuestions = storedQuestions.length;

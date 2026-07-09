@@ -9,6 +9,7 @@ import Parrot from '../components/mascot/Parrot.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import { t } from '../i18n/index.js';
 import Translate from './renderers/Translate.jsx';
+import MatchPairs from './renderers/MatchPairs.jsx';
 import ReviewList from './ReviewList.jsx';
 
 const TOTAL_QUESTIONS = 10;
@@ -143,17 +144,19 @@ const GameEngine = ({ origin = null }) => {
     return () => clearInterval(interval);
   }, [status]);
 
-  const handleAnswer = (option) => {
+  // `answer` is a chosen option string (translate) or a leftId->rightId mapping
+  // (match). The engine just records it; the server is the grader.
+  const handleAnswer = (answer) => {
     if (status !== 'playing') return;
-    setSelected(option);
+    setSelected(answer);
     setStatus('answered');
 
     if (sessionId) {
-      setAnswers((prev) => [...prev, { idx: questions[current].idx, answer: option }]);
+      setAnswers((prev) => [...prev, { idx: questions[current].idx, answer }]);
       return;
     }
 
-    const isCorrect = option === questions[current].correct_answer;
+    const isCorrect = answer === questions[current].correct_answer;
     if (isCorrect) {
       setCorrect((c) => c + 1);
       setScore((s) => s + 100);
@@ -413,7 +416,7 @@ const GameEngine = ({ origin = null }) => {
         </div>
       </div>
 
-      {/* Current question — one renderer per type (GAME-0: translate only) */}
+      {/* Current question — one renderer per type (translate, match) */}
       <AnimatePresence mode="wait">
         <motion.div
           key={current}
@@ -422,15 +425,24 @@ const GameEngine = ({ origin = null }) => {
           exit={{ opacity: 0, x: -30 }}
           transition={{ duration: 0.3 }}
         >
-          <Translate
-            question={question}
-            status={status}
-            selected={selected}
-            serverGraded={Boolean(sessionId)}
-            onAnswer={handleAnswer}
-            onNext={nextQuestion}
-            isLast={current + 1 >= questions.length}
-          />
+          {question.type === 'match' ? (
+            <MatchPairs
+              question={question}
+              onComplete={handleAnswer}
+              onNext={nextQuestion}
+              isLast={current + 1 >= questions.length}
+            />
+          ) : (
+            <Translate
+              question={question}
+              status={status}
+              selected={selected}
+              serverGraded={Boolean(sessionId)}
+              onAnswer={handleAnswer}
+              onNext={nextQuestion}
+              isLast={current + 1 >= questions.length}
+            />
+          )}
         </motion.div>
       </AnimatePresence>
     </div>
