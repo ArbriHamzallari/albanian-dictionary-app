@@ -1,6 +1,6 @@
 const pool = require('../utils/db');
 const { quizSubmitSchema, startQuizSchema, QUIZ_QUESTIONS_PER_SESSION } = require('../utils/validation');
-const { buildQuestions, QuestionPoolError } = require('../utils/questionFactory');
+const { buildQuestions, composeSession, QuestionPoolError } = require('../utils/questionFactory');
 const { hasUnlimitedAccess } = require('../utils/access');
 const { unlockAchievementByKey } = require('../utils/achievements');
 
@@ -169,7 +169,11 @@ const startQuiz = async (req, res, next) => {
 
     let questions;
     try {
-      questions = await buildQuestions({ origin, count: QUIZ_QUESTIONS_PER_SESSION, types });
+      // No `types` → GAME-5 composes a ramped mixed session for the origin. Explicit
+      // `types` → build that set (tests / direct API).
+      questions = types
+        ? await buildQuestions({ origin, count: QUIZ_QUESTIONS_PER_SESSION, types })
+        : await composeSession({ origin });
     } catch (err) {
       if (err instanceof QuestionPoolError) {
         // Content is too thin for this origin — an honest empty state, not a 500.
@@ -186,6 +190,9 @@ const startQuiz = async (req, res, next) => {
       [userUuid, JSON.stringify(questions)]
     );
 
+    // The origin's display name for the session header (best-effort; null if absent).
+    const originRow = await pool.query('SELECT name_sq FROM origins WHERE code = $1', [origin]);
+
     // Strip the grading truth (answer) AND the teach block (it reveals the answer:
     // correct word + definition + example) before questions reach the client. The
     // teach block is served only in the submit response.
@@ -194,6 +201,7 @@ const startQuiz = async (req, res, next) => {
     return res.json({
       sessionId: sessionResult.rows[0].id,
       origin,
+      originName: originRow.rows[0]?.name_sq || null,
       questions: clientQuestions,
     });
   } catch (err) {

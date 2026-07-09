@@ -89,6 +89,7 @@ test('rejects answers that do not match the served quiz session', async () => {
   const started = await api('/api/progress/quiz/start', {
     method: 'POST',
     token,
+    body: { types: ['translate'] },
   });
   assert.equal(started.status, 200);
   assert.ok(started.data.sessionId);
@@ -134,6 +135,7 @@ test('grades server-side and awards zero xp for all-wrong answers', async () => 
   const started = await api('/api/progress/quiz/start', {
     method: 'POST',
     token,
+    body: { types: ['translate'] },
   });
   assert.equal(started.status, 200);
 

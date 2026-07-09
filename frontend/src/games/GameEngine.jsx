@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
-import { Star, Trophy, RotateCcw, Timer, X } from 'lucide-react';
+import { Star, Trophy, RotateCcw, Timer, X, ArrowRight } from 'lucide-react';
 import api from '../utils/api.js';
 import LoadingSpinner from '../components/LoadingSpinner.jsx';
 import Parrot from '../components/mascot/Parrot.jsx';
@@ -54,6 +54,8 @@ const GameEngine = ({ origin = null }) => {
   const [answers, setAnswers] = useState([]);
   // Per-question teaching review (GAME-1), returned by the server on submit.
   const [review, setReview] = useState([]);
+  // The origin world's display name (GAME-5), shown in the session header.
+  const [originName, setOriginName] = useState(null);
   // Submit-time error is kept separate from `error`: `error` swaps in the full-page
   // error view, which must NOT happen on the results screen. A failed submit shows
   // an inline banner and the results stay visible.
@@ -81,13 +83,16 @@ const GameEngine = ({ origin = null }) => {
       setSessionId(null);
       setAnswers([]);
       setReview([]);
+      setOriginName(null);
 
       if (isLoggedIn) {
         // The origin scopes the world; omitting it lets the backend default to the
-        // free anglisht world. Questions arrive without answers (server-authoritative).
+        // free anglisht world. No `types` → the server composes a ramped mixed session
+        // (GAME-5). Questions arrive without answers (server-authoritative).
         const res = await api.post('/progress/quiz/start', origin ? { origin } : {});
         setSessionId(res.data.sessionId);
         setQuestions(res.data.questions || []);
+        setOriginName(res.data.originName || null);
         resetPlayState();
         return;
       }
@@ -332,9 +337,16 @@ const GameEngine = ({ origin = null }) => {
             <button onClick={buildQuestions} className="btn-primary inline-flex items-center gap-2">
               <RotateCcw className="w-4 h-4" /> {t('quiz.result.playAgain')}
             </button>
-            <Link to="/arritjet" className="btn-outline inline-flex items-center gap-2">
-              <Trophy className="w-4 h-4" /> {t('nav.achievements')}
-            </Link>
+            {/* Came from an origin world → offer a way back to it (GAME-5) */}
+            {origin ? (
+              <Link to={`/origjina/${origin}`} className="btn-outline inline-flex items-center gap-2">
+                {t('quiz.continue')} <ArrowRight className="w-4 h-4" />
+              </Link>
+            ) : (
+              <Link to="/arritjet" className="btn-outline inline-flex items-center gap-2">
+                <Trophy className="w-4 h-4" /> {t('nav.achievements')}
+              </Link>
+            )}
           </div>
         </motion.div>
 
@@ -398,6 +410,14 @@ const GameEngine = ({ origin = null }) => {
 
   return (
     <div className="max-w-2xl mx-auto px-6 py-8">
+      {/* Origin world header (GAME-5): parrot + world name */}
+      {originName && (
+        <div className="flex items-center gap-2 mb-4">
+          <Parrot state="idle" size={28} />
+          <span className="text-sm font-black text-fjalingo-purple">{originName}</span>
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
