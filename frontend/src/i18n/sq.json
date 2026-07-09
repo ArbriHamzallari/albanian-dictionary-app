@@ -264,6 +264,9 @@
       "instruction": "Plotëso boshllëkun me fjalën e duhur.",
       "confirm": "Konfirmo"
     },
+    "spot": {
+      "instruction": "Prek fjalën e huazuar në fjali."
+    },
     "review": {
       "heading": "Shiko përgjigjet",
       "yourAnswer": "Përgjigjja jote:",
