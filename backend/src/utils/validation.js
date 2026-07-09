@@ -128,12 +128,12 @@ const matchMappingSchema = Joi.object()
   .max(MATCH_PAIRS_PER_QUESTION);
 
 // Answers are keyed by the question's `idx` in the served session (not a DB id).
-// `answer` is the chosen option string for `translate`, or a mapping object for
-// `match` (GAME-2); fill_blank/spot_loanword extend this in GAME-3/4.
+// `answer` is a chosen option string for `translate`, a mapping object for `match`
+// (GAME-2), or a chosen bank INDEX (integer) for `fill_blank` (GAME-3).
 const quizAnswerSchema = Joi.object({
   idx: Joi.number().integer().min(0).max(QUIZ_QUESTIONS_PER_SESSION - 1).required(),
   answer: Joi.alternatives()
-    .try(Joi.string().trim().max(255), matchMappingSchema)
+    .try(Joi.number().integer().min(0), Joi.string().trim().max(255), matchMappingSchema)
     .required(),
 });
 

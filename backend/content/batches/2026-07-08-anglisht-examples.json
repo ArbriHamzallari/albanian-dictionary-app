@@ -1,0 +1,425 @@
+{
+    "batch": "2026-07-08-anglisht-examples",
+    "words": [
+      {
+        "borrowed_word": "budget",
+        "correct_albanian": "buxhet",
+        "origin_language": "anglisht",
+        "word_type": "replace",
+        "difficulty": 1,
+        "definition_sq": "Plani i të ardhurave dhe shpenzimeve për një periudhë të caktuar.",
+        "examples": [
+          {
+            "sentence_loan": "Duhet ta rrisim budget-in për këtë projekt.",
+            "sentence_clean": "Duhet ta rrisim buxhetin për këtë projekt.",
+            "blank_form": "buxhetin"
+          },
+          {
+            "sentence_loan": "Budget-i i këtij muaji është i kufizuar.",
+            "sentence_clean": "Buxheti i këtij muaji është i kufizuar.",
+            "blank_form": "Buxheti"
+          }
+        ]
+      },
+      {
+        "borrowed_word": "business",
+        "correct_albanian": "biznes",
+        "origin_language": "anglisht",
+        "word_type": "replace",
+        "difficulty": 1,
+        "definition_sq": "Veprimtari ekonomike që synon të ofrojë mallra ose shërbime.",
+        "examples": [
+          {
+            "sentence_loan": "Ai ka hapur një business të ri.",
+            "sentence_clean": "Ai ka hapur një biznes të ri.",
+            "blank_form": "biznes"
+          },
+          {
+            "sentence_loan": "Business-i po ecën shumë mirë.",
+            "sentence_clean": "Biznesi po ecën shumë mirë.",
+            "blank_form": "Biznesi"
+          }
+        ]
+      },
+      {
+        "borrowed_word": "challenge",
+        "correct_albanian": "sfidë",
+        "origin_language": "anglisht",
+        "word_type": "replace",
+        "difficulty": 1,
+        "definition_sq": "Detyrë ose situatë e vështirë që kërkon përpjekje për t'u kapërcyer.",
+        "examples": [
+          {
+            "sentence_loan": "Ky challenge më motivon shumë.",
+            "sentence_clean": "Kjo sfidë më motivon shumë.",
+            "blank_form": "sfidë"
+          },
+          {
+            "sentence_loan": "Pranova challenge-in pa hezitim.",
+            "sentence_clean": "Pranova sfidën pa hezitim.",
+            "blank_form": "sfidën"
+          }
+        ]
+      },
+      {
+        "borrowed_word": "deadline",
+        "correct_albanian": "afat",
+        "origin_language": "anglisht",
+        "word_type": "replace",
+        "difficulty": 1,
+        "definition_sq": "Koha e fundit brenda së cilës duhet të përfundojë një detyrë.",
+        "examples": [
+          {
+            "sentence_loan": "Deadline është nesër në mëngjes.",
+            "sentence_clean": "Afati është nesër në mëngjes.",
+            "blank_form": "Afati"
+          },
+          {
+            "sentence_loan": "Mos e humb deadline-in.",
+            "sentence_clean": "Mos e humb afatin.",
+            "blank_form": "afatin"
+          }
+        ]
+      },
+      {
+        "borrowed_word": "download",
+        "correct_albanian": "shkarkoj",
+        "origin_language": "anglisht",
+        "word_type": "replace",
+        "difficulty": 1,
+        "definition_sq": "Marr një skedar nga interneti ose një pajisje tjetër në pajisjen time.",
+        "examples": [
+          {
+            "sentence_loan": "Duhet ta download dokumentin.",
+            "sentence_clean": "Duhet ta shkarkoj dokumentin.",
+            "blank_form": "shkarkoj"
+          },
+          {
+            "sentence_loan": "Po e download aplikacionin tani.",
+            "sentence_clean": "Po e shkarkoj aplikacionin tani.",
+            "blank_form": "shkarkoj"
+          }
+        ]
+      },
+      {
+        "borrowed_word": "email",
+        "correct_albanian": "postë elektronike",
+        "origin_language": "anglisht",
+        "word_type": "replace",
+        "difficulty": 1,
+        "definition_sq": "Mesazh që dërgohet dhe merret përmes internetit.",
+        "examples": [
+          {
+            "sentence_loan": "Më dërgo një email kur të mbarosh.",
+            "sentence_clean": "Më dërgo një postë elektronike kur të mbarosh.",
+            "blank_form": "postë elektronike"
+          },
+          {
+            "sentence_loan": "E mora email-in tënd.",
+            "sentence_clean": "E mora postën elektronike tënde.",
+            "blank_form": "postën elektronike"
+          }
+        ]
+      },
+      {
+        "borrowed_word": "feedback",
+        "correct_albanian": "vlerësim",
+        "origin_language": "anglisht",
+        "word_type": "replace",
+        "difficulty": 1,
+        "definition_sq": "Mendim ose koment për të ndihmuar përmirësimin e diçkaje.",
+        "examples": [
+          {
+            "sentence_loan": "Pres feedback nga klienti.",
+            "sentence_clean": "Pres vlerësim nga klienti.",
+            "blank_form": "vlerësim"
+          },
+          {
+            "sentence_loan": "Feedback-u ishte shumë i dobishëm.",
+            "sentence_clean": "Vlerësimi ishte shumë i dobishëm.",
+            "blank_form": "Vlerësimi"
+          }
+        ]
+      },
+      {
+        "borrowed_word": "investigoj",
+        "correct_albanian": "hetoj",
+        "origin_language": "anglisht",
+        "word_type": "replace",
+        "difficulty": 1,
+        "definition_sq": "Kërkoj me kujdes të vërtetën ose shkakun e një ngjarjeje.",
+        "examples": [
+          {
+            "sentence_loan": "Policia po investigon rastin.",
+            "sentence_clean": "Policia po heton rastin.",
+            "blank_form": "heton"
+          },
+          {
+            "sentence_loan": "Duhet ta investigojmë këtë çështje.",
+            "sentence_clean": "Duhet ta hetojmë këtë çështje.",
+            "blank_form": "hetojmë"
+          }
+        ]
+      },
+      {
+        "borrowed_word": "manager",
+        "correct_albanian": "drejtues",
+        "origin_language": "anglisht",
+        "word_type": "replace",
+        "difficulty": 1,
+        "definition_sq": "Personi që drejton punën e një ekipi ose organizate.",
+        "examples": [
+          {
+            "sentence_loan": "Manager-i do të vijë pas pak.",
+            "sentence_clean": "Drejtuesi do të vijë pas pak.",
+            "blank_form": "Drejtuesi"
+          },
+          {
+            "sentence_loan": "Fol me manager-in e projektit.",
+            "sentence_clean": "Fol me drejtuesin e projektit.",
+            "blank_form": "drejtuesin"
+          }
+        ]
+      },
+      {
+        "borrowed_word": "marketing",
+        "correct_albanian": "tregtim",
+        "origin_language": "anglisht",
+        "word_type": "replace",
+        "difficulty": 1,
+        "definition_sq": "Veprimtari për promovimin dhe shitjen e produkteve ose shërbimeve.",
+        "examples": [
+          {
+            "sentence_loan": "Ai punon në marketing.",
+            "sentence_clean": "Ai punon në tregtim.",
+            "blank_form": "tregtim"
+          },
+          {
+            "sentence_loan": "Marketing-u kërkon ide të reja.",
+            "sentence_clean": "Tregtimi kërkon ide të reja.",
+            "blank_form": "Tregtimi"
+          }
+        ]
+      },
+      {
+        "borrowed_word": "meeting",
+        "correct_albanian": "mbledhje",
+        "origin_language": "anglisht",
+        "word_type": "replace",
+        "difficulty": 1,
+        "definition_sq": "Takim ku disa veta mblidhen për të diskutuar një çështje.",
+        "examples": [
+          {
+            "sentence_loan": "Kemi një meeting në orën dhjetë.",
+            "sentence_clean": "Kemi një mbledhje në orën dhjetë.",
+            "blank_form": "mbledhje"
+          },
+          {
+            "sentence_loan": "Meeting-u zgjati dy orë.",
+            "sentence_clean": "Mbledhja zgjati dy orë.",
+            "blank_form": "Mbledhja"
+          }
+        ]
+      },
+      {
+        "borrowed_word": "network",
+        "correct_albanian": "rrjet",
+        "origin_language": "anglisht",
+        "word_type": "replace",
+        "difficulty": 1,
+        "definition_sq": "Sistem i lidhur pajisjesh ose njerëzish që komunikojnë me njëri-tjetrin.",
+        "examples": [
+          {
+            "sentence_loan": "Network-u nuk po funksionon.",
+            "sentence_clean": "Rrjeti nuk po funksionon.",
+            "blank_form": "Rrjeti"
+          },
+          {
+            "sentence_loan": "Duhet ta kontrolloj network-un.",
+            "sentence_clean": "Duhet ta kontrolloj rrjetin.",
+            "blank_form": "rrjetin"
+          }
+        ]
+      },
+      {
+        "borrowed_word": "office",
+        "correct_albanian": "zyrë",
+        "origin_language": "anglisht",
+        "word_type": "replace",
+        "difficulty": 1,
+        "definition_sq": "Vend ku kryhet punë administrative ose profesionale.",
+        "examples": [
+          {
+            "sentence_loan": "Jam në office gjithë ditën.",
+            "sentence_clean": "Jam në zyrë gjithë ditën.",
+            "blank_form": "zyrë"
+          },
+          {
+            "sentence_loan": "Office-i hapet në tetë.",
+            "sentence_clean": "Zyra hapet në tetë.",
+            "blank_form": "Zyra"
+          }
+        ]
+      },
+      {
+        "borrowed_word": "parking",
+        "correct_albanian": "parkim",
+        "origin_language": "anglisht",
+        "word_type": "replace",
+        "difficulty": 1,
+        "definition_sq": "Vend ose veprimi i lënies së një mjeti të ndalur.",
+        "examples": [
+          {
+            "sentence_loan": "Nuk gjeta parking afër.",
+            "sentence_clean": "Nuk gjeta parkim afër.",
+            "blank_form": "parkim"
+          },
+          {
+            "sentence_loan": "Parking-u është plot.",
+            "sentence_clean": "Parkimi është plot.",
+            "blank_form": "Parkimi"
+          }
+        ]
+      },
+      {
+        "borrowed_word": "password",
+        "correct_albanian": "fjalëkalim",
+        "origin_language": "anglisht",
+        "word_type": "replace",
+        "difficulty": 1,
+        "definition_sq": "Fjalë ose kombinim shenjash që përdoret për të hyrë në një llogari.",
+        "examples": [
+          {
+            "sentence_loan": "Harrova password-in.",
+            "sentence_clean": "Harrova fjalëkalimin.",
+            "blank_form": "fjalëkalimin"
+          },
+          {
+            "sentence_loan": "Vendos një password të fortë.",
+            "sentence_clean": "Vendos një fjalëkalim të fortë.",
+            "blank_form": "fjalëkalim"
+          }
+        ]
+      },
+      {
+        "borrowed_word": "shopping",
+        "correct_albanian": "blerje",
+        "origin_language": "anglisht",
+        "word_type": "replace",
+        "difficulty": 1,
+        "definition_sq": "Veprimi i blerjes së mallrave ose shërbimeve.",
+        "examples": [
+          {
+            "sentence_loan": "Sot do të dal për shopping.",
+            "sentence_clean": "Sot do të dal për blerje.",
+            "blank_form": "blerje"
+          },
+          {
+            "sentence_loan": "Shopping-u zgjati gjithë pasditen.",
+            "sentence_clean": "Blerjet zgjatën gjithë pasditen.",
+            "blank_form": "Blerjet"
+          }
+        ]
+      },
+      {
+        "borrowed_word": "software",
+        "correct_albanian": "program",
+        "origin_language": "anglisht",
+        "word_type": "replace",
+        "difficulty": 1,
+        "definition_sq": "Pjesa logjike e një kompjuteri që kryen detyra të caktuara.",
+        "examples": [
+          {
+            "sentence_loan": "Duhet të përditësojmë software-in.",
+            "sentence_clean": "Duhet të përditësojmë programin.",
+            "blank_form": "programin"
+          },
+          {
+            "sentence_loan": "Ky software është shumë i shpejtë.",
+            "sentence_clean": "Ky program është shumë i shpejtë.",
+            "blank_form": "program"
+          }
+        ]
+      },
+      {
+        "borrowed_word": "target",
+        "correct_albanian": "objektiv",
+        "origin_language": "anglisht",
+        "word_type": "replace",
+        "difficulty": 1,
+        "definition_sq": "Qëllimi që synon të arrihet.",
+        "examples": [
+          {
+            "sentence_loan": "E arritëm target-in e muajit.",
+            "sentence_clean": "E arritëm objektivin e muajit.",
+            "blank_form": "objektivin"
+          },
+          {
+            "sentence_loan": "Target-i ynë është ambicioz.",
+            "sentence_clean": "Objektivi ynë është ambicioz.",
+            "blank_form": "Objektivi"
+          }
+        ]
+      },
+      {
+        "borrowed_word": "team",
+        "correct_albanian": "ekip",
+        "origin_language": "anglisht",
+        "word_type": "replace",
+        "difficulty": 1,
+        "definition_sq": "Grup njerëzish që punojnë së bashku për një qëllim.",
+        "examples": [
+          {
+            "sentence_loan": "Team-i punoi shumë mirë.",
+            "sentence_clean": "Ekipi punoi shumë mirë.",
+            "blank_form": "Ekipi"
+          },
+          {
+            "sentence_loan": "Jam pjesë e një team-i të shkëlqyer.",
+            "sentence_clean": "Jam pjesë e një ekipi të shkëlqyer.",
+            "blank_form": "ekipi"
+          }
+        ]
+      },
+      {
+        "borrowed_word": "upload",
+        "correct_albanian": "ngarkoj",
+        "origin_language": "anglisht",
+        "word_type": "replace",
+        "difficulty": 1,
+        "definition_sq": "Dërgoj një skedar nga pajisja ime në internet ose në një sistem.",
+        "examples": [
+          {
+            "sentence_loan": "Mos harro ta upload foton.",
+            "sentence_clean": "Mos harro ta ngarkosh foton.",
+            "blank_form": "ngarkosh"
+          },
+          {
+            "sentence_loan": "Po e upload dokumentin tani.",
+            "sentence_clean": "Po e ngarkoj dokumentin tani.",
+            "blank_form": "ngarkoj"
+          }
+        ]
+      },
+      {
+        "borrowed_word": "weekend",
+        "correct_albanian": "fundjavë",
+        "origin_language": "anglisht",
+        "word_type": "replace",
+        "difficulty": 1,
+        "definition_sq": "Dy ditët e fundit të javës që zakonisht janë pushim.",
+        "examples": [
+          {
+            "sentence_loan": "Do të shkojmë në det për weekend.",
+            "sentence_clean": "Do të shkojmë në det për fundjavë.",
+            "blank_form": "fundjavë"
+          },
+          {
+            "sentence_loan": "Weekend-i kaloi shumë shpejt.",
+            "sentence_clean": "Fundjava kaloi shumë shpejt.",
+            "blank_form": "Fundjava"
+          }
+        ]
+      }
+    ]
+  }

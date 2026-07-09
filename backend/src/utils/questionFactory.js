@@ -202,6 +202,93 @@ function buildMatchQuestions(words, count) {
   return questions;
 }
 
+// Split a clean sentence at the exact blank_form surface form (guaranteed present by
+// the import contract). Returns the text before/after the blank so the renderer can
+// draw a real blank slot without parsing a sentinel token. Case-insensitive, first
+// occurrence.
+function blankOut(sentenceClean, blankForm) {
+  const at = sentenceClean.toLowerCase().indexOf(blankForm.toLowerCase());
+  if (at < 0) return null;
+  return { before: sentenceClean.slice(0, at), after: sentenceClean.slice(at + blankForm.length) };
+}
+
+// GAME-3 (Plotëso vendin bosh): the learner produces the Albanian word inside a real
+// sentence via a tap word-bank (typed input is banned — the ë/ç problem). Only words
+// WITH an example carrying blank_form qualify; the sentence is blanked at that exact
+// inflected form. Bank = correct lemma + 3 same-origin, adjacent-difficulty distractor
+// lemmas (never random, never the borrowed word, no duplicates). Stored answer = the
+// correct option INDEX. Throws (fail fast) if the pool can't fill `count`.
+async function buildFillBlankQuestions(origin, words, count) {
+  if (words.length < 4) {
+    throw new QuestionPoolError(`fill_blank: only ${words.length} words for a 4-option bank (need >= 4)`);
+  }
+
+  const { rows: candidates } = await pool.query(
+    `SELECT w.id AS word_id, w.borrowed_word, w.correct_albanian, w.difficulty, w.slug,
+            we.sentence_loan, we.sentence_clean, we.blank_form
+       FROM words w
+       JOIN word_examples we ON we.word_id = w.id
+      WHERE w.origin_language = $1
+        AND w.word_type = 'replace'
+        AND w.correct_albanian IS NOT NULL
+        AND we.blank_form IS NOT NULL`,
+    [origin]
+  );
+  if (!candidates.length) {
+    throw new QuestionPoolError(`fill_blank: no examples with blank_form for "${origin}"`);
+  }
+
+  const questions = [];
+  const usedWordIds = new Set(); // one question per word keeps a session varied
+  for (const cand of shuffle(candidates)) {
+    if (questions.length >= count) break;
+    if (usedWordIds.has(cand.word_id)) continue;
+
+    const split = blankOut(cand.sentence_clean, cand.blank_form);
+    if (!split) continue; // import guarantees a match, but never trust — skip if not
+
+    // 3 distractor lemmas: same origin (pool already is), adjacent difficulty (±1),
+    // distinct values, never the correct word.
+    const seen = new Set([normalize(cand.correct_albanian)]);
+    const distractors = [];
+    for (const w of shuffle(words)) {
+      if (w.id === cand.word_id) continue;
+      if (Math.abs(w.difficulty - cand.difficulty) > 1) continue;
+      if (seen.has(normalize(w.correct_albanian))) continue;
+      seen.add(normalize(w.correct_albanian));
+      distractors.push(w.correct_albanian);
+      if (distractors.length === 3) break;
+    }
+    if (distractors.length < 3) continue;
+
+    const bank = shuffle([cand.correct_albanian, ...distractors]);
+    const answer = bank.findIndex((opt) => normalize(opt) === normalize(cand.correct_albanian));
+
+    usedWordIds.add(cand.word_id);
+    questions.push({
+      type: 'fill_blank',
+      word_id: cand.word_id,
+      prompt: { before: split.before, after: split.after, bank },
+      answer,
+      // Teaching block (served only on submit): the full loan/clean pair is the
+      // learning moment; reuses the review renderer (no fork — GAME-4 too).
+      teach: {
+        borrowed_word: cand.borrowed_word,
+        correct_albanian: cand.correct_albanian,
+        slug: cand.slug,
+        example: { loan: cand.sentence_loan, clean: cand.sentence_clean },
+      },
+    });
+  }
+
+  if (questions.length < count) {
+    throw new QuestionPoolError(
+      `fill_blank: built only ${questions.length}/${count} from ${candidates.length} examples for "${origin}"`
+    );
+  }
+  return questions;
+}
+
 // Produce `count` question objects of the requested `types` from the content model.
 // GAME-0 serves a single type (`translate`); mixing/ordering multiple types into a
 // ramped session is GAME-5's composer, not here. `idx` is assigned last and is the
@@ -225,6 +312,8 @@ async function buildQuestions({ origin, count, types = ['translate'] }) {
         built = built.concat(buildMatchQuestions(words, count));
         break;
       case 'fill_blank':
+        built = built.concat(await buildFillBlankQuestions(origin, words, count));
+        break;
       case 'spot_loanword':
         throw new Error(`buildQuestions: question type "${type}" is not implemented yet`);
       default:

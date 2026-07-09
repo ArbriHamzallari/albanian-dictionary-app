@@ -260,6 +260,10 @@
     "match": {
       "instruction": "Përputh çdo fjalë të huazuar me fjalën shqipe."
     },
+    "fill": {
+      "instruction": "Plotëso boshllëkun me fjalën e duhur.",
+      "confirm": "Konfirmo"
+    },
     "review": {
       "heading": "Shiko përgjigjet",
       "yourAnswer": "Përgjigjja jote:",
