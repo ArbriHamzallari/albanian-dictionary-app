@@ -113,12 +113,28 @@ const startQuizSchema = Joi.object({
   types: Joi.array().items(Joi.string().valid(...QUESTION_TYPES)).min(1).default(['translate']),
 }).options({ stripUnknown: true });
 
+const MATCH_PAIRS_PER_QUESTION = 5;
+
+// A match answer: a leftId -> rightId index mapping (keys and values are small
+// non-negative integers). Structural correctness (exact size, no duplicate right
+// indices, keys matching the question) is enforced by the grader; Joi just pins the
+// shape and ranges. `.pattern` with no other keys allowed keeps it strict.
+const matchMappingSchema = Joi.object()
+  .pattern(
+    /^\d+$/,
+    Joi.number().integer().min(0).max(MATCH_PAIRS_PER_QUESTION - 1)
+  )
+  .min(1)
+  .max(MATCH_PAIRS_PER_QUESTION);
+
 // Answers are keyed by the question's `idx` in the served session (not a DB id).
-// `answer` is the chosen option string for `translate`; GAME-2/3 extend this shape
-// for mapping/index answers.
+// `answer` is the chosen option string for `translate`, or a mapping object for
+// `match` (GAME-2); fill_blank/spot_loanword extend this in GAME-3/4.
 const quizAnswerSchema = Joi.object({
   idx: Joi.number().integer().min(0).max(QUIZ_QUESTIONS_PER_SESSION - 1).required(),
-  answer: Joi.string().trim().max(255).required(),
+  answer: Joi.alternatives()
+    .try(Joi.string().trim().max(255), matchMappingSchema)
+    .required(),
 });
 
 const quizSubmitSchema = Joi.object({
@@ -165,6 +181,7 @@ module.exports = {
   startQuizSchema,
   quizSubmitSchema,
   QUIZ_QUESTIONS_PER_SESSION,
+  MATCH_PAIRS_PER_QUESTION,
   ORIGIN_CODES,
   QUESTION_TYPES,
 };
