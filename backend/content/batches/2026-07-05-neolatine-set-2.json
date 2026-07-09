@@ -11,7 +11,8 @@
       "examples": [
         {
           "sentence_loan": "Bëri apel për ndihmë.",
-          "sentence_clean": "Bëri thirrje për ndihmë."
+          "sentence_clean": "Bëri thirrje për ndihmë.",
+          "blank_form": "thirrje"
         }
       ]
     },
@@ -25,7 +26,8 @@
       "examples": [
         {
           "sentence_loan": "Aplikimi i ligjit vazhdon.",
-          "sentence_clean": "Zbatimi i ligjit vazhdon."
+          "sentence_clean": "Zbatimi i ligjit vazhdon.",
+          "blank_form": "Zbatimi"
         }
       ]
     },
@@ -39,7 +41,8 @@
       "examples": [
         {
           "sentence_loan": "Komisioni e aprovoi projektin.",
-          "sentence_clean": "Komisioni e miratoi projektin."
+          "sentence_clean": "Komisioni e miratoi projektin.",
+          "blank_form": "miratoi"
         }
       ]
     },
@@ -53,7 +56,8 @@
       "examples": [
         {
           "sentence_loan": "Diskutuam çdo aspekt.",
-          "sentence_clean": "Diskutuam çdo anë."
+          "sentence_clean": "Diskutuam çdo anë.",
+          "blank_form": "anë"
         }
       ]
     },
@@ -67,7 +71,8 @@
       "examples": [
         {
           "sentence_loan": "Ishin avangardë e ndryshimit.",
-          "sentence_clean": "Ishin pararojë e ndryshimit."
+          "sentence_clean": "Ishin pararojë e ndryshimit.",
+          "blank_form": "pararojë"
         }
       ]
     },
@@ -81,7 +86,8 @@
       "examples": [
         {
           "sentence_loan": "Kjo të jep avantazh.",
-          "sentence_clean": "Kjo të jep epërsi."
+          "sentence_clean": "Kjo të jep epërsi.",
+          "blank_form": "epërsi"
         }
       ]
     },
@@ -95,7 +101,8 @@
       "examples": [
         {
           "sentence_loan": "Gjuha ishte barrierë.",
-          "sentence_clean": "Gjuha ishte pengesë."
+          "sentence_clean": "Gjuha ishte pengesë.",
+          "blank_form": "pengesë"
         }
       ]
     },
@@ -109,7 +116,8 @@
       "examples": [
         {
           "sentence_loan": "Nënshkruan marrëveshje bilaterale.",
-          "sentence_clean": "Nënshkruan marrëveshje të dyanshme."
+          "sentence_clean": "Nënshkruan marrëveshje të dyanshme.",
+          "blank_form": "të dyanshme"
         }
       ]
     },
@@ -123,7 +131,8 @@
       "examples": [
         {
           "sentence_loan": "Ishte shumë brutal.",
-          "sentence_clean": "Ishte shumë i vrazhdë."
+          "sentence_clean": "Ishte shumë i vrazhdë.",
+          "blank_form": "i vrazhdë"
         }
       ]
     },
@@ -137,7 +146,8 @@
       "examples": [
         {
           "sentence_loan": "Mora certifikatën sot.",
-          "sentence_clean": "Mora vërtetimin sot."
+          "sentence_clean": "Mora vërtetimin sot.",
+          "blank_form": "vërtetimin"
         }
       ]
     },
@@ -151,7 +161,8 @@
       "examples": [
         {
           "sentence_loan": "Studiojmë civilizimin ilir.",
-          "sentence_clean": "Studiojmë qytetërimin ilir."
+          "sentence_clean": "Studiojmë qytetërimin ilir.",
+          "blank_form": "qytetërimin"
         }
       ]
     },
@@ -165,7 +176,8 @@
       "examples": [
         {
           "sentence_loan": "Duhet të decidojmë sot.",
-          "sentence_clean": "Duhet të vendosim sot."
+          "sentence_clean": "Duhet të vendosim sot.",
+          "blank_form": "vendosim"
         }
       ]
     },
@@ -179,7 +191,8 @@
       "examples": [
         {
           "sentence_loan": "Ishte moment deciziv.",
-          "sentence_clean": "Ishte moment vendimtar."
+          "sentence_clean": "Ishte moment vendimtar.",
+          "blank_form": "vendimtar"
         }
       ]
     },
@@ -193,7 +206,8 @@
       "examples": [
         {
           "sentence_loan": "Ia dedikoi fitoren nënës.",
-          "sentence_clean": "Ia kushtoi fitoren nënës."
+          "sentence_clean": "Ia kushtoi fitoren nënës.",
+          "blank_form": "kushtoi"
         }
       ]
     },
@@ -207,7 +221,8 @@
       "examples": [
         {
           "sentence_loan": "Lexo definicionin me kujdes.",
-          "sentence_clean": "Lexo përkufizimin me kujdes."
+          "sentence_clean": "Lexo përkufizimin me kujdes.",
+          "blank_form": "përkufizimin"
         }
       ]
     }

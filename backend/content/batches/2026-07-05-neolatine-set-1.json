@@ -11,7 +11,8 @@
       "examples": [
         {
           "sentence_loan": "Bëra abonim për një vit.",
-          "sentence_clean": "Bëra pajtim për një vit."
+          "sentence_clean": "Bëra pajtim për një vit.",
+          "blank_form": "pajtim"
         }
       ]
     },
@@ -25,7 +26,8 @@
       "examples": [
         {
           "sentence_loan": "Kuvendi e abrogoi ligjin.",
-          "sentence_clean": "Kuvendi e shfuqizoi ligjin."
+          "sentence_clean": "Kuvendi e shfuqizoi ligjin.",
+          "blank_form": "shfuqizoi"
         }
       ]
     },
@@ -39,7 +41,8 @@
       "examples": [
         {
           "sentence_loan": "Ky vend është adapt për fëmijë.",
-          "sentence_clean": "Ky vend është i përshtatshëm për fëmijë."
+          "sentence_clean": "Ky vend është i përshtatshëm për fëmijë.",
+          "blank_form": "i përshtatshëm"
         }
       ]
     },
@@ -53,7 +56,8 @@
       "examples": [
         {
           "sentence_loan": "Duhet ta adaptojmë planin.",
-          "sentence_clean": "Duhet ta përshtatim planin."
+          "sentence_clean": "Duhet ta përshtatim planin.",
+          "blank_form": "përshtatim"
         }
       ]
     },
@@ -67,7 +71,8 @@
       "examples": [
         {
           "sentence_loan": "Ai afirmoi lajmin.",
-          "sentence_clean": "Ai pohoi lajmin."
+          "sentence_clean": "Ai pohoi lajmin.",
+          "blank_form": "pohoi"
         }
       ]
     },
@@ -81,7 +86,8 @@
       "examples": [
         {
           "sentence_loan": "Mora pjesë në aktivitet.",
-          "sentence_clean": "Mora pjesë në veprimtari."
+          "sentence_clean": "Mora pjesë në veprimtari.",
+          "blank_form": "veprimtari"
         }
       ]
     },
@@ -95,7 +101,8 @@
       "examples": [
         {
           "sentence_loan": "Situata aktuale është e qetë.",
-          "sentence_clean": "Situata e tanishme është e qetë."
+          "sentence_clean": "Situata e tanishme është e qetë.",
+          "blank_form": "tanishme"
         }
       ]
     },
@@ -109,7 +116,8 @@
       "examples": [
         {
           "sentence_loan": "Ra alarmi i zjarrit.",
-          "sentence_clean": "Ra kushtrimi i zjarrit."
+          "sentence_clean": "Ra kushtrimi i zjarrit.",
+          "blank_form": "kushtrimi"
         }
       ]
     },
@@ -123,7 +131,8 @@
       "examples": [
         {
           "sentence_loan": "Ambienti ishte i pastër.",
-          "sentence_clean": "Mjedisi ishte i pastër."
+          "sentence_clean": "Mjedisi ishte i pastër.",
+          "blank_form": "Mjedisi"
         }
       ]
     },
@@ -137,7 +146,8 @@
       "examples": [
         {
           "sentence_loan": "Kam një angazhim nesër.",
-          "sentence_clean": "Kam një zotim nesër."
+          "sentence_clean": "Kam një zotim nesër.",
+          "blank_form": "zotim"
         }
       ]
     }

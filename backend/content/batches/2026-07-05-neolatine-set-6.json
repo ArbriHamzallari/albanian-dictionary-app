@@ -11,7 +11,8 @@
       "examples": [
         {
           "sentence_loan": "Frekuentoj kursin çdo javë.",
-          "sentence_clean": "Ndjek kursin çdo javë."
+          "sentence_clean": "Ndjek kursin çdo javë.",
+          "blank_form": "Ndjek"
         }
       ]
     },
@@ -25,7 +26,8 @@
       "examples": [
         {
           "sentence_loan": "Mos hezito të pyesësh.",
-          "sentence_clean": "Mos ngurro të pyesësh."
+          "sentence_clean": "Mos ngurro të pyesësh.",
+          "blank_form": "ngurro"
         }
       ]
     },
@@ -39,7 +41,8 @@
       "examples": [
         {
           "sentence_loan": "Këto dy foto janë identike.",
-          "sentence_clean": "Këto dy foto janë të njëjta."
+          "sentence_clean": "Këto dy foto janë të njëjta.",
+          "blank_form": "të njëjta"
         }
       ]
     },
@@ -53,7 +56,8 @@
       "examples": [
         {
           "sentence_loan": "E imagjinoj veten atje.",
-          "sentence_clean": "E përfytyroj veten atje."
+          "sentence_clean": "E përfytyroj veten atje.",
+          "blank_form": "përfytyroj"
         }
       ]
     },
@@ -67,7 +71,8 @@
       "examples": [
         {
           "sentence_loan": "Është imperativ të veprojmë.",
-          "sentence_clean": "Është e domosdoshme të veprojmë."
+          "sentence_clean": "Është e domosdoshme të veprojmë.",
+          "blank_form": "e domosdoshme"
         }
       ]
     },
@@ -81,7 +86,8 @@
       "examples": [
         {
           "sentence_loan": "Ky vendim ka implikime të mëdha.",
-          "sentence_clean": "Ky vendim ka pasoja të mëdha."
+          "sentence_clean": "Ky vendim ka pasoja të mëdha.",
+          "blank_form": "pasoja"
         }
       ]
     },
@@ -95,7 +101,8 @@
       "examples": [
         {
           "sentence_loan": "Ndërtesa ishte impozante.",
-          "sentence_clean": "Ndërtesa ishte madhështore."
+          "sentence_clean": "Ndërtesa ishte madhështore.",
+          "blank_form": "madhështore"
         }
       ]
     },
@@ -109,7 +116,8 @@
       "examples": [
         {
           "sentence_loan": "Sot inaugurojmë shkollën e re.",
-          "sentence_clean": "Sot përurojmë shkollën e re."
+          "sentence_clean": "Sot përurojmë shkollën e re.",
+          "blank_form": "përurojmë"
         }
       ]
     },
@@ -123,7 +131,8 @@
       "examples": [
         {
           "sentence_loan": "Indeksi i çmimeve u rrit.",
-          "sentence_clean": "Treguesi i çmimeve u rrit."
+          "sentence_clean": "Treguesi i çmimeve u rrit.",
+          "blank_form": "Treguesi"
         }
       ]
     },
@@ -137,7 +146,8 @@
       "examples": [
         {
           "sentence_loan": "Lajmi shkaktoi indinjatë.",
-          "sentence_clean": "Lajmi shkaktoi zemërim."
+          "sentence_clean": "Lajmi shkaktoi zemërim.",
+          "blank_form": "zemërim"
         }
       ]
     },
@@ -151,7 +161,8 @@
       "examples": [
         {
           "sentence_loan": "Vendi fitoi indipendencën.",
-          "sentence_clean": "Vendi fitoi pavarësinë."
+          "sentence_clean": "Vendi fitoi pavarësinë.",
+          "blank_form": "pavarësinë"
         }
       ]
     },
@@ -165,7 +176,8 @@
       "examples": [
         {
           "sentence_loan": "Ai më influencoi shumë.",
-          "sentence_clean": "Ai më ndikoi shumë."
+          "sentence_clean": "Ai më ndikoi shumë.",
+          "blank_form": "ndikoi"
         }
       ]
     },
@@ -179,7 +191,8 @@
       "examples": [
         {
           "sentence_loan": "Ka shumë influencë tek të rinjtë.",
-          "sentence_clean": "Ka shumë ndikim tek të rinjtë."
+          "sentence_clean": "Ka shumë ndikim tek të rinjtë.",
+          "blank_form": "ndikim"
         }
       ]
     },
@@ -193,7 +206,8 @@
       "examples": [
         {
           "sentence_loan": "Mori iniciativë për projektin.",
-          "sentence_clean": "Mori nismë për projektin."
+          "sentence_clean": "Mori nismë për projektin.",
+          "blank_form": "nismë"
         }
       ]
     },
@@ -207,7 +221,8 @@
       "examples": [
         {
           "sentence_loan": "Injoranca sjell gabime.",
-          "sentence_clean": "Padituria sjell gabime."
+          "sentence_clean": "Padituria sjell gabime.",
+          "blank_form": "Padituria"
         }
       ]
     }
