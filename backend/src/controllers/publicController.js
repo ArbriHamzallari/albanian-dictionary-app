@@ -1,4 +1,7 @@
+const crypto = require('crypto');
 const pool = require('../utils/db');
+const { buildQuestions, QuestionPoolError } = require('../utils/questionFactory');
+const { demoAnswerSchema } = require('../utils/validation');
 
 // Public homepage stats are read on every homepage load. `search_logs` grows
 // constantly and COUNT(*) is not free, so the result is cached in-memory for
@@ -105,4 +108,81 @@ const getOriginByCode = async (req, res, next) => {
   }
 };
 
-module.exports = { getPublicStats, getOrigins, getOriginByCode };
+// --- Landing playable demo (UI-1) -----------------------------------------
+// ONE real "Gjej fjalën e huazuar" question, playable without signup, graded
+// server-side (the answer index never reaches the client). Built from the free
+// anglisht world and rotated hourly so it is CDN/cache-friendly and the same for
+// every visitor within the hour. The correct index is stored server-side keyed by
+// an opaque id; the id stays gradeable for a short window after rotation so answers
+// submitted right at an hour boundary still resolve.
+const DEMO_ROTATE_MS = 60 * 60 * 1000; // a new question each hour
+const DEMO_GRADE_WINDOW_MS = 2 * 60 * 60 * 1000; // an id remains gradeable this long
+let demoCurrent = null; // { id, tokens, expiresAt } — client-safe, no answer
+const demoAnswers = new Map(); // id -> { answer, teach, expiresAt } — server-only truth
+
+const pruneDemoAnswers = (now) => {
+  for (const [id, entry] of demoAnswers) {
+    if (entry.expiresAt <= now) demoAnswers.delete(id);
+  }
+};
+
+// GET /api/public/demo-question — the current demo question (tokens only, no answer).
+const getDemoQuestion = async (req, res, next) => {
+  try {
+    const now = Date.now();
+    if (!demoCurrent || demoCurrent.expiresAt <= now) {
+      const [question] = await buildQuestions({
+        origin: 'anglisht',
+        count: 1,
+        types: ['spot_loanword'],
+      });
+      const id = crypto.randomBytes(9).toString('hex');
+      demoCurrent = { id, tokens: question.prompt.tokens, expiresAt: now + DEMO_ROTATE_MS };
+      demoAnswers.set(id, {
+        answer: question.answer,
+        teach: question.teach,
+        expiresAt: now + DEMO_GRADE_WINDOW_MS,
+      });
+      pruneDemoAnswers(now);
+    }
+    res.json({ id: demoCurrent.id, tokens: demoCurrent.tokens });
+  } catch (err) {
+    if (err instanceof QuestionPoolError) {
+      // Content not ready for the demo — honest 503, no fake question.
+      return res.status(503).json({ message: 'Demoja nuk është gati për momentin.' });
+    }
+    next(err);
+  }
+};
+
+// POST /api/public/demo-answer — grade one tapped token against the stored answer.
+const postDemoAnswer = async (req, res, next) => {
+  try {
+    const { error, value } = demoAnswerSchema.validate(req.body || {});
+    if (error) {
+      return res.status(400).json({ message: 'Kërkesë e pavlefshme.' });
+    }
+
+    const entry = demoAnswers.get(value.id);
+    if (!entry || entry.expiresAt <= Date.now()) {
+      // Rotated out or never existed — ask the client to reload a fresh question.
+      return res.status(410).json({ message: 'Pyetja e demos skadoi. Rifresko faqen.' });
+    }
+
+    res.json({
+      correct: value.selected === entry.answer,
+      answer: entry.answer,
+      teach: entry.teach,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+module.exports = {
+  getPublicStats,
+  getOrigins,
+  getOriginByCode,
+  getDemoQuestion,
+  postDemoAnswer,
+};
