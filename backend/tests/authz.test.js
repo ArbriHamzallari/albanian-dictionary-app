@@ -70,6 +70,8 @@ const ACCESS = {
   'GET /api/public/stats': 'public',
   'GET /api/public/origins': 'public',
   'GET /api/public/origins/:code': 'public',
+  'GET /api/public/demo-question': 'public',
+  'POST /api/public/demo-answer': 'public',
   'GET /api/words/search': 'public',
   'GET /api/words/word-of-the-day': 'public',
   'GET /api/words/random': 'public',

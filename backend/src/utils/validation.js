@@ -165,9 +165,18 @@ const deleteAccountSchema = Joi.object({
   credential: Joi.string().max(8192),
 }).options({ stripUnknown: true });
 
+// Public landing demo (UI-1): grade ONE spot-the-loanword question with no auth.
+// `id` is the opaque handle the demo-question endpoint minted (the answer index it
+// maps to lives server-side only); `selected` is the tapped token index.
+const demoAnswerSchema = Joi.object({
+  id: Joi.string().trim().max(64).required(),
+  selected: Joi.number().integer().min(0).max(255).required(),
+}).options({ stripUnknown: true });
+
 module.exports = {
   searchSchema,
   suggestionSchema,
+  demoAnswerSchema,
   loginSchema,
   googleAuthSchema,
   completeProfileSchema,

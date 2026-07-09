@@ -150,7 +150,9 @@
       "problem": "Sa shpesh përdorim 'email', 'meeting', 'business' në vend të fjalëve tona?",
       "promise": "Fjalingo të ndihmon t'i kthesh fjalët e huazuara në shqipen e vërtetë — me lojë, jo me mësim.",
       "ctaPrimary": "Fillo falas",
-      "ctaSecondary": "Si funksionon"
+      "ctaSecondary": "Si funksionon",
+      "ctaDemo": "TODO_SQ_home_hero_ctaDemo",
+      "microline": "TODO_SQ_home_hero_microline"
     },
     "how": {
       "heading": "Si funksionon",
@@ -205,6 +207,101 @@
     "popular": {
       "heading": "Fjalët më të kërkuara 🔥",
       "seeAll": "Shiko të gjitha"
+    },
+    "proof": {
+      "wordsLabel": "TODO_SQ_home_proof_wordsLabel",
+      "worldsLabel": "TODO_SQ_home_proof_worldsLabel",
+      "adsLabel": "TODO_SQ_home_proof_adsLabel",
+      "heartsLabel": "TODO_SQ_home_proof_heartsLabel"
+    },
+    "path": {
+      "eyebrow": "TODO_SQ_home_path_eyebrow",
+      "heading": "TODO_SQ_home_path_heading",
+      "lead": "TODO_SQ_home_path_lead",
+      "freeBadge": "TODO_SQ_home_path_freeBadge",
+      "premiumBadge": "TODO_SQ_home_path_premiumBadge",
+      "wordsLabel": "TODO_SQ_home_path_wordsLabel",
+      "open": "TODO_SQ_home_path_open"
+    },
+    "features": {
+      "eyebrow": "TODO_SQ_home_features_eyebrow",
+      "heading": "TODO_SQ_home_features_heading",
+      "lead": "TODO_SQ_home_features_lead",
+      "streaks": {
+        "title": "TODO_SQ_home_features_streaks_title",
+        "desc": "TODO_SQ_home_features_streaks_desc"
+      },
+      "achievements": {
+        "title": "TODO_SQ_home_features_achievements_title",
+        "desc": "TODO_SQ_home_features_achievements_desc"
+      },
+      "challenge": {
+        "title": "TODO_SQ_home_features_challenge_title",
+        "desc": "TODO_SQ_home_features_challenge_desc"
+      },
+      "celebrations": {
+        "title": "TODO_SQ_home_features_celebrations_title",
+        "desc": "TODO_SQ_home_features_celebrations_desc"
+      }
+    },
+    "showcase": {
+      "heading": "TODO_SQ_home_showcase_heading",
+      "level": {
+        "title": "TODO_SQ_home_showcase_level_title",
+        "desc": "TODO_SQ_home_showcase_level_desc"
+      },
+      "types": {
+        "title": "TODO_SQ_home_showcase_types_title",
+        "desc": "TODO_SQ_home_showcase_types_desc"
+      },
+      "win": {
+        "title": "TODO_SQ_home_showcase_win_title",
+        "desc": "TODO_SQ_home_showcase_win_desc"
+      }
+    },
+    "demo": {
+      "eyebrow": "TODO_SQ_home_demo_eyebrow",
+      "heading": "TODO_SQ_home_demo_heading",
+      "correct": "TODO_SQ_home_demo_correct",
+      "wrong": "TODO_SQ_home_demo_wrong",
+      "answerLabel": "TODO_SQ_home_demo_answerLabel",
+      "cta": "TODO_SQ_home_demo_cta",
+      "another": "TODO_SQ_home_demo_another",
+      "retry": "TODO_SQ_home_demo_retry",
+      "loadError": "TODO_SQ_home_demo_loadError"
+    },
+    "trust": {
+      "eyebrow": "TODO_SQ_home_trust_eyebrow",
+      "heading": "TODO_SQ_home_trust_heading",
+      "lead": "TODO_SQ_home_trust_lead",
+      "ads": {
+        "title": "TODO_SQ_home_trust_ads_title",
+        "desc": "TODO_SQ_home_trust_ads_desc"
+      },
+      "hearts": {
+        "title": "TODO_SQ_home_trust_hearts_title",
+        "desc": "TODO_SQ_home_trust_hearts_desc"
+      },
+      "safety": {
+        "title": "TODO_SQ_home_trust_safety_title",
+        "desc": "TODO_SQ_home_trust_safety_desc"
+      },
+      "messages": {
+        "title": "TODO_SQ_home_trust_messages_title",
+        "desc": "TODO_SQ_home_trust_messages_desc"
+      },
+      "server": {
+        "title": "TODO_SQ_home_trust_server_title",
+        "desc": "TODO_SQ_home_trust_server_desc"
+      },
+      "cancel": {
+        "title": "TODO_SQ_home_trust_cancel_title",
+        "desc": "TODO_SQ_home_trust_cancel_desc"
+      }
+    },
+    "pricing": {
+      "text": "TODO_SQ_home_pricing_text",
+      "cta": "TODO_SQ_home_pricing_cta"
     }
   },
   "premiumHome": {
