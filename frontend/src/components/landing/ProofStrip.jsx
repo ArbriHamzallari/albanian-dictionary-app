@@ -12,7 +12,7 @@ const ProofStrip = ({ words }) => {
     { key: 'words', value: words, label: t('home.proof.wordsLabel') },
     { key: 'worlds', value: 5, label: t('home.proof.worldsLabel') },
     { key: 'ads', value: 0, label: t('home.proof.adsLabel') },
-    { key: 'hearts', value: 0, label: t('home.proof.heartsLabel') },
+    { key: 'hearts', value: 0, label: t('TODO_SQ_proof_hearts') },
   ];
 
   return (

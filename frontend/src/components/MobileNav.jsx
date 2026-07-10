@@ -1,19 +1,16 @@
 import { NavLink } from 'react-router-dom';
-import { Home, Search, Gamepad2, Trophy, User } from 'lucide-react';
+import { Compass, Gamepad2, Trophy, User } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.jsx';
 import { t } from '../i18n/index.js';
 
 const MobileNav = () => {
-  const { isLoggedIn, isAdmin } = useAuth();
-
-  const dashboardPath = isAdmin ? '/admin/dashboard' : '/dashboard';
+  const { isLoggedIn } = useAuth();
 
   const tabs = [
-    { to: '/', icon: Home, label: t('mobilenav.home') },
-    { to: '/kerko', icon: Search, label: t('mobilenav.search') },
-    { to: '/kuizi', icon: Gamepad2, label: t('mobilenav.quiz') },
-    { to: '/renditja', icon: Trophy, label: t('mobilenav.leaderboard') },
-    { to: isLoggedIn ? dashboardPath : '/hyr', icon: User, label: isAdmin ? t('common.admin') : (isLoggedIn ? t('mobilenav.profile') : t('common.login')) },
+    { to: '/origjina', icon: Compass, label: t('TODO_SQ_nav_rruga') },
+    { to: '/kuizi', icon: Gamepad2, label: t('TODO_SQ_nav_luaj') },
+    { to: '/renditja', icon: Trophy, label: t('TODO_SQ_nav_renditja') },
+    { to: isLoggedIn ? '/profili' : '/hyr', icon: User, label: isLoggedIn ? t('TODO_SQ_nav_profili') : t('common.login') },
   ];
 
   return (

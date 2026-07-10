@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Star, Flame, Trophy, Target, BarChart3, Clock, BookOpen, ArrowRight } from 'lucide-react';
+import { Star, Flame, Trophy, Target, BarChart3, Clock, BookOpen, ArrowRight, Compass, CalendarDays } from 'lucide-react';
 import { useAuth, useHasUnlimitedAccess } from '../context/AuthContext.jsx';
 import Avatar from '../components/Avatar.jsx';
 import LoadingSpinner from '../components/LoadingSpinner.jsx';
@@ -23,7 +23,8 @@ const Dashboard = () => {
   const { user, loading: authLoading, isLoggedIn } = useAuth();
   const hasUnlimited = useHasUnlimitedAccess();
   const navigate = useNavigate();
-  const [recentAttempts, setRecentAttempts] = useState([]);
+  const [wotd, setWotd] = useState(null);
+  const [lessonProgress, setLessonProgress] = useState(null); // { completed, total }
 
   useEffect(() => {
     if (!authLoading && !isLoggedIn) {
@@ -33,12 +34,29 @@ const Dashboard = () => {
     // and admins see it with the AdminHomeBanner + their Header link to the panel.
   }, [authLoading, isLoggedIn, navigate]);
 
+  // Daily-loop widgets (UI-2): the word of the day and lesson-path progress. Both are
+  // best-effort — a failed fetch just hides its card, never blocks the dashboard.
   useEffect(() => {
-    if (!user) return;
-    // Fetch recent quiz attempts
-    api.get(`/profile/${user.profile.uuid}`)
-      .then(() => {})
+    if (!user) return undefined;
+    let active = true;
+    api.get('/words/word-of-the-day')
+      .then((res) => { if (active) setWotd(res.data.word); })
       .catch(() => {});
+    api.get('/lessons')
+      .then((res) => {
+        if (!active) return;
+        let completed = 0;
+        let total = 0;
+        for (const unit of res.data.units || []) {
+          for (const lesson of unit.lessons || []) {
+            total += 1;
+            if (lesson.completed) completed += 1;
+          }
+        }
+        setLessonProgress({ completed, total });
+      })
+      .catch(() => {});
+    return () => { active = false; };
   }, [user]);
 
   if (authLoading || !user) {
@@ -140,6 +158,60 @@ const Dashboard = () => {
         </Card>
         <DashboardQuestCard />
       </motion.div>
+
+      {/* Vazhdo rrugën — pull back into the origin path, with lesson progress (UI-2) */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.125 }}
+        className="mb-6"
+      >
+        <Link to="/origjina" className="card card-hover flex items-center gap-4">
+          <span className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-fjalingo-green/15">
+            <Compass className="h-6 w-6 text-fjalingo-green" />
+          </span>
+          <div className="flex-1">
+            <p className="font-black text-heading dark:text-dark-text">{t('TODO_SQ_dashboard_continue_path')}</p>
+            {lessonProgress && lessonProgress.total > 0 && (
+              <p className="text-xs font-bold text-muted dark:text-dark-muted">
+                {t('TODO_SQ_dashboard_lessons_completed', {
+                  completed: lessonProgress.completed,
+                  total: lessonProgress.total,
+                })}
+              </p>
+            )}
+          </div>
+          <ArrowRight className="h-5 w-5 flex-shrink-0 text-muted dark:text-dark-muted" />
+        </Link>
+      </motion.div>
+
+      {/* Fjala e ditës — the daily word, one tap into its full detail (UI-2) */}
+      {wotd && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.127 }}
+          className="mb-6"
+        >
+          <Link to="/fjala-e-dites" className="card card-hover flex items-center gap-4">
+            <span className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-accent-yellow/15">
+              <CalendarDays className="h-6 w-6 text-accent-yellow" />
+            </span>
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-extrabold uppercase tracking-wide text-muted dark:text-dark-muted">
+                {t('TODO_SQ_dashboard_wotd')}
+              </p>
+              <p className="truncate font-black text-heading dark:text-dark-text">
+                {wotd.borrowed_word}
+                {wotd.correct_albanian && <span className="text-brand-green"> → {wotd.correct_albanian}</span>}
+              </p>
+            </div>
+            <span className="flex-shrink-0 text-sm font-bold text-brand-green">
+              {t('TODO_SQ_dashboard_see_details')}
+            </span>
+          </Link>
+        </motion.div>
+      )}
 
       {/* Lessons (Mësimet) — the three-type lesson player */}
       <motion.div

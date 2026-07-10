@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
+import Parrot from '../mascot/Parrot.jsx';
 import { t } from '../../i18n/index.js';
 
 // The five origin worlds in the FIXED landing order (M4 decode §3) — anglisht is the
@@ -8,6 +9,14 @@ import { t } from '../../i18n/index.js';
 // content yet, so it is not part of the path.
 const LANDING_ORDER = ['anglisht', 'turqisht', 'neolatine', 'greqisht', 'sllavisht'];
 const FREE_ORIGIN = 'anglisht';
+
+const ORIGIN_MASCOT_STATES = {
+  anglisht: 'wave',
+  turqisht: 'think',
+  neolatine: 'cheer',
+  greqisht: 'idle',
+  sllavisht: 'sleep',
+};
 
 // Teaser = first sentence of the origin's intro narrative.
 const firstSentence = (text) => {
@@ -40,47 +49,59 @@ const PathRow = ({ index, isFree, isLast, children }) => (
   </div>
 );
 
-const OriginCard = ({ origin, isFree }) => (
-  <Link
-    to={`/origjina/${origin.code}`}
-    className="card card-hover block"
-  >
-    <div className="flex items-start justify-between gap-3">
-      <div className="min-w-0">
-        {origin.era_sq && (
-          <p className="text-xs font-bold uppercase tracking-wide text-accent-purple">
-            {origin.era_sq}
+const OriginCard = ({ origin, isFree }) => {
+  const mascotState = ORIGIN_MASCOT_STATES[origin.code] || 'idle';
+  return (
+    <Link
+      to={`/origjina/${origin.code}`}
+      className="card card-hover block"
+    >
+      <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
+        <div className="flex-1 min-w-0 w-full">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              {origin.era_sq && (
+                <p className="text-xs font-bold uppercase tracking-wide text-accent-purple">
+                  {origin.era_sq}
+                </p>
+              )}
+              <h3 className="mt-0.5 text-lg font-black text-heading dark:text-dark-text sm:text-xl">
+                {origin.name_sq}
+              </h3>
+            </div>
+            <span
+              className={`flex-shrink-0 rounded-pill px-2.5 py-1 text-[0.65rem] font-black uppercase tracking-wide ${
+                isFree
+                  ? 'bg-brand-green/15 text-brand-green'
+                  : 'bg-accent-purple/15 text-accent-purple'
+              }`}
+            >
+              {isFree ? t('home.path.freeBadge') : t('home.path.premiumBadge')}
+            </span>
+          </div>
+
+          <p className="mt-2 text-sm text-muted dark:text-dark-muted">
+            {firstSentence(origin.intro_sq)}
           </p>
-        )}
-        <h3 className="mt-0.5 text-lg font-black text-heading dark:text-dark-text sm:text-xl">
-          {origin.name_sq}
-        </h3>
+
+          <div className="mt-4 flex items-center justify-between">
+            <span className="text-xs font-bold text-brand-green">
+              {origin.word_count} {t('home.path.wordsLabel')}
+            </span>
+            <span className="inline-flex items-center gap-1 text-sm font-bold text-brand-green">
+              {t('home.path.open')} <ArrowRight className="h-4 w-4" />
+            </span>
+          </div>
+        </div>
+
+        {/* Small illustration mascot panel on the right side */}
+        <div className="hidden sm:flex flex-shrink-0 bg-cloud dark:bg-dark-bg/20 p-2.5 rounded-2xl border border-line dark:border-dark-border items-center justify-center">
+          <Parrot state={mascotState} size={70} />
+        </div>
       </div>
-      <span
-        className={`flex-shrink-0 rounded-pill px-2.5 py-1 text-[0.65rem] font-black uppercase tracking-wide ${
-          isFree
-            ? 'bg-brand-green/15 text-brand-green'
-            : 'bg-accent-purple/15 text-accent-purple'
-        }`}
-      >
-        {isFree ? t('home.path.freeBadge') : t('home.path.premiumBadge')}
-      </span>
-    </div>
-
-    <p className="mt-2 text-sm text-muted dark:text-dark-muted">
-      {firstSentence(origin.intro_sq)}
-    </p>
-
-    <div className="mt-4 flex items-center justify-between">
-      <span className="text-xs font-bold text-brand-green">
-        {origin.word_count} {t('home.path.wordsLabel')}
-      </span>
-      <span className="inline-flex items-center gap-1 text-sm font-bold text-brand-green">
-        {t('home.path.open')} <ArrowRight className="h-4 w-4" />
-      </span>
-    </div>
-  </Link>
-);
+    </Link>
+  );
+};
 
 const SkeletonCard = () => (
   <div className="card">

@@ -33,20 +33,10 @@ const Header = () => {
   useEffect(() => { setAccountOpen(false); }, [location]);
 
   const navLinks = [
-    { to: '/', label: t('nav.home') },
-    { to: '/origjina', label: t('nav.origins') },
-    { to: '/kuizi', label: t('nav.quiz') },
-    { to: '/arritjet', label: t('nav.achievements') },
-    { to: '/renditja', label: t('nav.leaderboard') },
-    // Friends/Chats are Premium features, but every logged-in user sees the link:
-    // free users get the upgrade prompt on the page, admins (unlimited access) and
-    // premium users get the real thing. Admins must see it to test Premium.
-    ...(isLoggedIn ? [
-      { to: '/miqte', label: t('nav.friends') },
-      { to: '/bisedat', label: t('nav.chats') },
-    ] : []),
-    { to: '/premium', label: t('nav.premium') },
-    { to: '/propozo', label: t('nav.suggest') },
+    { to: '/origjina', label: t('TODO_SQ_nav_rruga') },
+    { to: '/kuizi', label: t('TODO_SQ_nav_luaj') },
+    { to: '/renditja', label: t('TODO_SQ_nav_renditja') },
+    { to: '/profili', label: t('TODO_SQ_nav_profili') },
   ];
 
   return (

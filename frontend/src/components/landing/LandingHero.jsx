@@ -58,7 +58,7 @@ const LandingHero = () => (
         </div>
 
         <p className="mt-5 text-sm font-bold text-muted dark:text-dark-muted">
-          {t('home.hero.microline')}
+          {t('TODO_SQ_hero_microline')}
         </p>
       </motion.div>
 
