@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion, useReducedMotion } from 'framer-motion';
-import { Save, Check, Users, Trash2 } from 'lucide-react';
+import { Save, Check, Users, Trash2, Trophy, CalendarDays, MessageSquare, Lightbulb, Sparkles, ChevronRight, Search, Target } from 'lucide-react';
 import { useAuth, useHasUnlimitedAccess } from '../context/AuthContext.jsx';
 import Avatar from '../components/Avatar.jsx';
 import Card from '../components/ui/Card.jsx';
@@ -15,6 +15,19 @@ import api from '../utils/api.js';
 import { t } from '../i18n/index.js';
 
 const inputClass = 'w-full rounded-2xl border-2 border-line bg-paper px-4 h-14 font-bold text-ink focus:outline-none focus:border-brand-green';
+
+// Profili is the hub for the secondary destinations pulled out of the flat nav (UI-2):
+// every one stays reachable in ≤2 taps (Profili → card). Labels reuse existing keys.
+const HUB_LINKS = [
+  { to: '/arritjet', icon: Trophy, labelKey: 'nav.achievements' },
+  { to: '/sfida-e-dites', icon: Target, labelKey: 'questCard.label' },
+  { to: '/fjala-e-dites', icon: CalendarDays, labelKey: 'TODO_SQ_dashboard_wotd' },
+  { to: '/kerko', icon: Search, labelKey: 'mobilenav.search' },
+  { to: '/miqte', icon: Users, labelKey: 'nav.friends' },
+  { to: '/bisedat', icon: MessageSquare, labelKey: 'nav.chats' },
+  { to: '/propozo', icon: Lightbulb, labelKey: 'nav.suggest' },
+  { to: '/premium', icon: Sparkles, labelKey: 'nav.premium' },
+];
 
 const Profile = () => {
   const reduceMotion = useReducedMotion();
@@ -151,6 +164,25 @@ const Profile = () => {
         <Avatar filename={selectedAvatar} size={80} className="mx-auto mb-4 ring-4 ring-brand-green/20" />
         <Heading level={2}>{t('profile.title')}</Heading>
       </motion.div>
+
+      {/* Hub: the secondary destinations, reachable in ≤2 taps from the Profili nav item */}
+      <div className="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-3">
+        {HUB_LINKS.map(({ to, icon: Icon, labelKey }) => (
+          <Link
+            key={to}
+            to={to}
+            className="card card-hover flex items-center gap-3 py-4"
+          >
+            <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-2xl bg-brand-green/10">
+              <Icon className="h-5 w-5 text-brand-green" aria-hidden="true" />
+            </span>
+            <span className="min-w-0 flex-1 truncate text-sm font-black text-heading dark:text-dark-text">
+              {t(labelKey)}
+            </span>
+            <ChevronRight className="h-4 w-4 flex-shrink-0 text-muted dark:text-dark-muted" aria-hidden="true" />
+          </Link>
+        ))}
+      </div>
 
       <ErrorMessage message={error} />
       {success && (
