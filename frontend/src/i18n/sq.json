@@ -1104,6 +1104,20 @@
   "TODO_SQ_landing_hero_demo_loanword": "event",
   "TODO_SQ_landing_hero_demo_answer": "the Albanian word",
   "TODO_SQ_landing_hero_demo_option2": "second option",
-  "TODO_SQ_landing_hero_demo_option3": "third option"
+  "TODO_SQ_landing_hero_demo_option3": "third option",
+  "TODO_SQ_landing_manifesto_pair1_loan": "event",
+  "TODO_SQ_landing_manifesto_pair1_albanian": "the Albanian word",
+  "TODO_SQ_landing_manifesto_pair2_loan": "meeting",
+  "TODO_SQ_landing_manifesto_pair2_albanian": "the word you know",
+  "TODO_SQ_landing_manifesto_pair3_loan": "weekend",
+  "TODO_SQ_landing_manifesto_pair3_albanian": "your own word",
+  "TODO_SQ_landing_manifesto_pair4_loan": "business",
+  "TODO_SQ_landing_manifesto_pair4_albanian": "the real word",
+  "landing": {
+    "manifesto": {
+      "line1": "Shqipja nuk humbet brenda një dite.",
+      "line2": "Humbet fjalë pas fjale."
+    }
+  }
 }
 
