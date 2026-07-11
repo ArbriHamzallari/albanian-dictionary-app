@@ -9,6 +9,13 @@
   --paper: #FFFFFF;
   --cloud: #F4F7FB;
   --line: #E3E8EF;
+
+  /* M4 rebrand surface tokens (m4-rebrand.md §2). Atmosphere-alternation
+     surfaces + the hero gradient. Consumed via surface.cream / surface.mint
+     tailwind aliases and bg-[image:var(--surface-hero)]. */
+  --surface-cream: #FBF6EC;   /* warm alternation surface */
+  --surface-mint:  #EAF7F1;   /* green-tinted alternation surface */
+  --surface-hero:  linear-gradient(180deg, #EAF7F1 0%, #FFFFFF 100%);
 }
 
 /* Dark mode (UX-5): the .dark class on <html> flips the neutral surface/text
@@ -22,4 +29,9 @@
   --paper: #2D2D2D;     /* dark.card  — card/surface background */
   --cloud: #1A1A1A;     /* dark.bg    — page background */
   --line: #404040;      /* dark.border — borders/dividers */
+
+  /* Both alternation surfaces collapse to one in dark — a tone that sits
+     between dark-bg (#1A1A1A) and dark-card (#2D2D2D). (m4-rebrand.md §2) */
+  --surface-cream: #222222;
+  --surface-mint:  #222222;
 }
