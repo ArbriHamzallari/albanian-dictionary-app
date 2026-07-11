@@ -20,7 +20,7 @@ const container = {
   show: { transition: { staggerChildren: 0.09, delayChildren: 0.05 } },
 };
 const item = {
-  hidden: { opacity: 0, y: 20 },
+  hidden: { opacity: 0, y: 24 },
   show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: 'easeOut' } },
 };
 
