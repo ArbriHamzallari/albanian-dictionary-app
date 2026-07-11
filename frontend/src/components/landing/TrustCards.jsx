@@ -7,7 +7,9 @@ import { t } from '../../i18n/index.js';
 
 // Section 9 — Privacy & safety (m4-rebrand.md §5.9). Warm parental cards, not legal
 // text. EVERY claim is traceable to code that ships today (see the RB-9 PR notes):
-//   private-by-default minors ...... authController: profilePrivate = isMinor
+//   age-gate + consent + private ... authController.buildChildSafetyFields (self-DECLARED
+//                                    age + self-ticked consent; profilePrivate = isMinor).
+//                                    There is NO age/identity verification anywhere.
 //   pseudonymous/opt-out leaderboards rankSql: leaderboard_opt_out + segment partition
 //   accepted-friends preset chat .... chatController: no free text for minors
 //   profanity + PII screening ....... childSafety.validateUserText
@@ -25,7 +27,7 @@ const CHIP = {
 const CARDS = [
   { key: 'ads', icon: Ban, accent: 'coral', title: 'home.trust.ads.title', desc: 'home.trust.ads.desc' },
   { key: 'hearts', icon: Heart, accent: 'green', title: 'home.trust.hearts.title', desc: 'home.trust.hearts.desc' },
-  { key: 'private', icon: Lock, accent: 'purple', title: 'TODO_SQ_landing_safety_private_title', desc: 'TODO_SQ_landing_safety_private_desc' },
+  { key: 'age_gate', icon: Lock, accent: 'purple', title: 'TODO_SQ_safety_age_gate_title', desc: 'TODO_SQ_safety_age_gate' },
   { key: 'leaderboard', icon: Trophy, accent: 'green', title: 'TODO_SQ_landing_safety_leaderboard_title', desc: 'TODO_SQ_landing_safety_leaderboard_desc' },
   { key: 'messages', icon: MessageSquare, accent: 'coral', title: 'home.trust.messages.title', desc: 'home.trust.messages.desc' },
   { key: 'filter', icon: ShieldCheck, accent: 'purple', title: 'TODO_SQ_landing_safety_filter_title', desc: 'TODO_SQ_landing_safety_filter_desc' },
