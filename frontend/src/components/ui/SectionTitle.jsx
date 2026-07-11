@@ -31,6 +31,7 @@ const SectionTitle = ({
   subline,
   id,
   align = 'left',
+  as: Tag = 'h2',
   className = '',
 }) => {
   const accentClass = ACCENTS[accent] ?? ACCENTS.green;
@@ -38,12 +39,12 @@ const SectionTitle = ({
 
   return (
     <div className={['max-w-2xl', alignClass, className].filter(Boolean).join(' ')}>
-      <h2
+      <Tag
         id={id}
         className="text-balance text-3xl font-black leading-tight text-ink sm:text-4xl md:text-[clamp(2rem,4vw,3rem)]"
       >
         {renderHeadline(title, accentWord, accentClass)}
-      </h2>
+      </Tag>
       {subline && (
         <p className="mt-4 text-base font-semibold text-ink-soft sm:text-lg">
           {subline}
