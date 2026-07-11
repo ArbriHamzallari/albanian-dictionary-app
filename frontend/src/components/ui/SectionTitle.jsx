@@ -6,6 +6,7 @@
 const ACCENTS = {
   green: 'text-brand-green',
   coral: 'text-accent-coral',
+  purple: 'text-accent-purple', // premium surfaces only (spec §2)
 };
 
 // Split the headline around the FIRST occurrence of accentWord and colour only
