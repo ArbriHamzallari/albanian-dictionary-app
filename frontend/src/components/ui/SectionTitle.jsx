@@ -9,13 +9,19 @@ const ACCENTS = {
   purple: 'text-accent-purple', // premium surfaces only (spec §2)
 };
 
-// Split the headline around the FIRST occurrence of accentWord and colour only
-// that one span — everything else stays ink. If the word isn't found, the
-// headline renders plainly (fail-soft, never throws).
+// Colour the accent word. If it appears inside the title, highlight it in place;
+// if it doesn't (copy supplies the title and the trailing accent word separately),
+// append it highlighted — so approved strings go in verbatim either way.
 const renderHeadline = (title, accentWord, accentClass) => {
   if (!accentWord) return title;
   const idx = title.indexOf(accentWord);
-  if (idx === -1) return title;
+  if (idx === -1) {
+    return (
+      <>
+        {title} <span className={accentClass}>{accentWord}</span>
+      </>
+    );
+  }
   return (
     <>
       {title.slice(0, idx)}
