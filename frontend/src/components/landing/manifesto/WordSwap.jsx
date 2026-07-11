@@ -10,8 +10,17 @@ const SPRING = { type: 'spring', stiffness: 260, damping: 20 };
 // Gentle holds so the loop reads calm, never distracting (spec §4, constraints).
 const HOLD = { loan: 1500, albanian: 1900 };
 
-const WordSwap = ({ pairs, forceReducedMotion = false }) => {
+// Colour scheme per background. `onGreen` (Final CTA reprise) renders on the green
+// gradient: the loanword fades in translucent white, the Albanian word settles in solid
+// white. On paper (default) it keeps the coral→green semantic from the manifesto.
+const TONE = {
+  light: { loan: 'text-accent-coral', albanian: 'text-brand-green' },
+  onGreen: { loan: 'text-white/60', albanian: 'text-white' },
+};
+
+const WordSwap = ({ pairs, forceReducedMotion = false, tone = 'light' }) => {
   const reduceMotion = useReducedMotion() || forceReducedMotion;
+  const colors = TONE[tone] ?? TONE.light;
   const [index, setIndex] = useState(0);
   const [phase, setPhase] = useState('loan');
 
@@ -35,8 +44,8 @@ const WordSwap = ({ pairs, forceReducedMotion = false }) => {
       <div className="flex flex-col items-center gap-2">
         {pairs.map(({ loan, albanian }, i) => (
           <p key={i} className="text-xl font-black sm:text-2xl">
-            <span className="text-accent-coral line-through decoration-2">{loan}</span>{' '}
-            <span className="text-brand-green">{albanian}</span>
+            <span className={`${colors.loan} line-through decoration-2`}>{loan}</span>{' '}
+            <span className={colors.albanian}>{albanian}</span>
           </p>
         ))}
       </div>
@@ -59,7 +68,7 @@ const WordSwap = ({ pairs, forceReducedMotion = false }) => {
         <AnimatePresence mode="wait">
           <motion.span
             key={`${index}-${phase}`}
-            className={isLoan ? 'text-accent-coral' : 'text-brand-green'}
+            className={isLoan ? colors.loan : colors.albanian}
             initial={{ opacity: 0, filter: 'blur(6px)', y: 8 }}
             animate={{ opacity: 1, filter: 'blur(0px)', y: 0, transition: SPRING }}
             exit={{ opacity: 0, filter: 'blur(6px)', y: -6, transition: { duration: 0.35 } }}

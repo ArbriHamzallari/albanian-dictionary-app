@@ -1183,6 +1183,9 @@
     "manifesto": {
       "line1": "Shqipja nuk humbet brenda një dite.",
       "line2": "Humbet fjalë pas fjale."
+    },
+    "finalCta": {
+      "line": "Fjalët që nuk përdorim, harrohen. Fjalët që përdorim, mbeten."
     }
   }
 }
