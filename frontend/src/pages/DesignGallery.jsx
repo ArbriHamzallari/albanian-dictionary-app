@@ -9,6 +9,7 @@ import Eyebrow from '../components/ui/Eyebrow.jsx';
 import SectionTitle from '../components/ui/SectionTitle.jsx';
 import PhoneFrame from '../components/ui/PhoneFrame.jsx';
 import StatChip from '../components/ui/StatChip.jsx';
+import Manifesto from '../components/landing/Manifesto.jsx';
 
 const isDesignGalleryEnabled = () =>
   import.meta.env.DEV || import.meta.env.VITE_SHOW_DESIGN_GALLERY === 'true';
@@ -289,6 +290,36 @@ const DesignGallery = () => {
                 <StatChip value="7" label="botë" accent="ink" />
                 <StatChip label="fjalë" loading />
               </div>
+            </ThemePair>
+          </div>
+        </section>
+
+        {/* ── M4 Manifesto — signature section (RB-2) ────────────────────── */}
+        <section className="space-y-8">
+          <div>
+            <Heading level={2}>M4 — Manifesto (fjalia nënshkruese)</Heading>
+            <p className="mt-2 text-ink-soft font-semibold">
+              Fjalia zbulohet fjalë pas fjale; poshtë saj, huazimi (koral) tretet
+              dhe fjala shqipe (jeshile) zë vendin. Të dyja temat, plus varianti
+              me lëvizje të reduktuar.
+            </p>
+          </div>
+
+          <div>
+            <Heading level={3} className="mb-3">
+              E animuar
+            </Heading>
+            <ThemePair>
+              <Manifesto />
+            </ThemePair>
+          </div>
+
+          <div>
+            <Heading level={3} className="mb-3">
+              Lëvizje e reduktuar (statik)
+            </Heading>
+            <ThemePair>
+              <Manifesto forceReducedMotion />
             </ThemePair>
           </div>
         </section>
