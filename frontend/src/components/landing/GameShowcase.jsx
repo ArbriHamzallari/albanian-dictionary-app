@@ -1,87 +1,104 @@
-import { motion } from 'framer-motion';
+import { ArrowRight, Flame } from 'lucide-react';
+import SectionShell from '../ui/SectionShell.jsx';
+import Eyebrow from '../ui/Eyebrow.jsx';
+import SectionTitle from '../ui/SectionTitle.jsx';
+import Card from '../ui/Card.jsx';
 import { t } from '../../i18n/index.js';
 
-// A static, non-interactive mock of the signature "Gjej fjalën e huazuar" game. The
-// chips are loanwords (foreign words, not Albanian UI copy), one shown as the tapped
-// answer — purely illustrative. No data fetch, so the section never shifts. The real
-// playable question lives in the demo section below.
-const MOCK_CHIPS = [
-  { word: 'email', selected: true },
-  { word: 'meeting', selected: false },
-  { word: 'deadline', selected: false },
-  { word: 'weekend', selected: false },
-];
+// Section 4 — How the game works (m4-rebrand.md §5.4). Three step cards mapping
+// the real loop: the borrowed word you already say → find the Albanian word →
+// make it yours (XP/streak). Numbered markers are justified (a real sequence).
+// Words inside the cards follow the coral (loan) / green (authentic) rule (§2).
+// Paper surface; stays mounted in Home.jsx (reordering is RB-11).
 
-const BULLETS = ['level', 'types', 'win'];
+// A subtle, geometric inline-SVG accent — token-coloured, decorative only (§5.4).
+const CornerDecor = () => (
+  <svg
+    aria-hidden="true"
+    viewBox="0 0 60 60"
+    className="absolute right-3 top-3 h-12 w-12 text-brand-green/10"
+  >
+    <circle cx="30" cy="30" r="26" fill="none" stroke="currentColor" strokeWidth="2" />
+    <circle cx="30" cy="30" r="16" fill="none" stroke="currentColor" strokeWidth="2" />
+    <circle cx="30" cy="30" r="6" fill="currentColor" />
+  </svg>
+);
 
-const PhoneMock = () => (
-  <div className="mx-auto w-full max-w-[280px]">
-    <div className="rounded-[2.25rem] border-[6px] border-ink bg-paper p-3 shadow-card dark:border-dark-border">
-      <div className="mx-auto mb-4 h-1.5 w-16 rounded-full bg-line dark:bg-dark-border" />
-      <div className="card">
-        <p className="mb-4 text-xs font-bold text-muted dark:text-dark-muted">
-          {t('quiz.spot.instruction')}
-        </p>
-        <div className="flex flex-wrap gap-2">
-          {MOCK_CHIPS.map((chip) => (
-            <span
-              key={chip.word}
-              className={`rounded-xl border-2 px-3 py-2 text-sm font-bold ${
-                chip.selected
-                  ? 'border-brand-green bg-brand-green/10 text-brand-green'
-                  : 'border-border text-heading dark:border-dark-border dark:text-dark-text'
-              }`}
-            >
-              {chip.word}
-            </span>
-          ))}
-        </div>
+// The illustrative word-demo per step (the coral/green rule made concrete).
+const StepDemo = ({ step, loan, albanian, rewardLabel }) => {
+  if (step === 1) {
+    return (
+      <span className="inline-flex rounded-xl border-2 border-accent-coral/40 bg-accent-coral/10 px-3 py-1.5 text-sm font-black text-accent-coral">
+        {loan}
+      </span>
+    );
+  }
+  if (step === 2) {
+    return (
+      <span className="inline-flex items-center gap-2 text-sm font-black">
+        <span className="text-accent-coral line-through decoration-2">{loan}</span>
+        <ArrowRight className="h-4 w-4 text-ink-soft" aria-hidden="true" />
+        <span className="text-brand-green">{albanian}</span>
+      </span>
+    );
+  }
+  return (
+    <span className="inline-flex items-center gap-2">
+      <Flame className="h-5 w-5 text-accent-coral" aria-hidden="true" />
+      <span className="rounded-pill bg-accent-yellow/15 px-2.5 py-1 text-xs font-black uppercase tracking-wide text-ink">
+        +XP · {rewardLabel}
+      </span>
+    </span>
+  );
+};
+
+const StepCard = ({ n, title, desc, demo }) => (
+  <Card className="relative overflow-hidden shadow-card transition-transform duration-200 hover:-translate-y-1 hover:shadow-card-hover">
+    <CornerDecor />
+    <span className="relative flex h-10 w-10 items-center justify-center rounded-full bg-brand-green/15 text-base font-black text-brand-green">
+      {n}
+    </span>
+    <h3 className="relative mt-4 text-lg font-black text-ink">{title}</h3>
+    <p className="relative mt-2 text-sm font-semibold text-ink-soft">{desc}</p>
+    <div className="relative mt-4">{demo}</div>
+  </Card>
+);
+
+const GameShowcase = ({ id }) => {
+  const loan = t('TODO_SQ_landing_how_word_loan');
+  const albanian = t('TODO_SQ_landing_how_word_albanian');
+  const rewardLabel = t('TODO_SQ_landing_how_reward_label');
+
+  const steps = [1, 2, 3].map((n) => ({
+    n,
+    title: t(`TODO_SQ_landing_how_step${n}_title`),
+    desc: t(`TODO_SQ_landing_how_step${n}_desc`),
+    demo: (
+      <StepDemo step={n} loan={loan} albanian={albanian} rewardLabel={rewardLabel} />
+    ),
+  }));
+
+  return (
+    <SectionShell surface="paper" id={id}>
+      <div className="flex flex-col items-center text-center">
+        <Eyebrow>{t('TODO_SQ_landing_how_eyebrow')}</Eyebrow>
+        <SectionTitle
+          className="mt-4"
+          align="center"
+          title={t('TODO_SQ_landing_how_title')}
+          accentWord={t('TODO_SQ_landing_how_title_accent')}
+          accent="green"
+          subline={t('TODO_SQ_landing_how_subline')}
+        />
       </div>
-    </div>
-  </div>
-);
 
-const GameShowcase = () => (
-  <section className="mx-auto max-w-6xl px-4 py-14 sm:px-6">
-    <div className="grid items-center gap-10 md:grid-cols-2">
-      <motion.div
-        initial={{ opacity: 0, x: -20 }}
-        whileInView={{ opacity: 1, x: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.4 }}
-      >
-        <PhoneMock />
-      </motion.div>
-
-      <motion.div
-        initial={{ opacity: 0, x: 20 }}
-        whileInView={{ opacity: 1, x: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.4 }}
-      >
-        <h2 className="text-2xl font-black text-heading dark:text-dark-text sm:text-3xl">
-          {t('home.showcase.heading')}
-        </h2>
-        <ol className="mt-6 space-y-5">
-          {BULLETS.map((key, i) => (
-            <li key={key} className="flex gap-4">
-              <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-brand-green/15 text-sm font-black text-brand-green">
-                {i + 1}
-              </span>
-              <div>
-                <p className="font-black text-heading dark:text-dark-text">
-                  {t(`home.showcase.${key}.title`)}
-                </p>
-                <p className="mt-1 text-sm font-semibold text-muted dark:text-dark-muted">
-                  {t(`home.showcase.${key}.desc`)}
-                </p>
-              </div>
-            </li>
-          ))}
-        </ol>
-      </motion.div>
-    </div>
-  </section>
-);
+      <div className="mt-12 grid gap-6 md:grid-cols-3">
+        {steps.map(({ n, title, desc, demo }) => (
+          <StepCard key={n} n={n} title={title} desc={desc} demo={demo} />
+        ))}
+      </div>
+    </SectionShell>
+  );
+};
 
 export default GameShowcase;
