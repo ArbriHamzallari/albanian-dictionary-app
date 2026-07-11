@@ -1144,6 +1144,18 @@
   "TODO_SQ_landing_demo_title_accent": "vërtetë",
   "TODO_SQ_landing_demo_warm": "Nuk ka problem. Pikërisht kështu mësohen e kujtohen fjalët.",
   "TODO_SQ_landing_origins_empty": "New word-histories are on their way — come back soon.",
+  "TODO_SQ_landing_feat_eyebrow": "Why people love it",
+  "TODO_SQ_landing_feat_title": "Small wins that add up",
+  "TODO_SQ_landing_feat_title_accent": "wins",
+  "TODO_SQ_landing_feat_subline": "XP, streaks, achievements, leagues and word collections — no hearts, no ads, ever.",
+  "TODO_SQ_landing_feat_levels_title": "XP & levels",
+  "TODO_SQ_landing_feat_levels_desc": "Earn XP for every word and watch your level climb.",
+  "TODO_SQ_landing_feat_leagues_title": "Leagues",
+  "TODO_SQ_landing_feat_leagues_desc": "Rise through the ranks in a gentle weekly league.",
+  "TODO_SQ_landing_feat_collections_title": "Word collections",
+  "TODO_SQ_landing_feat_collections_desc": "Collect the Albanian words you bring back, world by world.",
+  "TODO_SQ_landing_feat_premium_title": "Premium",
+  "TODO_SQ_landing_feat_premium_desc": "Unlock every origin world and extra practice — one simple plan.",
   "landing": {
     "manifesto": {
       "line1": "Shqipja nuk humbet brenda një dite.",

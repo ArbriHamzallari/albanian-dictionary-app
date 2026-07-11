@@ -11,6 +11,7 @@ import PhoneFrame from '../components/ui/PhoneFrame.jsx';
 import StatChip from '../components/ui/StatChip.jsx';
 import Manifesto from '../components/landing/Manifesto.jsx';
 import EverydayExamples from '../components/landing/EverydayExamples.jsx';
+import FeatureProof from '../components/landing/FeatureProof.jsx';
 
 const isDesignGalleryEnabled = () =>
   import.meta.env.DEV || import.meta.env.VITE_SHOW_DESIGN_GALLERY === 'true';
@@ -336,6 +337,24 @@ const DesignGallery = () => {
           </div>
           <ThemePair>
             <EverydayExamples />
+          </ThemePair>
+        </section>
+
+        {/* ── M4 Features + live proof, merged (RB-7) ────────────────────── */}
+        <section className="space-y-6">
+          <div>
+            <Heading level={2}>M4 — Veçoritë + prova live (RB-7)</Heading>
+            <p className="mt-2 text-ink-soft font-semibold">
+              Brez i hollë me statistika (StatChip) mbi kartat e veçorive. Poshtë:
+              gjendja e ngarkimit (skeleton, pa zhvendosje).
+            </p>
+          </div>
+          <ThemePair>
+            <FeatureProof words={1240} />
+          </ThemePair>
+          <Heading level={3}>Gjendja e ngarkimit</Heading>
+          <ThemePair>
+            <FeatureProof words={null} />
           </ThemePair>
         </section>
       </div>
