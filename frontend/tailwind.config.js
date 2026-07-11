@@ -22,6 +22,12 @@ export default {
         paper: 'var(--paper)',
         cloud: 'var(--cloud)',
         line: 'var(--line)',
+        // M4 rebrand alternation surfaces (tokens.css). The hero gradient is
+        // not a color — consume it via bg-[image:var(--surface-hero)].
+        surface: {
+          cream: 'var(--surface-cream)',
+          mint: 'var(--surface-mint)',
+        },
         // Legacy aliases (migrate gradually) — kept as hex so opacity
         // modifiers (e.g. bg-fjalingo-green/10) keep working. Values match
         // the canonical --brand-green / --brand-green-dark tokens.
