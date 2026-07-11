@@ -1,5 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
-
+/* Nunito is loaded via the preconnect + <link rel="stylesheet" display=swap> in
+   index.html — importing it here too adds a second, render-blocking request. */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

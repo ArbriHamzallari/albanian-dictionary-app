@@ -15,7 +15,7 @@ const HOLD = { loan: 1500, albanian: 1900 };
 // white. On paper (default) it keeps the coral→green semantic from the manifesto.
 const TONE = {
   light: { loan: 'text-accent-coral', albanian: 'text-brand-green' },
-  onGreen: { loan: 'text-white/60', albanian: 'text-white' },
+  onGreen: { loan: 'text-white/75', albanian: 'text-white' },
 };
 
 const WordSwap = ({ pairs, forceReducedMotion = false, tone = 'light' }) => {

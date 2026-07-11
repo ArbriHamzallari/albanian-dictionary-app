@@ -22,7 +22,7 @@ const FinalCTA = ({ id = 'fillo' }) => {
   return (
     <section
       id={id}
-      className="bg-[linear-gradient(180deg,var(--brand-green),var(--brand-green-dark))]"
+      className="bg-[linear-gradient(180deg,var(--brand-green-dark)_0%,var(--brand-green-dark)_65%,var(--brand-green)_100%)]"
     >
       <div className="mx-auto flex max-w-3xl flex-col items-center px-4 py-16 text-center sm:px-6 md:py-20 lg:py-[120px]">
         <Parrot state="cheer" size={112} />
