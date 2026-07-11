@@ -1140,6 +1140,9 @@
   "TODO_SQ_landing_how_word_loan": "meeting",
   "TODO_SQ_landing_how_word_albanian": "the Albanian word",
   "TODO_SQ_landing_how_reward_label": "streak",
+  "TODO_SQ_landing_demo_title": "Try a real question, right now",
+  "TODO_SQ_landing_demo_title_accent": "real",
+  "TODO_SQ_landing_demo_warm": "So close — now the word is yours. Give another a go.",
   "landing": {
     "manifesto": {
       "line1": "Shqipja nuk humbet brenda një dite.",
