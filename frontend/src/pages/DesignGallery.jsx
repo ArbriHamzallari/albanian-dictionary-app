@@ -10,6 +10,7 @@ import SectionTitle from '../components/ui/SectionTitle.jsx';
 import PhoneFrame from '../components/ui/PhoneFrame.jsx';
 import StatChip from '../components/ui/StatChip.jsx';
 import Manifesto from '../components/landing/Manifesto.jsx';
+import EverydayExamples from '../components/landing/EverydayExamples.jsx';
 
 const isDesignGalleryEnabled = () =>
   import.meta.env.DEV || import.meta.env.VITE_SHOW_DESIGN_GALLERY === 'true';
@@ -322,6 +323,20 @@ const DesignGallery = () => {
               <Manifesto forceReducedMotion />
             </ThemePair>
           </div>
+        </section>
+
+        {/* ── M4 Everyday examples (RB-3) ────────────────────────────────── */}
+        <section className="space-y-6">
+          <div>
+            <Heading level={2}>M4 — Shembuj të përditshëm (RB-3)</Heading>
+            <p className="mt-2 text-ink-soft font-semibold">
+              Karta me flluska bisede; huazimi theksohet me koral. Toni: njohje,
+              jo korrigjim.
+            </p>
+          </div>
+          <ThemePair>
+            <EverydayExamples />
+          </ThemePair>
         </section>
       </div>
     </div>
