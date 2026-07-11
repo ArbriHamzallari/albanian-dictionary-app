@@ -12,6 +12,7 @@ import StatChip from '../components/ui/StatChip.jsx';
 import Manifesto from '../components/landing/Manifesto.jsx';
 import EverydayExamples from '../components/landing/EverydayExamples.jsx';
 import FeatureProof from '../components/landing/FeatureProof.jsx';
+import ParentsTeachers from '../components/landing/ParentsTeachers.jsx';
 
 const isDesignGalleryEnabled = () =>
   import.meta.env.DEV || import.meta.env.VITE_SHOW_DESIGN_GALLERY === 'true';
@@ -355,6 +356,20 @@ const DesignGallery = () => {
           <Heading level={3}>Gjendja e ngarkimit</Heading>
           <ThemePair>
             <FeatureProof words={null} />
+          </ThemePair>
+        </section>
+
+        {/* ── M4 Parents & teachers (RB-8) ───────────────────────────────── */}
+        <section className="space-y-6">
+          <div>
+            <Heading level={2}>M4 — Prindër & mësues (RB-8)</Heading>
+            <p className="mt-2 text-ink-soft font-semibold">
+              Dy karta të qeta (familje / klasa), fakte të ndershme dhe një lidhje
+              te seksioni i sigurisë. Papagalli shfaqet një herë.
+            </p>
+          </div>
+          <ThemePair>
+            <ParentsTeachers />
           </ThemePair>
         </section>
       </div>
