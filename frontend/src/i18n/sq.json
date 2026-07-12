@@ -1040,6 +1040,7 @@
       "countryLabel": "Shteti",
       "minorPrivacyNote": "Profilet e fëmijëve janë private si parazgjedhje dhe renditja publike shfaq vetëm emër publik dhe avatar.",
       "consentLabel": "Kam pëlqimin e prindit ose kujdestarit për të krijuar këtë llogari.",
+      "ageTooYoung": "TODO_SQ_register_age_too_young",
       "submit": "Regjistrohu",
       "submitLoading": "Duke u regjistruar...",
       "hasAccount": "Ke tashmë llogari?",

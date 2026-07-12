@@ -47,8 +47,13 @@ const wordOfDaySchema = Joi.object({
   display_date: Joi.string().regex(/\d{4}-\d{2}-\d{2}/).required(),
 });
 
+// SAFE-2: hard 13+ floor. Under-13 accounts simply cannot exist, so COPPA's
+// verifiable-parental-consent obligation never attaches. Applied to every path that
+// sets an age: consent-check, register, guest-upgrade, complete-profile.
+const MIN_SIGNUP_AGE = 13;
+
 const consentCheckSchema = Joi.object({
-  age: Joi.number().integer().min(1).max(120).required(),
+  age: Joi.number().integer().min(MIN_SIGNUP_AGE).max(120).required(),
   country_code: Joi.string().trim().uppercase().length(2).required(),
 });
 
@@ -60,7 +65,7 @@ const registerSchema = Joi.object({
   username: Joi.string().trim().pattern(/^[A-Za-z0-9_-]+$/).min(3).max(30).required(),
   email: Joi.string().email().max(255).required(),
   password: Joi.string().min(6).max(255).required(),
-  age: Joi.number().integer().min(1).max(120).required(),
+  age: Joi.number().integer().min(MIN_SIGNUP_AGE).max(120).required(),
   country_code: Joi.string().trim().uppercase().length(2).required(),
   parental_consent_given: Joi.boolean().default(false),
   timezone: Joi.string().trim().max(64).optional(),
@@ -70,7 +75,7 @@ const guestUpgradeSchema = Joi.object({
   username: Joi.string().trim().pattern(/^[A-Za-z0-9_-]+$/).min(3).max(30).required(),
   email: Joi.string().email().max(255).required(),
   password: Joi.string().min(6).max(255).required(),
-  age: Joi.number().integer().min(1).max(120).required(),
+  age: Joi.number().integer().min(MIN_SIGNUP_AGE).max(120).required(),
   country_code: Joi.string().trim().uppercase().length(2).required(),
   parental_consent_given: Joi.boolean().default(false),
   timezone: Joi.string().trim().max(64).optional(),
@@ -150,7 +155,7 @@ const googleAuthSchema = Joi.object({
 // Google sign-ups provide no age/country, so a new Google user must complete the
 // age gate before full access. Same shape as the consent step + the consent flag.
 const completeProfileSchema = Joi.object({
-  age: Joi.number().integer().min(1).max(120).required(),
+  age: Joi.number().integer().min(MIN_SIGNUP_AGE).max(120).required(),
   country_code: Joi.string().trim().uppercase().length(2).required(),
   parental_consent_given: Joi.boolean().default(false),
   timezone: Joi.string().trim().max(64).optional(),

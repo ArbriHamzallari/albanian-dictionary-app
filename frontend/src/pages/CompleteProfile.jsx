@@ -88,7 +88,7 @@ const CompleteProfile = () => {
               value={age}
               onChange={(e) => setAge(e.target.value)}
               required
-              min={1}
+              min={13}
               max={120}
               className="input-field"
               placeholder="13"
@@ -109,7 +109,13 @@ const CompleteProfile = () => {
           </div>
         </div>
 
-        {Number(age) > 0 && Number(age) < 18 && (
+        {Number(age) > 0 && Number(age) < 13 && (
+          <p className="text-xs font-semibold text-fjalingo-coral">
+            {t('auth.register.ageTooYoung')}
+          </p>
+        )}
+
+        {Number(age) >= 13 && Number(age) < 18 && (
           <p className="text-xs font-semibold text-muted dark:text-dark-muted">
             {t('auth.register.minorPrivacyNote')}
           </p>
