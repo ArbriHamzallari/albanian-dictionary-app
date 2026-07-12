@@ -439,9 +439,14 @@ const guestUpgrade = async (req, res, next) => {
     }
 
     const safety = buildChildSafetyFields(value);
-    if (safety.error) {
-      return res.status(safety.error.status).json(safety.error.body);
+    const consentRequired = safety.fields.parentalConsentRequired;
+
+    // Same consent gate as register (a guest upgrade is still a new full account).
+    const parentCheck = validateParentEmail(consentRequired, value.parent_email, value.email);
+    if (parentCheck.error) {
+      return res.status(400).json({ message: 'Email-i i prindit/kujdestarit është i pavlefshëm ose mungon.', code: parentCheck.error });
     }
+    const parentEmail = consentRequired ? value.parent_email : null;
 
     const gp = value.guestProgress;
     // Extra clamp: correct_answers cannot exceed total_quizzes * 10
@@ -472,9 +477,10 @@ const guestUpgrade = async (req, res, next) => {
            profile_private,
            leaderboard_opt_out,
            leaderboard_segment,
-           timezone
+           timezone,
+           parent_email
          )
-         VALUES ($1, $2, $3, 'user', $4, $5, 'default.png', $6, $7, $8, $9, $10, CASE WHEN $10 THEN NOW() ELSE NULL END, $11, $12, $13, $14)
+         VALUES ($1, $2, $3, 'user', $4, $5, 'default.png', $6, $7, $8, $9, $10, CASE WHEN $10 THEN NOW() ELSE NULL END, $11, $12, $13, $14, $15)
          RETURNING *`,
         [
           value.email,
@@ -491,20 +497,24 @@ const guestUpgrade = async (req, res, next) => {
           safety.fields.leaderboardOptOut,
           safety.fields.leaderboardSegment,
           timezone,
+          parentEmail,
         ]
       );
       const user = userResult.rows[0];
 
       // Create stats with merged guest progress
-      // Level = floor(sqrt(xp/100)) + 1, computed from the xp parameter ($2)
+      // Level = floor(sqrt(xp/100)) + 1, computed from a dedicated xp param ($6). It is
+      // passed separately from the xp column value ($2) because Postgres rejects one
+      // parameter being deduced as both integer (the xp column) and numeric (the
+      // sqrt cast) — "inconsistent types deduced for parameter".
       // total_questions seeds the accuracy denominator (BUG-5). Guests track quizzes,
       // not per-quiz question counts, so use the same total_quizzes * 10 convention
       // as the correct_answers clamp above — keeping merged accuracy <= 100%.
       await client.query(
         `INSERT INTO user_stats (user_id, xp, level, streak, total_quizzes, correct_answers, total_questions)
-         VALUES ($1, $2, floor(sqrt(($2::numeric)/100))::int + 1, $3, $4, $5, $4 * 10)
+         VALUES ($1, $2, floor(sqrt(($6::numeric)/100))::int + 1, $3, $4, $5, $4 * 10)
          ON CONFLICT (user_id) DO NOTHING`,
-        [user.uuid, gp.xp, gp.streak, gp.total_quizzes, gp.correct_answers]
+        [user.uuid, gp.xp, gp.streak, gp.total_quizzes, gp.correct_answers, gp.xp]
       );
 
       await client.query(
@@ -519,6 +529,20 @@ const guestUpgrade = async (req, res, next) => {
       const statsResult = await client.query('SELECT * FROM user_stats WHERE user_id = $1', [user.uuid]);
 
       const token = setSessionCookies(res, user);
+
+      if (consentRequired) {
+        const { parentEmailHint } = await sendParentalConsentEmail(user.uuid, parentEmail);
+        return res.status(201).json({
+          token,
+          profile: profileFromRow(user),
+          stats: statsResult.rows[0],
+          entitlement: { tier: 'free', status: 'free', current_period_end: null },
+          csrfToken: res.locals.csrfToken,
+          pendingParentalConsent: true,
+          parentEmailHint,
+        });
+      }
+
       return res.status(201).json({
         token,
         profile: profileFromRow(user),
@@ -836,9 +860,19 @@ const completeProfile = async (req, res, next) => {
     }
 
     const safety = buildChildSafetyFields(value);
-    if (safety.error) {
-      return res.status(safety.error.status).json(safety.error.body);
+    const consentRequired = safety.fields.parentalConsentRequired;
+
+    // The account already exists (Google sign-up). Its own email is needed to reject a
+    // parent_email equal to it. Same shared consent helper as register — no duplication.
+    const existing = await pool.query('SELECT email FROM users WHERE uuid = $1::uuid', [req.user.uuid]);
+    if (!existing.rows.length) {
+      return res.status(404).json({ message: 'Përdoruesi nuk u gjet.' });
     }
+    const parentCheck = validateParentEmail(consentRequired, value.parent_email, existing.rows[0].email);
+    if (parentCheck.error) {
+      return res.status(400).json({ message: 'Email-i i prindit/kujdestarit është i pavlefshëm ose mungon.', code: parentCheck.error });
+    }
+    const parentEmail = consentRequired ? value.parent_email : null;
 
     const timezone = resolveTimezone(value.timezone);
     const result = await pool.query(
@@ -852,7 +886,8 @@ const completeProfile = async (req, res, next) => {
          profile_private = $7,
          leaderboard_opt_out = $8,
          leaderboard_segment = $9,
-         timezone = COALESCE($10, timezone)
+         timezone = COALESCE($10, timezone),
+         parent_email = $11
        WHERE uuid = $1::uuid
        RETURNING *`,
       [
@@ -866,14 +901,23 @@ const completeProfile = async (req, res, next) => {
         safety.fields.leaderboardOptOut,
         safety.fields.leaderboardSegment,
         timezone,
+        parentEmail,
       ]
     );
 
     if (!result.rows.length) {
       return res.status(404).json({ message: 'Përdoruesi nuk u gjet.' });
     }
+    const user = result.rows[0];
 
-    return res.json({ profile: profileFromRow(result.rows[0]) });
+    // Same consent-pending path as register: email the parent, tell the client to show
+    // the pending screen. Email failure is logged, not fatal.
+    if (consentRequired) {
+      const { parentEmailHint } = await sendParentalConsentEmail(user.uuid, parentEmail);
+      return res.json({ profile: profileFromRow(user), pendingParentalConsent: true, parentEmailHint });
+    }
+
+    return res.json({ profile: profileFromRow(user) });
   } catch (err) {
     return next(err);
   }

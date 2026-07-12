@@ -192,7 +192,7 @@ export function AuthProvider({ children }) {
     });
   };
 
-  const guestUpgrade = async ({ username, email, password, age, countryCode, parentalConsentGiven }) => {
+  const guestUpgrade = async ({ username, email, password, age, countryCode, parentEmail }) => {
     const guestProgress = getGuestProgress();
     const res = await api.post('/auth/guest-upgrade', {
       username,
@@ -200,7 +200,7 @@ export function AuthProvider({ children }) {
       password,
       age: Number(age),
       country_code: countryCode,
-      parental_consent_given: parentalConsentGiven,
+      ...(parentEmail ? { parent_email: parentEmail } : {}),
       timezone: getBrowserTimeZone(),
       guestProgress,
     });

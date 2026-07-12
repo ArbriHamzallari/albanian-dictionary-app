@@ -86,7 +86,7 @@ const Onboarding = () => {
   const [minutesGoal, setMinutesGoal] = useState(null);
   const [age, setAge] = useState('');
   const [countryCode, setCountryCode] = useState('AL');
-  const [parentalConsentGiven, setParentalConsentGiven] = useState(false);
+  const [parentEmail, setParentEmail] = useState('');
   const [username, setUsername] = useState('');
   const [avatar, setAvatar] = useState(null);
   const [email, setEmail] = useState('');
@@ -116,7 +116,7 @@ const Onboarding = () => {
   const handleAgeContinue = async () => {
     setAgeError('');
     const numericAge = Number(age);
-    if (!Number.isInteger(numericAge) || numericAge < 1 || numericAge > 120) {
+    if (!Number.isInteger(numericAge) || numericAge < 13 || numericAge > 120) {
       setAgeError(t('onboarding.ageInvalid'));
       return;
     }
@@ -129,7 +129,7 @@ const Onboarding = () => {
       if (res.data.parental_consent_required) {
         setShowConsent(true);
       } else {
-        setParentalConsentGiven(false);
+        setParentEmail('');
         next();
       }
     } catch (err) {
@@ -145,14 +145,20 @@ const Onboarding = () => {
     setAccountError('');
     setSubmitting(true);
     try {
-      await register({
+      const data = await register({
         username,
         email,
         password,
         age: Number(age),
         countryCode,
-        parentalConsentGiven,
+        parentEmail: showConsent ? parentEmail : undefined,
       });
+
+      // Consent-pending: hold on the pending screen instead of dropping into Lesson 1.
+      if (data.pendingParentalConsent) {
+        navigate('/pending-consent');
+        return;
+      }
 
       // Persist the chosen avatar (register defaults to default.png).
       if (avatar) {
@@ -280,21 +286,25 @@ const Onboarding = () => {
                 </p>
               </div>
               <Card padding="md">
-                <label className="flex items-start gap-3 text-sm font-semibold text-ink cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={parentalConsentGiven}
-                    onChange={(e) => setParentalConsentGiven(e.target.checked)}
-                    className="mt-1"
-                  />
-                  {t('onboarding.consent.checkbox')}
+                <label className="block text-xs font-bold text-ink-soft mb-1">
+                  {t('auth.register.parentEmailLabel')}
                 </label>
+                <input
+                  type="email"
+                  value={parentEmail}
+                  onChange={(e) => setParentEmail(e.target.value)}
+                  className="input-field"
+                  placeholder={t('auth.register.parentEmailPlaceholder')}
+                />
+                <p className="mt-1 text-xs font-semibold text-ink-soft">
+                  {t('auth.register.parentEmailNote')}
+                </p>
               </Card>
               <Button
                 variant="primary"
                 size="lg"
                 fullWidth
-                disabled={!parentalConsentGiven}
+                disabled={!parentEmail}
                 onClick={next}
               >
                 {t('common.continue')}
@@ -312,7 +322,7 @@ const Onboarding = () => {
                 <label className="block text-xs font-bold text-ink-soft mb-1">{t('auth.register.ageLabel')}</label>
                 <input
                   type="number"
-                  min={1}
+                  min={13}
                   max={120}
                   value={age}
                   onChange={(e) => setAge(e.target.value)}
