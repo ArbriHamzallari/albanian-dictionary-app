@@ -1041,6 +1041,9 @@
       "minorPrivacyNote": "Profilet e fëmijëve janë private si parazgjedhje dhe renditja publike shfaq vetëm emër publik dhe avatar.",
       "consentLabel": "Kam pëlqimin e prindit ose kujdestarit për të krijuar këtë llogari.",
       "ageTooYoung": "TODO_SQ_register_age_too_young",
+      "parentEmailLabel": "TODO_SQ_register_parent_email_label",
+      "parentEmailPlaceholder": "TODO_SQ_register_parent_email_placeholder",
+      "parentEmailNote": "TODO_SQ_register_parent_email_note",
       "submit": "Regjistrohu",
       "submitLoading": "Duke u regjistruar...",
       "hasAccount": "Ke tashmë llogari?",
@@ -1050,6 +1053,30 @@
     "google": {
       "failed": "Hyrja me Google dështoi. Provoni përsëri."
     }
+  },
+  "pendingConsent": {
+    "title": "TODO_SQ_pending_consent_title",
+    "subtitle": "TODO_SQ_pending_consent_subtitle",
+    "sentTo": "TODO_SQ_pending_consent_sent_to",
+    "whatNext": "TODO_SQ_pending_consent_what_next",
+    "resendButton": "TODO_SQ_pending_consent_resend_button",
+    "resendLoading": "TODO_SQ_pending_consent_resend_loading",
+    "resendSuccess": "TODO_SQ_pending_consent_resend_success",
+    "resendRateLimited": "TODO_SQ_pending_consent_resend_rate_limited",
+    "logout": "TODO_SQ_pending_consent_logout"
+  },
+  "consentLanding": {
+    "title": "TODO_SQ_consent_landing_title",
+    "subtitle": "TODO_SQ_consent_landing_subtitle",
+    "explainer": "TODO_SQ_consent_landing_explainer",
+    "approve": "TODO_SQ_consent_landing_approve",
+    "decline": "TODO_SQ_consent_landing_decline",
+    "working": "TODO_SQ_consent_landing_working",
+    "approvedTitle": "TODO_SQ_consent_landing_approved_title",
+    "approvedBody": "TODO_SQ_consent_landing_approved_body",
+    "withdrawnTitle": "TODO_SQ_consent_landing_withdrawn_title",
+    "withdrawnBody": "TODO_SQ_consent_landing_withdrawn_body",
+    "errorInvalid": "TODO_SQ_consent_landing_error_invalid"
   },
   "completeProfile": {
     "title": "Plotëso profilin",

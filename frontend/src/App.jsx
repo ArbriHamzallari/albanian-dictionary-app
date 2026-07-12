@@ -1,5 +1,5 @@
 import { useEffect, useState, lazy, Suspense } from 'react';
-import { Route, Routes, useLocation, Link } from 'react-router-dom';
+import { Route, Routes, useLocation, useNavigate, Link } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import Header from './components/Header.jsx';
 import Footer from './components/Footer.jsx';
@@ -34,6 +34,8 @@ const Onboarding = lazy(() => import('./pages/Onboarding.jsx'));
 const Achievements = lazy(() => import('./pages/Achievements.jsx'));
 const Register = lazy(() => import('./pages/Register.jsx'));
 const CompleteProfile = lazy(() => import('./pages/CompleteProfile.jsx'));
+const PendingConsent = lazy(() => import('./pages/PendingConsent.jsx'));
+const ConsentLanding = lazy(() => import('./pages/ConsentLanding.jsx'));
 const Profile = lazy(() => import('./pages/Profile.jsx'));
 const Leaderboard = lazy(() => import('./pages/Leaderboard.jsx'));
 const LeaguePage = lazy(() => import('./pages/LeaguePage.jsx'));
@@ -97,7 +99,28 @@ const HomeRoute = () => {
 
 const App = () => {
   const location = useLocation();
-  const { isLoggedIn, loading: authLoading } = useAuth();
+  const navigate = useNavigate();
+  const { isLoggedIn, loading: authLoading, user } = useAuth();
+
+  // SAFE-2c: a logged-in account still awaiting parental consent is held on the pending
+  // screen — it cannot enter the app on any route. The parent's own /consent/:token page
+  // stays reachable (the parent may be signed in as no one, or as the child on a shared
+  // device). Server routes are gated independently; this is UX, not the security boundary.
+  // age != null gates this: a brand-new Google/legacy account has consent_required=true
+  // by default but has NOT passed the age gate yet — it belongs on /ploteso-profilin, not
+  // the pending screen. Only an account that has set its age and still owes consent waits.
+  const pendingConsent = Boolean(
+    user?.profile?.age != null &&
+    user?.profile?.parental_consent_required &&
+    !user?.profile?.parental_consent_given,
+  );
+  useEffect(() => {
+    if (authLoading || !pendingConsent) return;
+    const path = location.pathname;
+    if (path !== '/pending-consent' && !path.startsWith('/consent/')) {
+      navigate('/pending-consent', { replace: true });
+    }
+  }, [authLoading, pendingConsent, location.pathname, navigate]);
   // Only a guest at "/" gets the chrome-less marketing splash. Every logged-in user
   // gets the app home (Dashboard), which needs the header/nav (UI-0).
   const isSplash = location.pathname === '/' && !isLoggedIn;
@@ -161,6 +184,8 @@ const App = () => {
               <Route path="/hyr" element={<Login />} />
               <Route path="/regjistrohu" element={<Register />} />
               <Route path="/ploteso-profilin" element={<CompleteProfile />} />
+              <Route path="/pending-consent" element={<PendingConsent />} />
+              <Route path="/consent/:token" element={<ConsentLanding />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/profili" element={<Profile />} />
               <Route path="/profili/:uuid" element={<PublicProfile />} />

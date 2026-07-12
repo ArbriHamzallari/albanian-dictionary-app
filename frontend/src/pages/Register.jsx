@@ -16,7 +16,7 @@ const Register = () => {
   const [password, setPassword] = useState('');
   const [age, setAge] = useState('');
   const [countryCode, setCountryCode] = useState('AL');
-  const [parentalConsentGiven, setParentalConsentGiven] = useState(false);
+  const [parentEmail, setParentEmail] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -70,8 +70,13 @@ const Register = () => {
         password,
         age,
         countryCode: countryCode.toUpperCase(),
-        parentalConsentGiven,
+        parentEmail: consentRequired ? parentEmail : undefined,
       });
+      // Consent-pending accounts go to the "check your parent's email" screen, not the app.
+      if (data.pendingParentalConsent) {
+        navigate('/pending-consent');
+        return;
+      }
       resumeAfterAuth(data.profile?.role);
     } catch (err) {
       if (err.response?.status === 409) {
@@ -192,16 +197,22 @@ const Register = () => {
         )}
 
         {consentRequired && (
-          <label className="flex items-start gap-3 text-sm font-semibold text-muted dark:text-dark-muted">
+          <div>
+            <label className="block text-xs font-bold text-muted dark:text-dark-muted mb-1">
+              {t('auth.register.parentEmailLabel')}
+            </label>
             <input
-              type="checkbox"
-              checked={parentalConsentGiven}
-              onChange={(e) => setParentalConsentGiven(e.target.checked)}
+              type="email"
+              value={parentEmail}
+              onChange={(e) => setParentEmail(e.target.value)}
               required
-              className="mt-1"
+              className="input-field"
+              placeholder={t('auth.register.parentEmailPlaceholder')}
             />
-            {t('auth.register.consentLabel')}
-          </label>
+            <p className="mt-1 text-xs font-semibold text-muted dark:text-dark-muted">
+              {t('auth.register.parentEmailNote')}
+            </p>
+          </div>
         )}
 
         <ErrorMessage message={error} />

@@ -106,14 +106,19 @@ export function AuthProvider({ children }) {
     return { ...res.data, role: res.data.role || res.data.profile?.role || 'user' };
   };
 
-  const register = async ({ username, email, password, age, countryCode, parentalConsentGiven }) => {
+  // SAFE-2c: consent is no longer a client boolean. When the age+country needs consent
+  // the form supplies parentEmail; the server creates a RESTRICTED account, emails the
+  // parent, and returns { pendingParentalConsent, parentEmailHint }. The account is still
+  // logged in (needed for /resend-consent), but the route guard holds it on the pending
+  // screen until the parent approves.
+  const register = async ({ username, email, password, age, countryCode, parentEmail }) => {
     const res = await api.post('/auth/register', {
       username,
       email,
       password,
       age: Number(age),
       country_code: countryCode,
-      parental_consent_given: parentalConsentGiven,
+      ...(parentEmail ? { parent_email: parentEmail } : {}),
       timezone: getBrowserTimeZone(),
     });
     applyAuthResponse(res.data);
@@ -132,11 +137,11 @@ export function AuthProvider({ children }) {
     };
   };
 
-  const completeProfile = async ({ age, countryCode, parentalConsentGiven }) => {
+  const completeProfile = async ({ age, countryCode, parentEmail }) => {
     const res = await api.post('/auth/complete-profile', {
       age: Number(age),
       country_code: countryCode,
-      parental_consent_given: parentalConsentGiven,
+      ...(parentEmail ? { parent_email: parentEmail } : {}),
       timezone: getBrowserTimeZone(),
     });
     updateUserProfile(res.data.profile);
