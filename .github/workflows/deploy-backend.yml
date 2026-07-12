@@ -1,0 +1,78 @@
+name: Deploy backend (Fly)
+
+# Automated backend CD. Before this workflow existed the backend on Fly only ever
+# deployed when someone ran `fly deploy` by hand, so a merge could ship the frontend
+# (auto-deployed by Vercel) while the backend it depends on stayed on the old version.
+# That is exactly what happened with commit 72f8bfb: it added /api/public/demo-question
+# and /api/public/demo-answer plus the landing demo that calls them; the frontend went
+# live, the backend did not, and the demo 404'd in production until someone noticed.
+#
+# Trigger: this runs only after the CI workflow (ci.yml, name "CI") *completes on main*.
+# GitHub's workflow_run event is the native way to chain "run after another workflow",
+# and it does NOT support a `paths` filter — so the backend/fly.toml scope is enforced
+# inside the job by diffing the commit CI validated. If CI fails, conclusion != success
+# and nothing below runs: no deploy. There is deliberately no fallback path.
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+    branches: [main]
+
+# One backend deploy at a time; never let a newer run race an in-flight release.
+concurrency:
+  group: deploy-backend
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy to Fly
+    runs-on: ubuntu-latest
+    # Gate on CI passing. workflow_run fires on any completion (success OR failure),
+    # so this is the line that stops a deploy after a red CI run.
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+      # Check out the exact commit CI validated (not just the branch tip), so the image
+      # we build and the paths we diff are the ones that were tested. Full history is
+      # needed to diff a merge commit against its first parent.
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          fetch-depth: 0
+
+      # Scope the deploy to backend changes. main advances by PR merge commits, so
+      # HEAD^ is the previous main tip and HEAD^..HEAD is the net change the merge
+      # brought in — deploy only when that touches backend/ or fly.toml.
+      - name: Detect backend changes
+        id: filter
+        run: |
+          if git diff --name-only HEAD^ HEAD | grep -qE '^(backend/|fly\.toml$)'; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "Backend or fly.toml changed — deploying."
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No backend/ or fly.toml changes — skipping deploy."
+          fi
+
+      - name: Install flyctl
+        if: ${{ steps.filter.outputs.changed == 'true' }}
+        uses: superfly/flyctl-actions/setup-flyctl@master
+
+      # fly.toml already runs `npm run migrate` as its release_command, so migrations
+      # apply as part of the release — no migration step here. If the release_command
+      # fails the deploy fails and the previous version keeps serving; no --continue.
+      - name: Deploy
+        if: ${{ steps.filter.outputs.changed == 'true' }}
+        run: flyctl deploy --remote-only
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+      # Deploy gate, not a test suite: fail the workflow unless the live app answers 200
+      # on /api/health. A few retries absorb the rolling restart / cold Supabase TLS
+      # handshake; --fail turns any non-2xx into a non-zero exit.
+      - name: Smoke check /api/health
+        if: ${{ steps.filter.outputs.changed == 'true' }}
+        run: |
+          curl --fail --silent --show-error \
+            --retry 5 --retry-delay 10 --retry-all-errors \
+            https://albanian-dictionary-app.fly.dev/api/health
