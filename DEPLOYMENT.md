@@ -281,13 +281,57 @@ Do **not** echo real values in logs, commits, or docs.
 
 ## Updating the backend
 
-After code changes on `main`:
+### Automated (default): merge to `main`
+
+The backend deploys **automatically** via `.github/workflows/deploy-backend.yml`. You do
+not run `fly deploy` by hand for normal releases.
+
+**What triggers a deploy.** When a push lands on `main`, CI (`.github/workflows/ci.yml`,
+workflow name **CI**) runs first. The deploy workflow starts only *after CI completes on
+`main`* (GitHub's `workflow_run` event) and runs only if **CI succeeded** — a red CI run
+deploys nothing. It then checks whether that commit changed anything under `backend/` or
+`fly.toml`; if not (e.g. a frontend- or docs-only merge), it skips. When it does deploy it
+runs `flyctl deploy --remote-only`. Migrations are **not** a separate step: `fly.toml`'s
+`[deploy] release_command = "npm run migrate"` applies pending migrations as part of the
+release, before the new version serves traffic. If the release command fails, the deploy
+fails and the previous version keeps serving. Finally a smoke step fails the workflow
+unless `https://albanian-dictionary-app.fly.dev/api/health` answers **200**.
+
+> **Why this exists.** Previously the frontend auto-deployed on Vercel while the backend
+> only moved when someone ran `fly deploy` manually. A merge that shipped a new frontend
+> feature against a not-yet-deployed backend endpoint 404'd in production (the landing
+> demo, commit `72f8bfb`). This workflow closes that gap: backend code merged to `main`
+> ships without a human remembering to deploy.
+
+**Required secret.** The workflow authenticates to Fly with a single repository secret,
+**`FLY_API_TOKEN`**. Create a deploy-scoped token (least privilege — it can deploy this
+app, nothing else) and add it under **GitHub → repo → Settings → Secrets and variables →
+Actions → New repository secret**, name `FLY_API_TOKEN`:
+
+```powershell
+fly tokens create deploy -x 999999h -a albanian-dictionary-app
+```
+
+Copy the entire output including the `FlyV1` prefix. If the token is missing or invalid,
+the deploy step fails loudly (no silent skip). Rotate by creating a new token and updating
+the secret.
+
+### Manual (fallback): when the workflow is unavailable
+
+If GitHub Actions is down, the token is being rotated, or you need an out-of-band deploy,
+deploy by hand from the **repo root**:
 
 ```powershell
 fly deploy
 ```
 
-Fly performs rolling deploys with zero downtime when health checks pass at `/api/health`.
+This is the same command the workflow runs. The release command still applies migrations,
+and Fly performs rolling deploys with zero downtime when health checks pass at
+`/api/health`. Confirm afterward:
+
+```powershell
+curl https://albanian-dictionary-app.fly.dev/api/health
+```
 
 ---
 
