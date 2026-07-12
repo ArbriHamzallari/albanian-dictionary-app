@@ -80,6 +80,9 @@ const ACCESS = {
   'POST /api/suggestions': 'public',
   'POST /api/auth/register': 'public',
   'POST /api/auth/consent-check': 'public',
+  // SAFE-2c: the parent has no session — approval/withdrawal are public, token-verified.
+  'POST /api/auth/parental-consent': 'public',
+  'POST /api/auth/withdraw-consent': 'public',
   'POST /api/auth/login': 'public',
   'POST /api/auth/google': 'public',
   'POST /api/auth/guest-upgrade': 'public',
@@ -93,6 +96,7 @@ const ACCESS = {
 
   // authenticated (owner-scoped via req.user — no user id is taken from the path)
   'POST /api/auth/complete-profile': 'auth',
+  'POST /api/auth/resend-consent': 'auth',
   'GET /api/auth/me': 'auth',
   'POST /api/auth/heartbeat': 'auth',
   'DELETE /api/auth/account': 'auth',

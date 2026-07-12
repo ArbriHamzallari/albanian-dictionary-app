@@ -40,3 +40,28 @@ $$;
 UPDATE users
 SET birth_year = EXTRACT(YEAR FROM now())::int - age
 WHERE age IS NOT NULL AND birth_year IS NULL;
+
+-- ============================================================
+-- SAFE-2c: parent-email parental-consent flow
+-- ============================================================
+-- parent_email  : the parent/guardian address a consent request was sent to. Only set
+--                 when consent is pending or given; NULL otherwise. 320 = max email len.
+-- parental_consent_method : how consent was recorded, e.g. 'email_token'. NULL until given.
+-- (parental_consent_given / _required / _at already exist from migration 007.)
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_name = 'users' AND column_name = 'parent_email'
+  ) THEN
+    ALTER TABLE users ADD COLUMN parent_email VARCHAR(320);
+  END IF;
+
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_name = 'users' AND column_name = 'parental_consent_method'
+  ) THEN
+    ALTER TABLE users ADD COLUMN parental_consent_method VARCHAR(50);
+  END IF;
+END
+$$;

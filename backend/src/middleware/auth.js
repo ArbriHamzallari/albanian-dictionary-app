@@ -29,6 +29,12 @@ const authenticate = async (req, res, next) => {
   } catch (error) {
     return res.status(401).json({ message: 'Token i pavlefshëm ose i skaduar.' });
   }
+  // Non-session token types (e.g. the parental-consent link token, or a refresh token)
+  // are signed with the same secret but must never authenticate a request. Reject them
+  // explicitly rather than relying on their payload shape happening to miss `uuid`.
+  if (payload.type === 'parental_consent' || payload.type === 'refresh') {
+    return res.status(401).json({ message: 'Token i pavlefshëm ose i skaduar.' });
+  }
   // The JWT is stateless, so a deleted or admin-suspended account would otherwise
   // keep working until expiry. Check the live row on every authenticated request
   // and reject it immediately.
@@ -56,7 +62,12 @@ const optionalAuthenticate = (req, res, next) => {
     return next();
   }
   try {
-    req.user = jwt.verify(token, process.env.JWT_SECRET);
+    const payload = jwt.verify(token, process.env.JWT_SECRET);
+    // A non-session token (parental-consent / refresh) is not a login — stay anonymous.
+    if (payload.type === 'parental_consent' || payload.type === 'refresh') {
+      return next();
+    }
+    req.user = payload;
     return next();
   } catch (error) {
     // Treat an invalid/expired token as anonymous rather than erroring.

@@ -100,7 +100,7 @@ const sendMessage = async (req, res, next) => {
 
     const [senderResult, recipient] = await Promise.all([
       pool.query(
-        `SELECT uuid, username, is_minor
+        `SELECT uuid, username, is_minor, parental_consent_required, parental_consent_given
          FROM users
          WHERE uuid = $1::uuid AND role = 'user'`,
         [senderId]
@@ -111,6 +111,10 @@ const sendMessage = async (req, res, next) => {
     const sender = senderResult.rows[0];
     if (!sender || !recipient) {
       return res.status(404).json({ message: 'Përdoruesi nuk u gjet.' });
+    }
+    // SAFE-2c: a consent-pending account has no chat access until the parent approves.
+    if (sender.parental_consent_required && !sender.parental_consent_given) {
+      return res.status(403).json({ message: 'Llogaria është në pritje të pëlqimit të prindit.', code: 'PARENTAL_CONSENT_PENDING' });
     }
     if (sender.uuid === recipient.uuid) {
       return res.status(400).json({ message: 'Nuk mund t’i dërgoni mesazh vetes.' });
@@ -176,10 +180,14 @@ const listMessages = async (req, res, next) => {
     }
 
     const viewerResult = await pool.query(
-      `SELECT is_minor FROM users WHERE uuid = $1::uuid AND role = 'user'`,
+      `SELECT is_minor, parental_consent_required, parental_consent_given FROM users WHERE uuid = $1::uuid AND role = 'user'`,
       [req.user.uuid]
     );
     const viewer = viewerResult.rows[0];
+    // SAFE-2c: consent-pending accounts cannot read chat threads either.
+    if (viewer && viewer.parental_consent_required && !viewer.parental_consent_given) {
+      return res.status(403).json({ message: 'Llogaria është në pritje të pëlqimit të prindit.', code: 'PARENTAL_CONSENT_PENDING' });
+    }
     if (!viewer || (viewer.is_minor || otherUser.is_minor) && viewer.is_minor !== otherUser.is_minor) {
       return res.status(403).json({ message: 'Biseda midis të rriturve dhe fëmijëve nuk lejohet.' });
     }

@@ -67,7 +67,11 @@ const registerSchema = Joi.object({
   password: Joi.string().min(6).max(255).required(),
   age: Joi.number().integer().min(MIN_SIGNUP_AGE).max(120).required(),
   country_code: Joi.string().trim().uppercase().length(2).required(),
-  parental_consent_given: Joi.boolean().default(false),
+  // SAFE-2c: parental_consent_given is NO LONGER accepted from the client — the server
+  // sets it (only the /parental-consent endpoint flips it true). parent_email is optional
+  // at the schema layer; whether it is required/forbidden depends on the per-country
+  // consent threshold and is enforced in the shared consent helper (validateParentEmail).
+  parent_email: Joi.string().trim().email().max(320).optional(),
   timezone: Joi.string().trim().max(64).optional(),
 }).options({ stripUnknown: true });
 
@@ -77,7 +81,7 @@ const guestUpgradeSchema = Joi.object({
   password: Joi.string().min(6).max(255).required(),
   age: Joi.number().integer().min(MIN_SIGNUP_AGE).max(120).required(),
   country_code: Joi.string().trim().uppercase().length(2).required(),
-  parental_consent_given: Joi.boolean().default(false),
+  parent_email: Joi.string().trim().email().max(320).optional(),
   timezone: Joi.string().trim().max(64).optional(),
   guestProgress: Joi.object({
     xp: Joi.number().integer().min(0).max(500000).default(0),
@@ -157,9 +161,14 @@ const googleAuthSchema = Joi.object({
 const completeProfileSchema = Joi.object({
   age: Joi.number().integer().min(MIN_SIGNUP_AGE).max(120).required(),
   country_code: Joi.string().trim().uppercase().length(2).required(),
-  parental_consent_given: Joi.boolean().default(false),
+  parent_email: Joi.string().trim().email().max(320).optional(),
   timezone: Joi.string().trim().max(64).optional(),
-});
+}).options({ stripUnknown: true });
+
+// Token-only endpoints (public): the parent approves/withdraws via the emailed link.
+const consentTokenSchema = Joi.object({
+  token: Joi.string().min(1).max(4096).required(),
+}).options({ stripUnknown: true });
 
 // Self-service account deletion re-verifies identity before an irreversible
 // erase: a password re-entry for password accounts, or a fresh Google credential
@@ -185,6 +194,7 @@ module.exports = {
   loginSchema,
   googleAuthSchema,
   completeProfileSchema,
+  consentTokenSchema,
   deleteAccountSchema,
   wordSchema,
   wordOfDaySchema,
