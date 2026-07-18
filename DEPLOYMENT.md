@@ -223,18 +223,37 @@ bundle). Changing `FRONTEND_URL` on Fly restarts the backend automatically.
 
 ## Step 5: Schedule the daily cron
 
-The nightly streak/freeze job runs via an **external scheduler** that calls the backend once a
-day. There is no in-app scheduler — Fly does not run cron for us.
+The nightly maintenance job (seeds `word_of_the_day`, grants streak freezes, resets
+missed streaks, ends league seasons) runs via **GitHub Actions** — there is no in-app
+scheduler and Fly does not run cron for us. The controller is idempotent (safe to run
+more than once a day) and evaluates each user's "day" in that user's own timezone, so
+the job only needs to fire once, some time after local midnight.
 
-- **Endpoint:** `POST https://albanian-dictionary-app.fly.dev/api/cron/daily`
+- **Workflow:** [`.github/workflows/cron-daily.yml`](.github/workflows/cron-daily.yml)
+- **Endpoint:** `POST https://api.fjalingo.com/api/cron/daily`
 - **Header:** `x-cron-secret: <CRON_SECRET>` (must equal the `CRON_SECRET` Fly secret)
-- **Cadence:** once daily (e.g. `0 4 * * *`, 04:00 UTC)
+- **Schedule:** `0 3 * * *` — **03:00 UTC daily**. GitHub `schedule` cron is UTC and
+  does not observe DST. Europe/Tirane is UTC+1 in winter / UTC+2 in summer, so local
+  midnight is 23:00 UTC (winter) / 22:00 UTC (summer). 03:00 UTC = 04:00 local winter /
+  05:00 local summer — safely past local midnight year-round, with margin for late runs.
+- Any non-2xx response (e.g. `403` on a wrong/missing secret) fails the workflow loudly.
 
-Use any scheduler that can send a POST with a header — [cron-job.org](https://cron-job.org),
-GitHub Actions, or Fly Machines. A request without the correct `x-cron-secret` is rejected `403`.
+### Required GitHub repo secret
+
+The workflow needs a **`CRON_SECRET` repository secret** whose value **equals the
+`CRON_SECRET` Fly secret** the backend checks. Add it under **GitHub → repo → Settings →
+Secrets and variables → Actions → New repository secret**, name `CRON_SECRET`. (This is
+in addition to the Fly secret from Step 2b — the workflow can't read Fly's secrets.)
+
+### Manual run / backfill a missed day
+
+The workflow has a `workflow_dispatch` trigger — run it by hand from **GitHub → Actions →
+"Daily cron" → Run workflow**. Because the job is idempotent, running it after a missed
+night backfills that day (seeds today's `word_of_the_day` if none exists, catches up
+streak resets). Equivalent one-off curl (needs the raw secret locally, not the repo one):
 
 ```bash
-curl -X POST https://albanian-dictionary-app.fly.dev/api/cron/daily \
+curl -X POST https://api.fjalingo.com/api/cron/daily \
   -H "x-cron-secret: $CRON_SECRET"
 ```
 
@@ -268,7 +287,7 @@ node scripts/smoke-test.js https://albanian-dictionary-app.fly.dev
 | `DATABASE_URL` | Yes | Supabase/Postgres pooled connection string (`sslmode=require`) |
 | `JWT_SECRET` | Yes | Signs auth tokens; use `openssl rand -hex 32` |
 | `FRONTEND_URL` | Yes | Production frontend (Vercel) origin for CORS (e.g. `https://your-app.vercel.app`) |
-| `CRON_SECRET` | Yes | Shared secret for the daily cron (`x-cron-secret` header on `POST /api/cron/daily`); `openssl rand -hex 32` |
+| `CRON_SECRET` | Yes | Shared secret for the daily cron (`x-cron-secret` header on `POST /api/cron/daily`); `openssl rand -hex 32`. **Also add the same value as a GitHub `CRON_SECRET` repo secret** so the `cron-daily.yml` Action can authenticate — see Step 5. |
 | `PADDLE_ENVIRONMENT` | Yes | `sandbox` until live billing; `production` after Paddle verification. Must be exactly `sandbox` or `production`. Single source of truth for the checkout environment — the frontend reads it from `/billing/checkout-config`, there is **no** frontend Paddle env var. Set `production` alongside the live `PADDLE_CLIENT_TOKEN` / price ids. |
 | `PADDLE_CLIENT_TOKEN` | Yes | Paddle client-side token for checkout |
 | `PADDLE_PRICE_ID_ANNUAL` | Yes | Paddle price ID for the €25/year Premium plan (the hero). Falls back to legacy `PADDLE_PREMIUM_PRICE_ID` if set, so an un-renamed secret keeps working. |
