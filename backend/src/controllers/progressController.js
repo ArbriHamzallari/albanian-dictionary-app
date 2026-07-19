@@ -294,10 +294,19 @@ const submitQuiz = async (req, res, next) => {
         }
       };
 
+      // Every threshold is evaluated against `stats` — the row reflecting THIS quiz's
+      // xp/streak but BEFORE any unlock's own xp_reward is applied. `stats` is not
+      // re-read until after all tryUnlock calls (below), so a points_500 unlock's +XP
+      // can never push xp past 1000 and cascade points_1000 in the same submit.
       await tryUnlock('first_quiz');
       if (stats.total_quizzes >= 10) await tryUnlock('quiz_master');
       if (totalQuestions > 0 && correctAnswers === totalQuestions) await tryUnlock('perfect_quiz');
+      if (stats.streak >= 3) await tryUnlock('streak_3');
       if (stats.streak >= 7) await tryUnlock('7_day_streak');
+      if (stats.streak >= 30) await tryUnlock('streak_30');
+      if (stats.xp >= 500) await tryUnlock('points_500');
+      if (stats.xp >= 1000) await tryUnlock('points_1000');
+      if (stats.xp >= 5000) await tryUnlock('points_5000');
 
       if (achievementsUnlocked.length) {
         // The helper awarded XP and re-levelled — re-read the authoritative row.

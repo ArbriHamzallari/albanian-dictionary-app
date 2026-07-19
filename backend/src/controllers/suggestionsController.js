@@ -1,6 +1,7 @@
 const pool = require('../utils/db');
 const { suggestionSchema } = require('../utils/validation');
 const { validateUserTexts } = require('../utils/childSafety');
+const { unlockAchievementByKey } = require('../utils/achievements');
 
 const submitSuggestion = async (req, res, next) => {
   try {
@@ -19,25 +20,43 @@ const submitSuggestion = async (req, res, next) => {
       return res.status(400).json({ message: 'Propozimi përmban tekst të palejuar ose të dhëna personale.' });
     }
 
-    const result = await pool.query(
-      `INSERT INTO word_suggestions
-      (borrowed_word, suggested_albanian, suggested_definition, submitter_name, submitter_email, submitted_by)
-      VALUES ($1, $2, $3, $4, $5, $6)
-      RETURNING *`,
-      [
-        value.borrowed_word,
-        value.suggested_albanian || null,
-        value.suggested_definition || null,
-        value.submitter_name || null,
-        value.submitter_email || null,
-        req.user?.uuid || null,
-      ]
-    );
+    // Insert the suggestion and, for a signed-in submitter, award the `suggester`
+    // achievement in the SAME transaction as the insert that earned it — both commit
+    // or neither. Guests (no req.user) simply get no achievement.
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+      const result = await client.query(
+        `INSERT INTO word_suggestions
+        (borrowed_word, suggested_albanian, suggested_definition, submitter_name, submitter_email, submitted_by)
+        VALUES ($1, $2, $3, $4, $5, $6)
+        RETURNING *`,
+        [
+          value.borrowed_word,
+          value.suggested_albanian || null,
+          value.suggested_definition || null,
+          value.submitter_name || null,
+          value.submitter_email || null,
+          req.user?.uuid || null,
+        ]
+      );
 
-    return res.status(201).json({
-      message: 'Faleminderit! Propozimi juaj u dërgua me sukses.',
-      suggestion: result.rows[0],
-    });
+      if (req.user?.uuid) {
+        await unlockAchievementByKey(client, req.user.uuid, 'suggester');
+      }
+
+      await client.query('COMMIT');
+
+      return res.status(201).json({
+        message: 'Faleminderit! Propozimi juaj u dërgua me sukses.',
+        suggestion: result.rows[0],
+      });
+    } catch (err) {
+      await client.query('ROLLBACK');
+      throw err;
+    } finally {
+      client.release();
+    }
   } catch (error) {
     return next(error);
   }

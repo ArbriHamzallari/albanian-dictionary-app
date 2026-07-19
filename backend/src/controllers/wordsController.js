@@ -1,5 +1,13 @@
 const pool = require('../utils/db');
 const { searchSchema } = require('../utils/validation');
+const { unlockAchievementByKey } = require('../utils/achievements');
+
+// word_explorer ("Eksplorues — Shiko 20 fjalë", migration 021) fires at this many
+// distinct searched words. search_logs is the ONLY per-user word-interaction signal
+// that exists — word detail views (getWordById) carry no auth and no per-user row —
+// so "20 words viewed" is served by "20 distinct search terms", the closest honest
+// proxy without a schema change (out of scope for FIX-3).
+const WORD_EXPLORER_THRESHOLD = 20;
 
 const mapWord = (word, definitions, conjugations) => ({
   ...word,
@@ -58,12 +66,36 @@ const searchWords = async (req, res, next) => {
         return res.status(404).json({ message: 'Nuk u gjetën rezultate.' });
       }
 
+      // Log the search and, for signed-in users, evaluate the search-driven
+      // achievements in ONE transaction so the log row that earns first_search /
+      // word_explorer commits together with the unlock. Best-effort: any failure here
+      // must never fail the search itself — roll back, log, and still return results.
       try {
-        await client.query(
-          'INSERT INTO search_logs (search_term, found, ip_address, user_id) VALUES ($1, true, $2, $3)',
-          [query, req.ip, req.user?.uuid || null]
-        );
+        if (req.user?.uuid) {
+          await client.query('BEGIN');
+          await client.query(
+            'INSERT INTO search_logs (search_term, found, ip_address, user_id) VALUES ($1, true, $2, $3)',
+            [query, req.ip, req.user.uuid]
+          );
+          await unlockAchievementByKey(client, req.user.uuid, 'first_search');
+          const distinct = await client.query(
+            'SELECT count(DISTINCT search_term)::int AS n FROM search_logs WHERE user_id = $1 AND found = true',
+            [req.user.uuid]
+          );
+          if (distinct.rows[0].n >= WORD_EXPLORER_THRESHOLD) {
+            await unlockAchievementByKey(client, req.user.uuid, 'word_explorer');
+          }
+          await client.query('COMMIT');
+        } else {
+          await client.query(
+            'INSERT INTO search_logs (search_term, found, ip_address, user_id) VALUES ($1, true, $2, $3)',
+            [query, req.ip, null]
+          );
+        }
       } catch (logError) {
+        if (req.user?.uuid) {
+          await client.query('ROLLBACK').catch(() => {});
+        }
         console.error('[search_logs_insert_failed]', logError);
       }
 
