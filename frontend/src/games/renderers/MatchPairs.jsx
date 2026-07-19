@@ -3,56 +3,68 @@ import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { t } from '../../i18n/index.js';
 
-// GAME-2 (Çifto fjalët): tap a borrowed word on the left, then its Albanian match on
-// the right. A correct pair locks green; a wrong pair shakes coral and unlocks. When
-// all pairs are matched the renderer reports the final leftId->rightId mapping via
-// onComplete; the engine records it and submits it with the batch. Immediate lock/
-// shake feedback uses each tile's hidden `pairId` — see the factory for why that is
-// safe (the server still grades the submitted mapping authoritatively).
+// GAME-2 (Çifto fjalët): tap a borrowed word and its Albanian match to pair them.
+// Selection can start from EITHER column — tap a tile to select it (brand-green
+// border + lift), then tap a tile in the other column to resolve the pair. A correct
+// pair locks green and settles; a wrong pair flashes coral (with a shake when motion
+// is allowed) then clears. When all pairs are matched the renderer reports the final
+// leftId->rightId mapping via onComplete; the engine records it and submits it with
+// the batch. Immediate lock/shake feedback uses each tile's hidden `pairId` — see the
+// factory for why that is safe (the server still grades the submitted mapping
+// authoritatively). NOTE: left/right ids share the same 0..N-1 space, but leftIds are
+// only ever `matched` keys and rightIds only ever `matchedRightIds` values, so the
+// two never collide — the payload shape (leftId->rightId) is unchanged.
 const MatchPairs = ({ question, onComplete, onNext, isLast }) => {
   const { left, right } = question.prompt;
-  const [selectedLeft, setSelectedLeft] = useState(null); // leftId
+  const [selected, setSelected] = useState(null); // { side: 'left'|'right', id } | null
   const [matched, setMatched] = useState({}); // leftId -> rightId
   const [shake, setShake] = useState(null); // { leftId, rightId } transient
 
   const matchedRightIds = new Set(Object.values(matched));
   const isComplete = Object.keys(matched).length === left.length;
 
-  const tapLeft = (leftId) => {
-    if (isComplete || matched[leftId] !== undefined) return;
-    setSelectedLeft(leftId);
-  };
+  const isTileMatched = (side, id) =>
+    side === 'left' ? matched[id] !== undefined : matchedRightIds.has(id);
 
-  const tapRight = (rightId) => {
-    if (isComplete || selectedLeft === null || matchedRightIds.has(rightId)) return;
+  // One selection model for both columns: first tap (or re-tap within the same
+  // column) selects; a tap in the OTHER column resolves the pair — regardless of
+  // which column the user started from.
+  const tapTile = (side, id) => {
+    if (isComplete || isTileMatched(side, id)) return;
 
-    const leftTile = left.find((tItem) => tItem.id === selectedLeft);
-    const rightTile = right.find((tItem) => tItem.id === rightId);
+    if (!selected || selected.side === side) {
+      setSelected({ side, id });
+      return;
+    }
+
+    const leftId = side === 'left' ? id : selected.id;
+    const rightId = side === 'left' ? selected.id : id;
+    const leftTile = left.find((tile) => tile.id === leftId);
+    const rightTile = right.find((tile) => tile.id === rightId);
 
     if (leftTile.pairId === rightTile.pairId) {
-      const next = { ...matched, [selectedLeft]: rightId };
+      const next = { ...matched, [leftId]: rightId };
       setMatched(next);
-      setSelectedLeft(null);
+      setSelected(null);
       if (Object.keys(next).length === left.length) {
         onComplete(next);
       }
     } else {
-      setShake({ leftId: selectedLeft, rightId });
-      setSelectedLeft(null);
+      setShake({ leftId, rightId });
+      setSelected(null);
       setTimeout(() => setShake(null), 500);
     }
   };
 
-  const leftClass = (tile) => {
-    if (matched[tile.id] !== undefined) return 'card border-fjalingo-green bg-fjalingo-green/10 cursor-default';
-    if (shake?.leftId === tile.id) return 'card border-accent-coral bg-accent-coral/10 animate-shake';
-    if (selectedLeft === tile.id) return 'card border-fjalingo-blue bg-fjalingo-blue/10';
-    return 'card card-hover cursor-pointer';
-  };
-
-  const rightClass = (tile) => {
-    if (matchedRightIds.has(tile.id)) return 'card border-fjalingo-green bg-fjalingo-green/10 cursor-default';
-    if (shake?.rightId === tile.id) return 'card border-accent-coral bg-accent-coral/10 animate-shake';
+  const tileClass = (side, tile) => {
+    if (isTileMatched(side, tile.id)) {
+      return 'card border-fjalingo-green bg-fjalingo-green/15 opacity-70 cursor-default';
+    }
+    const isShaking = shake && (side === 'left' ? shake.leftId === tile.id : shake.rightId === tile.id);
+    if (isShaking) return 'card border-accent-coral bg-accent-coral/10 motion-safe:animate-shake';
+    if (selected?.side === side && selected.id === tile.id) {
+      return 'card border-fjalingo-green bg-fjalingo-green/10 -translate-y-1 shadow-card-hover ring-2 ring-fjalingo-green cursor-pointer';
+    }
     return 'card card-hover cursor-pointer';
   };
 
@@ -69,9 +81,9 @@ const MatchPairs = ({ question, onComplete, onNext, isLast }) => {
           {left.map((tile) => (
             <button
               key={`l-${tile.id}`}
-              onClick={() => tapLeft(tile.id)}
-              disabled={matched[tile.id] !== undefined || isComplete}
-              className={`${leftClass(tile)} text-center`}
+              onClick={() => tapTile('left', tile.id)}
+              disabled={isTileMatched('left', tile.id) || isComplete}
+              className={`${tileClass('left', tile)} text-center`}
             >
               <span className="font-bold text-heading dark:text-dark-text">{tile.text}</span>
             </button>
@@ -81,9 +93,9 @@ const MatchPairs = ({ question, onComplete, onNext, isLast }) => {
           {right.map((tile) => (
             <button
               key={`r-${tile.id}`}
-              onClick={() => tapRight(tile.id)}
-              disabled={matchedRightIds.has(tile.id) || isComplete}
-              className={`${rightClass(tile)} text-center`}
+              onClick={() => tapTile('right', tile.id)}
+              disabled={isTileMatched('right', tile.id) || isComplete}
+              className={`${tileClass('right', tile)} text-center`}
             >
               <span className="font-bold text-heading dark:text-dark-text">{tile.text}</span>
             </button>
