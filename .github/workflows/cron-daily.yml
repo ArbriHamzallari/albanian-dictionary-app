@@ -1,0 +1,67 @@
+name: Daily cron
+
+# Invokes the backend's nightly maintenance job. Before this workflow existed nothing
+# in the repo ever called POST /api/cron/daily — no GitHub workflow, no Fly machine
+# schedule, no external pinger — so in production the word_of_the_day was never seeded
+# (fjala-e-dites 404'd, /sfida-e-dites rendered empty), streaks were never reset, streak
+# freezes were never granted, and league seasons never ended. This closes that gap.
+#
+# The controller (backend/src/controllers/cronController.js runDailyCron) is idempotent:
+# safe to run more than once per day, and it evaluates each user's "day" in that user's
+# own timezone, so this job only has to fire once, some time after local midnight.
+#
+# TIMING — read carefully. GitHub Actions `schedule` cron runs in UTC and does NOT
+# observe daylight saving time (a fixed UTC cron does not shift when Tirane changes
+# clocks). Europe/Tirane is UTC+1 in winter (CET) and UTC+2 in summer (CEST, DST), so
+# local midnight falls at 23:00 UTC in winter and 22:00 UTC in summer. We therefore need
+# a UTC hour that is comfortably PAST local midnight in both seasons. 03:00 UTC =
+# 04:00 local in winter / 05:00 local in summer — safely into the new local day
+# year-round, with margin for GitHub's scheduler running late under load. (We could set
+# a `timezone:` on the schedule instead, but a fixed UTC hour is the most predictable
+# and is what the rest of the repo's schedules use — see sitemap.yml at 04:00 UTC.)
+on:
+  schedule:
+    - cron: '0 3 * * *' # 03:00 UTC daily — safely past Europe/Tirane midnight year-round (see comment above)
+  workflow_dispatch: {} # manual run (backfill a missed day / test)
+
+# Never let two cron runs overlap.
+concurrency:
+  group: cron-daily
+  cancel-in-progress: false
+
+jobs:
+  daily:
+    name: Trigger daily cron
+    runs-on: ubuntu-latest
+    steps:
+      # No checkout needed — this job only makes an authenticated HTTP call. The secret
+      # is passed via env and sent as the x-cron-secret header that routes/cron.js's
+      # authorizeCron expects (header, NOT body). GitHub masks the secret value in logs;
+      # we also never echo it. A non-2xx (e.g. 403 for a wrong/missing secret, or a 5xx
+      # from the backend) fails the step loudly so a missed night is visible in Actions.
+      - name: POST /api/cron/daily
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "${CRON_SECRET}" ]; then
+            echo "::error::CRON_SECRET repo secret is not set — add it in Settings → Secrets and variables → Actions."
+            exit 1
+          fi
+
+          http_code=$(curl --silent --show-error --max-time 60 \
+            --output /tmp/cron_response.json --write-out '%{http_code}' \
+            --request POST https://api.fjalingo.com/api/cron/daily \
+            --header "x-cron-secret: ${CRON_SECRET}")
+
+          echo "Response body:"
+          cat /tmp/cron_response.json || true
+          echo
+          echo "HTTP status: ${http_code}"
+
+          if [ "${http_code}" -lt 200 ] || [ "${http_code}" -ge 300 ]; then
+            echo "::error::Daily cron returned non-2xx status ${http_code}"
+            exit 1
+          fi
+          echo "Daily cron succeeded."

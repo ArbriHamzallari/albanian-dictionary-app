@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Star } from 'lucide-react';
 import LoadingSpinner from '../components/LoadingSpinner.jsx';
-import ErrorMessage from '../components/ErrorMessage.jsx';
+import DailyEmptyState from '../components/DailyEmptyState.jsx';
 import WordCard from '../components/WordCard.jsx';
 import Seo from '../components/Seo.jsx';
 import api from '../utils/api.js';
@@ -11,15 +11,17 @@ import { t } from '../i18n/index.js';
 const WordOfTheDay = () => {
   const [word, setWord] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
 
   useEffect(() => {
     const fetchWord = async () => {
       try {
         const response = await api.get('/words/word-of-the-day');
         setWord(response.data.word);
-      } catch {
-        setError(t('wordOfDay.notFound'));
+      } catch (err) {
+        // No word for today is an ops gap (the cron hasn't seeded one), never the
+        // user's fault — log the real HTTP status for diagnosability (DEMO-1 pattern)
+        // and fall through to the calm empty state, not a red error box.
+        console.error('WordOfTheDay: fetch failed:', err?.response?.status ?? err);
       } finally {
         setLoading(false);
       }
@@ -46,7 +48,7 @@ const WordOfTheDay = () => {
       </motion.div>
 
       {loading && <LoadingSpinner />}
-      {!loading && <ErrorMessage message={error} />}
+      {!loading && !word && <DailyEmptyState message={t('TODO_SQ_wordOfDay_empty')} />}
 
       {!loading && word && (
         <motion.div
