@@ -3,7 +3,8 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const pool = require('../utils/db');
 const { OAuth2Client } = require('google-auth-library');
-const { loginSchema, registerSchema, guestUpgradeSchema, consentCheckSchema, googleAuthSchema, completeProfileSchema, deleteAccountSchema } = require('../utils/validation');
+const { loginSchema, registerSchema, guestUpgradeSchema, consentCheckSchema, googleAuthSchema, completeProfileSchema, consentTokenSchema, deleteAccountSchema } = require('../utils/validation');
+const { validateParentEmail, sendParentalConsentEmail, verifyConsentToken, maskEmail } = require('../utils/parentalConsent');
 const { deleteUserData, hashUserIdentifier } = require('../utils/deleteUser');
 const { USER_RANK_SQL } = require('../utils/rankSql');
 const { getEntitlement, entitlementIsPremium } = require('../middleware/entitlements');
@@ -128,6 +129,9 @@ function profileFromRow(u) {
     is_minor: u.is_minor,
     parental_consent_required: u.parental_consent_required,
     parental_consent_given: u.parental_consent_given,
+    // Masked only — the full parent email is never returned to a client. Lets the
+    // pending-consent screen show "a***@gmail.com" after a reload (from /me).
+    parent_email_hint: u.parent_email ? maskEmail(u.parent_email) : null,
     profile_private: u.profile_private,
     leaderboard_opt_out: u.leaderboard_opt_out,
     leaderboard_segment: u.leaderboard_segment,
@@ -135,22 +139,16 @@ function profileFromRow(u) {
   };
 }
 
+// SAFE-2c: consent is server-authoritative. This no longer 403s on a missing
+// client-sent flag (that flag is gone). It computes the child-safety fields for a
+// freshly created account: consent is never "given" here — only the parent clicking
+// the emailed link (POST /parental-consent) flips it true — and a consent-pending
+// account is held private + off the leaderboard until then. The `{ fields }` shape is
+// kept so existing callers keep working; the parent-email flow is layered on top by
+// the caller (register/completeProfile/guestUpgrade).
 function buildChildSafetyFields(value) {
   const countryCode = normalizeCountryCode(value.country_code);
   const consentRequired = requiresParentalConsent(value.age, countryCode);
-
-  if (consentRequired && !value.parental_consent_given) {
-    return {
-      error: {
-        status: 403,
-        body: {
-          message: 'Kërkohet pëlqimi i prindit/kujdestarit për këtë moshë.',
-          code: 'PARENTAL_CONSENT_REQUIRED',
-        },
-      },
-    };
-  }
-
   const isMinor = isMinorAge(value.age);
   return {
     fields: {
@@ -158,9 +156,9 @@ function buildChildSafetyFields(value) {
       countryCode,
       isMinor,
       parentalConsentRequired: consentRequired,
-      parentalConsentGiven: Boolean(value.parental_consent_given),
+      parentalConsentGiven: false,
       profilePrivate: isMinor,
-      leaderboardOptOut: false,
+      leaderboardOptOut: consentRequired,
       leaderboardSegment: getLeaderboardSegmentForAge(value.age),
     },
   };
@@ -183,9 +181,16 @@ const register = async (req, res, next) => {
     }
 
     const safety = buildChildSafetyFields(value);
-    if (safety.error) {
-      return res.status(safety.error.status).json(safety.error.body);
+    const consentRequired = safety.fields.parentalConsentRequired;
+
+    // parent_email is required iff consent is required, and must differ from the child's
+    // own email. The requirement itself depends on the per-country threshold, so the rule
+    // lives in the shared consent helper rather than in the Joi schema.
+    const parentCheck = validateParentEmail(consentRequired, value.parent_email, value.email);
+    if (parentCheck.error) {
+      return res.status(400).json({ message: 'Email-i i prindit/kujdestarit është i pavlefshëm ose mungon.', code: parentCheck.error });
     }
+    const parentEmail = consentRequired ? value.parent_email : null;
 
     const timezone = resolveTimezone(value.timezone);
     const passwordHash = await bcrypt.hash(value.password, BCRYPT_COST);
@@ -212,9 +217,10 @@ const register = async (req, res, next) => {
            profile_private,
            leaderboard_opt_out,
            leaderboard_segment,
-           timezone
+           timezone,
+           parent_email
          )
-         VALUES ($1, $2, $3, 'user', $4, $5, 'default.png', $6, $7, $8, $9, $10, CASE WHEN $10 THEN NOW() ELSE NULL END, $11, $12, $13, $14)
+         VALUES ($1, $2, $3, 'user', $4, $5, 'default.png', $6, $7, $8, $9, $10, CASE WHEN $10 THEN NOW() ELSE NULL END, $11, $12, $13, $14, $15)
          RETURNING *`,
         [
           value.email,
@@ -231,6 +237,7 @@ const register = async (req, res, next) => {
           safety.fields.leaderboardOptOut,
           safety.fields.leaderboardSegment,
           timezone,
+          parentEmail,
         ]
       );
       const user = userResult.rows[0];
@@ -252,6 +259,24 @@ const register = async (req, res, next) => {
       const statsResult = await client.query('SELECT * FROM user_stats WHERE user_id = $1', [user.uuid]);
 
       const token = setSessionCookies(res, user);
+
+      // Consent-pending: the account exists but is restricted (private, off the
+      // leaderboard). Email the parent the approval link and tell the client to show the
+      // "check your parent's email" screen instead of entering the app. The email may
+      // fail (logged, not thrown) — the account stands and /resend-consent can retry.
+      if (consentRequired) {
+        const { parentEmailHint } = await sendParentalConsentEmail(user.uuid, parentEmail);
+        return res.status(201).json({
+          token,
+          profile: profileFromRow(user),
+          stats: statsResult.rows[0],
+          entitlement: { tier: 'free', status: 'free', current_period_end: null },
+          csrfToken: res.locals.csrfToken,
+          pendingParentalConsent: true,
+          parentEmailHint,
+        });
+      }
+
       return res.status(201).json({
         token,
         profile: profileFromRow(user),
@@ -414,9 +439,14 @@ const guestUpgrade = async (req, res, next) => {
     }
 
     const safety = buildChildSafetyFields(value);
-    if (safety.error) {
-      return res.status(safety.error.status).json(safety.error.body);
+    const consentRequired = safety.fields.parentalConsentRequired;
+
+    // Same consent gate as register (a guest upgrade is still a new full account).
+    const parentCheck = validateParentEmail(consentRequired, value.parent_email, value.email);
+    if (parentCheck.error) {
+      return res.status(400).json({ message: 'Email-i i prindit/kujdestarit është i pavlefshëm ose mungon.', code: parentCheck.error });
     }
+    const parentEmail = consentRequired ? value.parent_email : null;
 
     const gp = value.guestProgress;
     // Extra clamp: correct_answers cannot exceed total_quizzes * 10
@@ -447,9 +477,10 @@ const guestUpgrade = async (req, res, next) => {
            profile_private,
            leaderboard_opt_out,
            leaderboard_segment,
-           timezone
+           timezone,
+           parent_email
          )
-         VALUES ($1, $2, $3, 'user', $4, $5, 'default.png', $6, $7, $8, $9, $10, CASE WHEN $10 THEN NOW() ELSE NULL END, $11, $12, $13, $14)
+         VALUES ($1, $2, $3, 'user', $4, $5, 'default.png', $6, $7, $8, $9, $10, CASE WHEN $10 THEN NOW() ELSE NULL END, $11, $12, $13, $14, $15)
          RETURNING *`,
         [
           value.email,
@@ -466,20 +497,24 @@ const guestUpgrade = async (req, res, next) => {
           safety.fields.leaderboardOptOut,
           safety.fields.leaderboardSegment,
           timezone,
+          parentEmail,
         ]
       );
       const user = userResult.rows[0];
 
       // Create stats with merged guest progress
-      // Level = floor(sqrt(xp/100)) + 1, computed from the xp parameter ($2)
+      // Level = floor(sqrt(xp/100)) + 1, computed from a dedicated xp param ($6). It is
+      // passed separately from the xp column value ($2) because Postgres rejects one
+      // parameter being deduced as both integer (the xp column) and numeric (the
+      // sqrt cast) — "inconsistent types deduced for parameter".
       // total_questions seeds the accuracy denominator (BUG-5). Guests track quizzes,
       // not per-quiz question counts, so use the same total_quizzes * 10 convention
       // as the correct_answers clamp above — keeping merged accuracy <= 100%.
       await client.query(
         `INSERT INTO user_stats (user_id, xp, level, streak, total_quizzes, correct_answers, total_questions)
-         VALUES ($1, $2, floor(sqrt(($2::numeric)/100))::int + 1, $3, $4, $5, $4 * 10)
+         VALUES ($1, $2, floor(sqrt(($6::numeric)/100))::int + 1, $3, $4, $5, $4 * 10)
          ON CONFLICT (user_id) DO NOTHING`,
-        [user.uuid, gp.xp, gp.streak, gp.total_quizzes, gp.correct_answers]
+        [user.uuid, gp.xp, gp.streak, gp.total_quizzes, gp.correct_answers, gp.xp]
       );
 
       await client.query(
@@ -494,6 +529,20 @@ const guestUpgrade = async (req, res, next) => {
       const statsResult = await client.query('SELECT * FROM user_stats WHERE user_id = $1', [user.uuid]);
 
       const token = setSessionCookies(res, user);
+
+      if (consentRequired) {
+        const { parentEmailHint } = await sendParentalConsentEmail(user.uuid, parentEmail);
+        return res.status(201).json({
+          token,
+          profile: profileFromRow(user),
+          stats: statsResult.rows[0],
+          entitlement: { tier: 'free', status: 'free', current_period_end: null },
+          csrfToken: res.locals.csrfToken,
+          pendingParentalConsent: true,
+          parentEmailHint,
+        });
+      }
+
       return res.status(201).json({
         token,
         profile: profileFromRow(user),
@@ -811,9 +860,19 @@ const completeProfile = async (req, res, next) => {
     }
 
     const safety = buildChildSafetyFields(value);
-    if (safety.error) {
-      return res.status(safety.error.status).json(safety.error.body);
+    const consentRequired = safety.fields.parentalConsentRequired;
+
+    // The account already exists (Google sign-up). Its own email is needed to reject a
+    // parent_email equal to it. Same shared consent helper as register — no duplication.
+    const existing = await pool.query('SELECT email FROM users WHERE uuid = $1::uuid', [req.user.uuid]);
+    if (!existing.rows.length) {
+      return res.status(404).json({ message: 'Përdoruesi nuk u gjet.' });
     }
+    const parentCheck = validateParentEmail(consentRequired, value.parent_email, existing.rows[0].email);
+    if (parentCheck.error) {
+      return res.status(400).json({ message: 'Email-i i prindit/kujdestarit është i pavlefshëm ose mungon.', code: parentCheck.error });
+    }
+    const parentEmail = consentRequired ? value.parent_email : null;
 
     const timezone = resolveTimezone(value.timezone);
     const result = await pool.query(
@@ -827,7 +886,8 @@ const completeProfile = async (req, res, next) => {
          profile_private = $7,
          leaderboard_opt_out = $8,
          leaderboard_segment = $9,
-         timezone = COALESCE($10, timezone)
+         timezone = COALESCE($10, timezone),
+         parent_email = $11
        WHERE uuid = $1::uuid
        RETURNING *`,
       [
@@ -841,17 +901,137 @@ const completeProfile = async (req, res, next) => {
         safety.fields.leaderboardOptOut,
         safety.fields.leaderboardSegment,
         timezone,
+        parentEmail,
       ]
     );
 
     if (!result.rows.length) {
       return res.status(404).json({ message: 'Përdoruesi nuk u gjet.' });
     }
+    const user = result.rows[0];
 
-    return res.json({ profile: profileFromRow(result.rows[0]) });
+    // Same consent-pending path as register: email the parent, tell the client to show
+    // the pending screen. Email failure is logged, not fatal.
+    if (consentRequired) {
+      const { parentEmailHint } = await sendParentalConsentEmail(user.uuid, parentEmail);
+      return res.json({ profile: profileFromRow(user), pendingParentalConsent: true, parentEmailHint });
+    }
+
+    return res.json({ profile: profileFromRow(user) });
   } catch (err) {
     return next(err);
   }
 };
 
-module.exports = { register, login, me, guestUpgrade, heartbeat, consentCheck, refresh, logout, googleAuth, completeProfile, deleteAccount };
+// ── POST /parental-consent ───────────────────────────────────
+// PUBLIC. The parent lands here from the emailed link and approves. Verifies the
+// consent token (signature, type, expiry), then flips the account to consented and
+// lifts the leaderboard restriction. Idempotent: approving an already-approved account
+// is a success, not an error.
+const parentalConsent = async (req, res, next) => {
+  try {
+    const { error, value } = consentTokenSchema.validate(req.body);
+    if (error) {
+      return res.status(400).json({ message: 'Kërkesa është e pavlefshme.' });
+    }
+
+    let payload;
+    try {
+      payload = verifyConsentToken(value.token);
+    } catch {
+      return res.status(400).json({ message: 'Lidhja e pëlqimit është e pavlefshme ose ka skaduar.', code: 'CONSENT_TOKEN_INVALID' });
+    }
+
+    const userResult = await pool.query(
+      'SELECT uuid, parental_consent_given FROM users WHERE uuid = $1::uuid',
+      [payload.user_uuid]
+    );
+    if (!userResult.rows.length) {
+      return res.status(404).json({ message: 'Llogaria nuk u gjet.', code: 'CONSENT_USER_NOT_FOUND' });
+    }
+    if (userResult.rows[0].parental_consent_given) {
+      return res.json({ success: true, alreadyGranted: true });
+    }
+
+    await pool.query(
+      `UPDATE users
+         SET parental_consent_given = true,
+             parental_consent_at = NOW(),
+             parental_consent_method = 'email_token',
+             leaderboard_opt_out = false
+       WHERE uuid = $1::uuid`,
+      [payload.user_uuid]
+    );
+    return res.json({ success: true });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+// ── POST /withdraw-consent ───────────────────────────────────
+// PUBLIC (GDPR: consent is withdrawable). Uses the SAME emailed consent token as the
+// approval link — the ConsentLanding page offers "Withdraw" alongside "Approve". Re-
+// restricts the account (consent cleared, back off the leaderboard). After the token's
+// 7-day expiry a parent must request a fresh link (via the child's /resend-consent).
+const withdrawConsent = async (req, res, next) => {
+  try {
+    const { error, value } = consentTokenSchema.validate(req.body);
+    if (error) {
+      return res.status(400).json({ message: 'Kërkesa është e pavlefshme.' });
+    }
+
+    let payload;
+    try {
+      payload = verifyConsentToken(value.token);
+    } catch {
+      return res.status(400).json({ message: 'Lidhja e pëlqimit është e pavlefshme ose ka skaduar.', code: 'CONSENT_TOKEN_INVALID' });
+    }
+
+    const userResult = await pool.query('SELECT uuid FROM users WHERE uuid = $1::uuid', [payload.user_uuid]);
+    if (!userResult.rows.length) {
+      return res.status(404).json({ message: 'Llogaria nuk u gjet.', code: 'CONSENT_USER_NOT_FOUND' });
+    }
+
+    await pool.query(
+      `UPDATE users
+         SET parental_consent_given = false,
+             parental_consent_at = NULL,
+             parental_consent_method = NULL,
+             leaderboard_opt_out = true
+       WHERE uuid = $1::uuid`,
+      [payload.user_uuid]
+    );
+    return res.json({ success: true });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+// ── POST /resend-consent ─────────────────────────────────────
+// AUTHENTICATED (the pending user themselves) + rate-limited at the route. Regenerates
+// the consent token and re-emails the parent using the stored parent_email.
+const resendConsent = async (req, res, next) => {
+  try {
+    const userResult = await pool.query(
+      'SELECT uuid, parent_email, parental_consent_required, parental_consent_given FROM users WHERE uuid = $1::uuid',
+      [req.user.uuid]
+    );
+    if (!userResult.rows.length) {
+      return res.status(404).json({ message: 'Përdoruesi nuk u gjet.' });
+    }
+    const u = userResult.rows[0];
+    if (!u.parental_consent_required || u.parental_consent_given) {
+      return res.status(400).json({ message: 'Nuk ka pëlqim në pritje për këtë llogari.', code: 'NO_PENDING_CONSENT' });
+    }
+    if (!u.parent_email) {
+      return res.status(400).json({ message: 'Email-i i prindit mungon.', code: 'PARENT_EMAIL_MISSING' });
+    }
+
+    const { parentEmailHint } = await sendParentalConsentEmail(u.uuid, u.parent_email);
+    return res.json({ sent: true, parentEmailHint });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+module.exports = { register, login, me, guestUpgrade, heartbeat, consentCheck, refresh, logout, googleAuth, completeProfile, deleteAccount, parentalConsent, withdrawConsent, resendConsent };
