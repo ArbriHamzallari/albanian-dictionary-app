@@ -4,6 +4,24 @@ import confetti from 'canvas-confetti';
 import api from '../utils/api.js';
 import { updateStreak, awardPoints, getStreak } from '../utils/userService.js';
 import { t } from '../i18n/index.js';
+import DailyEmptyState from './DailyEmptyState.jsx';
+
+// Fixed-height skeleton that mirrors the loaded card's layout so swapping it for the
+// real card causes no layout shift (no CLS). Bars are theme-aware.
+const DailyChallengeSkeleton = () => (
+  <div className="card border-fjalingo-yellow/40 bg-gradient-to-br from-fjalingo-yellow/10 to-fjalingo-orange/5 dark:from-fjalingo-yellow/5 dark:to-fjalingo-orange/3">
+    <div className="mb-4 flex items-center justify-between">
+      <div className="h-6 w-40 animate-pulse rounded bg-line dark:bg-dark-border" />
+      <div className="h-8 w-12 animate-pulse rounded bg-line dark:bg-dark-border" />
+    </div>
+    <div className="mb-1 h-4 w-28 animate-pulse rounded bg-line dark:bg-dark-border" />
+    <div className="mb-4 h-8 w-48 animate-pulse rounded bg-line dark:bg-dark-border" />
+    <div className="flex gap-2">
+      <div className="h-12 flex-1 animate-pulse rounded bg-line dark:bg-dark-border" />
+      <div className="h-12 w-28 animate-pulse rounded bg-line dark:bg-dark-border" />
+    </div>
+  </div>
+);
 
 const DailyChallengeCard = () => {
   const [word, setWord] = useState(null);
@@ -14,18 +32,23 @@ const DailyChallengeCard = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        const [wordRes, streakRes] = await Promise.allSettled([
-          api.get('/words/word-of-the-day'),
-          getStreak(),
-        ]);
-        if (wordRes.status === 'fulfilled') setWord(wordRes.value.data.word);
-        if (streakRes.status === 'fulfilled') setStreakData(streakRes.value);
-      } catch {
-        // ignore
-      } finally {
-        setLoading(false);
+      const [wordRes, streakRes] = await Promise.allSettled([
+        api.get('/words/word-of-the-day'),
+        getStreak(),
+      ]);
+      if (wordRes.status === 'fulfilled') {
+        setWord(wordRes.value.data.word);
+      } else {
+        // A missing WOTD is an ops gap (the cron hasn't seeded one), not the user's
+        // fault — surface the real HTTP status for diagnosability (DEMO-1 pattern),
+        // then fall through to the calm empty state below.
+        console.error(
+          'DailyChallengeCard: word-of-the-day fetch failed:',
+          wordRes.reason?.response?.status ?? wordRes.reason,
+        );
       }
+      if (streakRes.status === 'fulfilled') setStreakData(streakRes.value);
+      setLoading(false);
     };
     fetchData();
   }, []);
@@ -46,10 +69,12 @@ const DailyChallengeCard = () => {
     }
   };
 
-  if (loading) return null;
-  // A heritage word has no replacement to type, so it can't be a fill-in challenge —
-  // skip it rather than crash on word.correct_albanian below.
-  if (!word || !word.correct_albanian) return null;
+  if (loading) return <DailyChallengeSkeleton />;
+  // No teachable word today (missing WOTD, or a heritage word with no replacement to
+  // type). Show the calm empty state instead of a blank screen — never return null.
+  if (!word || !word.correct_albanian) {
+    return <DailyEmptyState message={t('TODO_SQ_daily_challenge_empty')} />;
+  }
 
   return (
     <motion.div

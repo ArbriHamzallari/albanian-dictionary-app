@@ -1068,6 +1068,8 @@
   "TODO_SQ_dashboard_lessons_completed": "{completed} nga {total} mësime",
   "TODO_SQ_dashboard_wotd": "Fjala e Ditës",
   "TODO_SQ_dashboard_see_details": "Shiko detajet →",
+  "TODO_SQ_daily_challenge_empty": "[SQ] The daily challenge isn't ready yet — check back soon. Meanwhile, play a quiz.",
+  "TODO_SQ_wordOfDay_empty": "[SQ] The word of the day isn't ready yet — check back soon. Meanwhile, play a quiz.",
   "TODO_SQ_faq_title": "Pyetjet e Shpeshta",
   "TODO_SQ_faq_subtitle": "Këtu do të gjeni përgjigjet për pyetjet më të shpeshta rreth Fjalingos.",
   "TODO_SQ_faq_contact_heading": "Ende kureshtar?",
