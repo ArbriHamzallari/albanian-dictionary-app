@@ -27,7 +27,7 @@ const LEGAL_LINKS = [
 ];
 
 const SOCIALS = [
-  { href: 'https://www.instagram.com/codrix.al/', icon: Instagram, aria: 'footer.instagramAria' },
+  { href: 'https://www.instagram.com/fjalingo.app/', icon: Instagram, aria: 'footer.instagramAria' },
   { href: 'https://codrixwebsite.vercel.app/', icon: Globe, aria: 'footer.websiteAria' },
   { href: 'https://www.linkedin.com/company/codrix-solutions/', icon: Linkedin, aria: 'footer.linkedinAria' },
 ];

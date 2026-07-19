@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="50 32 140 140" role="img" aria-label="Fjalingo">
+  <ellipse cx="120" cy="108" rx="62" ry="58" fill="#2BB673" stroke="#1F8F58" stroke-width="2.5"/>
+  <ellipse cx="120" cy="118" rx="36" ry="32" fill="#66BB64" opacity="0.55"/>
+  <ellipse cx="108" cy="58" rx="8" ry="12" fill="#2BB673" stroke="#1F8F58" stroke-width="2"/>
+  <ellipse cx="120" cy="52" rx="9" ry="14" fill="#2BB673" stroke="#1F8F58" stroke-width="2"/>
+  <ellipse cx="132" cy="58" rx="8" ry="12" fill="#2BB673" stroke="#1F8F58" stroke-width="2"/>
+  <path d="M120 128 C108 134 106 148 120 156 C134 148 132 134 120 128 Z" fill="#FFC93C" stroke="#1F8F58" stroke-width="2.5"/>
+  <path d="M120 140 C114 144 114 150 120 152 C126 150 126 144 120 140 Z" fill="#FF7A6B"/>
+  <ellipse cx="98" cy="108" rx="22" ry="24" fill="#FFFFFF" stroke="#1F8F58" stroke-width="2"/>
+  <ellipse cx="142" cy="108" rx="22" ry="24" fill="#FFFFFF" stroke="#1F8F58" stroke-width="2"/>
+  <path d="M82 92 Q98 84 114 92" stroke="#1F8F58" stroke-width="3" stroke-linecap="round" fill="none"/>
+  <path d="M126 92 Q142 84 158 92" stroke="#1F8F58" stroke-width="3" stroke-linecap="round" fill="none"/>
+  <circle cx="98" cy="108" r="9" fill="#1F2933"/>
+  <circle cx="142" cy="108" r="9" fill="#1F2933"/>
+  <circle cx="102" cy="104" r="3.5" fill="#FFFFFF"/>
+  <circle cx="146" cy="104" r="3.5" fill="#FFFFFF"/>
+</svg>
