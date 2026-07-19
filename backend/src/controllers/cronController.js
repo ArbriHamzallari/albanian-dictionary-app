@@ -98,25 +98,50 @@ const runDailyCron = async (req, res, next) => {
     // 3. End-of-season league processing (rank, promote/demote, seed next).
     const leagues = await processSeasonEnd(client);
 
-    // 4. Word of the Day. If no row exists for today, pick a teachable word
-    //    deterministically from the date: number the eligible words (word_type
-    //    'replace' WITH at least one definition) by id and take the one at a
-    //    date-hashed offset. ON CONFLICT (display_date) DO NOTHING means an
-    //    admin's manual pick made earlier today always wins, and re-runs no-op.
+    // 4. Word of the Day (FEAT-1). ONE selection path with a defined base case:
+    //    - `popular`: yesterday's most-accessed eligible word (word_type 'replace'
+    //      WITH a definition), skipping any word shown in the last 30 days so the
+    //      surface rotates. views>0 required; ties broken deterministically by id.
+    //    - `fallback` (base case, UNCHANGED from before): the deterministic date-hash
+    //      pick among eligible words. Used when yesterday has zero recorded accesses
+    //      (or every popular candidate was shown recently) — so with no access data
+    //      the cron behaves exactly as it did previously.
+    //    COALESCE(popular, fallback) is the single chosen word. ON CONFLICT
+    //    (display_date) DO NOTHING keeps an admin's manual pick, and makes re-runs no-op.
     const wotd = await client.query(
       `WITH eligible AS (
-         SELECT w.id,
-                row_number() OVER (ORDER BY w.id) - 1 AS rn,
-                count(*) OVER () AS total
+         SELECT w.id
          FROM words w
          WHERE w.word_type = 'replace'
            AND EXISTS (SELECT 1 FROM definitions d WHERE d.word_id = w.id)
+       ),
+       popular AS (
+         SELECT wad.word_id
+         FROM word_access_daily wad
+         WHERE wad.day = CURRENT_DATE - 1
+           AND wad.views > 0
+           AND EXISTS (SELECT 1 FROM eligible e WHERE e.id = wad.word_id)
+           AND NOT EXISTS (
+             SELECT 1 FROM word_of_the_day recent
+             WHERE recent.word_id = wad.word_id
+               AND recent.display_date >= CURRENT_DATE - 30
+           )
+         ORDER BY wad.views DESC, wad.word_id ASC
+         LIMIT 1
+       ),
+       fallback AS (
+         SELECT id FROM (
+           SELECT e.id,
+                  row_number() OVER (ORDER BY e.id) - 1 AS rn,
+                  count(*) OVER () AS total
+           FROM eligible e
+         ) ranked
+         WHERE total > 0
+           AND rn = ((hashtext(CURRENT_DATE::text) % total) + total) % total
        )
        INSERT INTO word_of_the_day (word_id, display_date)
-       SELECT id, CURRENT_DATE
-       FROM eligible
-       WHERE total > 0
-         AND rn = ((hashtext(CURRENT_DATE::text) % total) + total) % total
+       SELECT COALESCE((SELECT word_id FROM popular), (SELECT id FROM fallback)), CURRENT_DATE
+       WHERE COALESCE((SELECT word_id FROM popular), (SELECT id FROM fallback)) IS NOT NULL
        ON CONFLICT (display_date) DO NOTHING
        RETURNING word_id, display_date`
     );

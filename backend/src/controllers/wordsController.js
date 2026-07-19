@@ -109,6 +109,21 @@ const getWordById = async (req, res, next) => {
         ),
       ]);
 
+      // FEAT-1: count this word-detail access (the one honest per-word signal — a
+      // direct fetch of a specific word, unlike a 10-result search list). Single
+      // PK-indexed upsert, counts only (no PII). Best-effort: a counter failure must
+      // never fail the fetch, so it is logged, not thrown.
+      try {
+        await client.query(
+          `INSERT INTO word_access_daily (word_id, day, views)
+           VALUES ($1, CURRENT_DATE, 1)
+           ON CONFLICT (word_id, day) DO UPDATE SET views = word_access_daily.views + 1`,
+          [word.id]
+        );
+      } catch (accessError) {
+        console.error('[word_access_daily_upsert_failed]', accessError);
+      }
+
       return res.json({
         word: {
           ...mapWord(word, definitionsResult.rows, conjugationsResult.rows),
