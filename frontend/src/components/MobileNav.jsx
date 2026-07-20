@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { Compass, Gamepad2, Trophy, User } from 'lucide-react';
+import { Route, Gamepad2, Trophy, User } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.jsx';
 import { t } from '../i18n/index.js';
 
@@ -7,7 +7,7 @@ const MobileNav = () => {
   const { isLoggedIn } = useAuth();
 
   const tabs = [
-    { to: '/origjina', icon: Compass, label: t('TODO_SQ_nav_rruga') },
+    { to: '/rruga', icon: Route, label: t('TODO_SQ_nav_rruga') },
     { to: '/kuizi', icon: Gamepad2, label: t('TODO_SQ_nav_luaj') },
     { to: '/renditja', icon: Trophy, label: t('TODO_SQ_nav_renditja') },
     { to: isLoggedIn ? '/profili' : '/hyr', icon: User, label: isLoggedIn ? t('TODO_SQ_nav_profili') : t('common.login') },

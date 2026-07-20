@@ -33,7 +33,7 @@ const Header = () => {
   useEffect(() => { setAccountOpen(false); }, [location]);
 
   const navLinks = [
-    { to: '/origjina', label: t('TODO_SQ_nav_rruga') },
+    { to: '/rruga', label: t('TODO_SQ_nav_rruga') },
     { to: '/kuizi', label: t('TODO_SQ_nav_luaj') },
     { to: '/renditja', label: t('TODO_SQ_nav_renditja') },
     { to: '/profili', label: t('TODO_SQ_nav_profili') },

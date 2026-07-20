@@ -166,7 +166,7 @@ const Dashboard = () => {
         transition={{ delay: 0.125 }}
         className="mb-6"
       >
-        <Link to="/origjina" className="card card-hover flex items-center gap-4">
+        <Link to="/rruga" className="card card-hover flex items-center gap-4">
           <span className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-fjalingo-green/15">
             <Compass className="h-6 w-6 text-fjalingo-green" />
           </span>
