@@ -34,7 +34,7 @@ const Header = () => {
 
   const navLinks = [
     { to: '/rruga', label: t('TODO_SQ_nav_rruga') },
-    { to: '/kuizi', label: t('TODO_SQ_nav_luaj') },
+    { to: '/luaj', label: t('TODO_SQ_nav_luaj') },
     { to: '/renditja', label: t('TODO_SQ_nav_renditja') },
     { to: '/profili', label: t('TODO_SQ_nav_profili') },
   ];

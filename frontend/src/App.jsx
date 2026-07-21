@@ -31,6 +31,7 @@ const Quiz = lazy(() => import('./pages/Quiz.jsx'));
 const Lesson = lazy(() => import('./pages/Lesson.jsx'));
 const Lessons = lazy(() => import('./pages/Lessons.jsx'));
 const Roadmap = lazy(() => import('./pages/Roadmap.jsx'));
+const GameHub = lazy(() => import('./pages/GameHub.jsx'));
 const Onboarding = lazy(() => import('./pages/Onboarding.jsx'));
 const Achievements = lazy(() => import('./pages/Achievements.jsx'));
 const Register = lazy(() => import('./pages/Register.jsx'));
@@ -176,6 +177,7 @@ const App = () => {
               <Route path="/origjina/:code" element={<OriginDetail />} />
               <Route path="/sfida-e-dites" element={<DailyChallenge />} />
               <Route path="/propozo" element={<SuggestWord />} />
+              <Route path="/luaj" element={<GameHub />} />
               <Route path="/kuizi" element={<Quiz />} />
               <Route path="/mesimet" element={<Lessons />} />
               <Route path="/rruga" element={<Roadmap />} />
