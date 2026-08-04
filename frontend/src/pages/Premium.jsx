@@ -1,11 +1,12 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { Check, Crown } from 'lucide-react';
+import { AlertTriangle, Check, Crown } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import PremiumCheckoutButton from '../components/PremiumCheckoutButton.jsx';
 import Card from '../components/ui/Card.jsx';
 import Heading from '../components/ui/Heading.jsx';
 import Seo from '../components/Seo.jsx';
+import api from '../utils/api.js';
 import { useAuth, useHasUnlimitedAccess } from '../context/AuthContext.jsx';
 import { t } from '../i18n/index.js';
 
@@ -16,6 +17,67 @@ const PLANS = [
   { id: 'annual', nameKey: 'premium.plans.annualName', priceKey: 'premium.plans.annualPrice', subKey: 'premium.plans.annualPerMonth', badgeKey: 'premium.plans.savingsBadge' },
   { id: 'monthly', nameKey: 'premium.plans.monthlyName', priceKey: 'premium.plans.monthlyPrice', subKey: null, badgeKey: null },
 ];
+
+// PAY-3: what an active subscriber sees in place of the old bare "Active" badge —
+// which plan they are on, when it renews, and a calm warning while Paddle retries a
+// failed payment. Everything here is rendered only when the server actually supplied
+// it: an unknown plan or a missing period end omits its line rather than inventing one.
+//
+// Not here yet: "Update payment method" / "Cancel subscription". Those are Paddle-hosted
+// links that Paddle deliberately omits from webhooks and treats as temporary, so they
+// require a server-side Paddle API call — a scope decision flagged in the PR, not a
+// silent addition.
+const SubscriptionPanel = ({ subscription }) => {
+  const pastDue = subscription?.status === 'past_due';
+  const planName = subscription?.plan
+    ? t(`premium.plans.${subscription.plan}Name`)
+    : null;
+  const renewsAt = subscription?.currentPeriodEnd
+    ? new Date(subscription.currentPeriodEnd)
+    : null;
+  const renewsValid = renewsAt && !Number.isNaN(renewsAt.getTime());
+
+  return (
+    <div className="mt-2">
+      <span className="inline-flex items-center gap-2 rounded-pill bg-brand-green/15 px-4 py-2 text-sm font-extrabold text-brand-green">
+        <Check className="w-4 h-4" aria-hidden="true" /> {t('premium.active')}
+      </span>
+
+      {(planName || renewsValid) && (
+        <dl className="mt-4 space-y-1 text-sm font-semibold text-muted dark:text-dark-muted">
+          {planName && (
+            <div className="flex items-center justify-center gap-2">
+              <dt>{t('TODO_SQ_premium_manage_plan_label')}</dt>
+              <dd className="text-ink dark:text-dark-text font-bold">{planName}</dd>
+            </div>
+          )}
+          {renewsValid && (
+            <div className="flex items-center justify-center gap-2">
+              {/* past_due means the period already lapsed and Paddle is retrying, so
+                  the same date is a "renews on" or a "retrying since" depending on state. */}
+              <dt>{pastDue ? t('TODO_SQ_premium_manage_period_ended_label') : t('TODO_SQ_premium_manage_renews_label')}</dt>
+              <dd className="text-ink dark:text-dark-text font-bold">
+                {renewsAt.toLocaleDateString('sq-AL', { year: 'numeric', month: 'long', day: 'numeric' })}
+              </dd>
+            </div>
+          )}
+        </dl>
+      )}
+
+      {pastDue && (
+        <div
+          role="status"
+          className="mt-4 flex items-start gap-3 rounded-2xl border border-accent-yellow/40 bg-accent-yellow/10 px-4 py-3 text-left"
+        >
+          <AlertTriangle className="w-5 h-5 flex-shrink-0 text-accent-yellow mt-0.5" aria-hidden="true" />
+          <p className="text-sm font-semibold text-ink dark:text-dark-text">
+            {t('TODO_SQ_premium_past_due_body')}
+          </p>
+        </div>
+      )}
+    </div>
+  );
+};
 
 const PlanSelector = ({ selected, onSelect }) => (
   <div className="mb-6 grid grid-cols-2 gap-3" role="radiogroup" aria-label={t('premium.plans.selectAria')}>
@@ -64,6 +126,25 @@ const Premium = () => {
   // only genuine free users see the upsell.
   const isPremium = useHasUnlimitedAccess();
   const [selectedPlan, setSelectedPlan] = useState('annual'); // annual is the hero
+  // PAY-3: only a real subscriber has a subscription to show. Admins and complimentary
+  // users also pass isPremium but have no Paddle row — the endpoint returns free/null
+  // for them and the panel simply falls back to the plain badge.
+  const [subscription, setSubscription] = useState(null);
+
+  useEffect(() => {
+    if (!isLoggedIn || !isPremium) return;
+    let cancelled = false;
+    api.get('/billing/subscription')
+      .then((res) => {
+        if (!cancelled) setSubscription(res.data.subscription || null);
+      })
+      .catch((err) => {
+        // Non-fatal: the badge still renders. Log so a real failure is diagnosable
+        // rather than silently degrading to "no details" forever.
+        console.error('Premium: subscription fetch failed:', err?.response?.status ?? err);
+      });
+    return () => { cancelled = true; };
+  }, [isLoggedIn, isPremium]);
 
   return (
     <div className="max-w-3xl mx-auto px-6 py-12">
@@ -82,9 +163,7 @@ const Premium = () => {
           <p className="text-muted dark:text-dark-muted font-semibold mb-6">{t('premium.hero')}</p>
 
           {isPremium ? (
-            <span className="inline-flex items-center gap-2 rounded-pill bg-brand-green/15 px-4 py-2 text-sm font-extrabold text-brand-green">
-              <Check className="w-4 h-4" aria-hidden="true" /> {t('premium.active')}
-            </span>
+            <SubscriptionPanel subscription={subscription} />
           ) : (
             <>
               <PlanSelector selected={selectedPlan} onSelect={setSelectedPlan} />

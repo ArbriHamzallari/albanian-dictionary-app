@@ -117,6 +117,9 @@ const ACCESS = {
   'GET /api/leagues/last-result': 'auth',
   'GET /api/notifications': 'auth',
   'GET /api/billing/checkout-config': 'auth',
+  // PAY-3: reads only the caller's OWN entitlement (WHERE user_id = req.user.uuid),
+  // so authentication is the whole boundary — there is no id to tamper with.
+  'GET /api/billing/subscription': 'auth',
   'POST /api/friends/request': 'auth',
   'POST /api/friends/accept': 'auth',
   'POST /api/friends/decline': 'auth',

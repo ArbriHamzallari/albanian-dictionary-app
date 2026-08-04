@@ -1,0 +1,16 @@
+-- 028_entitlements_price_id.sql (idempotent — safe to re-run)
+-- PAY-3: record WHICH price a subscriber is on, so the Premium page can tell them
+-- whether they are on the €25/year or the €5/month plan (PRICE-2 sells both).
+--
+-- Nothing stored today distinguishes the two: entitlements keeps tier/status/
+-- subscription id/customer id/period end, none of which name the price. The price id
+-- IS present on every subscription.* webhook payload at items[].price.id, so this is a
+-- straight capture in the existing upsert — no new mechanism, no extra Paddle call.
+--
+-- Deliberately NOT added here: management_url_cancel / management_url_update_payment_method.
+-- Paddle excludes `management_urls` from ALL subscription webhook payloads and documents
+-- the links as temporary ("Payload includes the complete subscription entity, except
+-- management_urls. Subscription management links are temporary, so they're not
+-- included."). Persisting a temporary link in a column would store a value that is both
+-- unobtainable here and stale by design — see the PR for the options that actually work.
+ALTER TABLE entitlements ADD COLUMN IF NOT EXISTS paddle_price_id VARCHAR(100);

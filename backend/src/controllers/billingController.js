@@ -20,11 +20,26 @@ function premiumPriceIds() {
   };
 }
 
-function assertPaddleSandbox() {
-  const environment = process.env.PADDLE_ENVIRONMENT || 'sandbox';
-  if (environment !== 'sandbox') {
-    throw new Error('Paddle live mode is not enabled for this integration.');
+// PAY-3: the gate used to throw on anything but 'sandbox' — including 'production',
+// which made live billing impossible and contradicted DEPLOYMENT.md ("`sandbox` until
+// live billing; `production` after Paddle verification. Must be exactly `sandbox` or
+// `production`"). Both are valid; anything else is a misconfiguration worth failing on.
+// This mirrors frontend/src/utils/paddleCheckout.js exactly, so the two ends agree on
+// what is valid. Flipping the env var itself is a business-side action, not a code one.
+const PADDLE_ENVIRONMENTS = ['sandbox', 'production'];
+
+function paddleEnvironment() {
+  return process.env.PADDLE_ENVIRONMENT || 'sandbox';
+}
+
+function assertPaddleEnvironmentConfigured() {
+  const environment = paddleEnvironment();
+  if (!PADDLE_ENVIRONMENTS.includes(environment)) {
+    throw new Error(
+      `Unexpected Paddle environment "${environment}"; expected "sandbox" or "production".`
+    );
   }
+  return environment;
 }
 
 function currentPeriodEndFromSubscription(subscription) {
@@ -43,15 +58,29 @@ function customDataFromSubscription(subscription) {
   return subscription?.custom_data || subscription?.customData || {};
 }
 
+// PAY-3: which price the subscriber is on (items[].price.id on every subscription.*
+// payload). One subscription = one Premium price here, so the first item is it; a
+// subscription with no items is possible in malformed/partial payloads, hence the
+// optional chaining rather than an assumption. Both naming conventions are tolerated,
+// matching currentPeriodEndFromSubscription above.
+function priceIdFromSubscription(subscription) {
+  const items = subscription?.items;
+  if (!Array.isArray(items) || !items.length) {
+    return null;
+  }
+  const price = items[0]?.price;
+  return price?.id || price?.priceId || null;
+}
+
 async function checkoutConfig(req, res, next) {
   try {
-    assertPaddleSandbox();
+    assertPaddleEnvironmentConfigured();
 
     const clientToken = process.env.PADDLE_CLIENT_TOKEN;
     const { annual, monthly } = premiumPriceIds();
     const secret = checkoutSigningSecret();
     if (!clientToken || !annual || !secret) {
-      return res.status(503).json({ message: 'Paddle sandbox checkout is not configured.' });
+      return res.status(503).json({ message: 'Paddle checkout is not configured.' });
     }
 
     const userResult = await pool.query(
@@ -65,7 +94,7 @@ async function checkoutConfig(req, res, next) {
     const checkoutSignature = signCheckoutUser(req.user.uuid, secret);
 
     return res.json({
-      environment: process.env.PADDLE_ENVIRONMENT || 'sandbox',
+      environment: paddleEnvironment(),
       clientToken,
       // Both plans; the frontend opens checkout with the chosen one's priceId.
       // Monthly is included only when configured.
@@ -78,6 +107,59 @@ async function checkoutConfig(req, res, next) {
         user_uuid: req.user.uuid,
         checkout_signature: checkoutSignature,
         tier: 'premium',
+      },
+    });
+  } catch (err) {
+    return next(err);
+  }
+}
+
+// GET /api/billing/subscription — the current user's own subscription, for the Premium
+// page's manage panel. /auth/me already returns tier/status/current_period_end, but not
+// which plan; rather than widen the auth payload for a billing-only concern, this keeps
+// billing reads in the billing controller and gives the page one source to render from.
+//
+// `plan` is DERIVED, never guessed: the stored price id is compared against the
+// configured annual/monthly ids. An unrecognised id (e.g. a legacy price, or a plan
+// bought before 028 shipped) yields null, and the page omits the plan line rather than
+// asserting something false.
+//
+// NOTE: the Paddle-hosted "update payment method" / "cancel" links are deliberately not
+// here. Paddle excludes management_urls from every subscription webhook and documents
+// them as temporary, so they cannot be captured or cached — fetching them needs a
+// server-side Paddle API key, which is a scope decision (see the PR).
+function planFromPriceId(priceId) {
+  if (!priceId) {
+    return null;
+  }
+  const { annual, monthly } = premiumPriceIds();
+  if (annual && priceId === annual) {
+    return 'annual';
+  }
+  if (monthly && priceId === monthly) {
+    return 'monthly';
+  }
+  return null;
+}
+
+async function getSubscription(req, res, next) {
+  try {
+    const result = await pool.query(
+      `SELECT tier, status, current_period_end, paddle_price_id
+       FROM entitlements
+       WHERE user_id = $1::uuid`,
+      [req.user.uuid]
+    );
+
+    // No entitlements row reads as free, matching getEntitlement's behavior.
+    const row = result.rows[0] || null;
+
+    return res.json({
+      subscription: {
+        tier: row?.tier || 'free',
+        status: row?.status || 'free',
+        currentPeriodEnd: row?.current_period_end || null,
+        plan: planFromPriceId(row?.paddle_price_id),
       },
     });
   } catch (err) {
@@ -114,8 +196,12 @@ async function applySubscriptionEvent(client, eventType, subscription, occurredA
     ? 'canceled'
     : (subscription.status || 'unknown');
   const currentPeriodEnd = currentPeriodEndFromSubscription(subscription);
+  const priceId = priceIdFromSubscription(subscription);
 
   await client.query(
+    // paddle_price_id is appended last rather than grouped with the other paddle_*
+    // columns on purpose: the existing lifecycle tests read this values array by
+    // position, so appending keeps their indices (and their meaning) intact.
     `INSERT INTO entitlements (
        user_id,
        tier,
@@ -123,14 +209,17 @@ async function applySubscriptionEvent(client, eventType, subscription, occurredA
        paddle_subscription_id,
        paddle_customer_id,
        current_period_end,
-       updated_at
+       updated_at,
+       paddle_price_id
      )
-     VALUES ($1::uuid, 'premium', $2, $3, $4, $5::timestamptz, $6::timestamptz)
+     VALUES ($1::uuid, 'premium', $2, $3, $4, $5::timestamptz, $6::timestamptz, $7)
      ON CONFLICT (user_id) DO UPDATE SET
        tier = EXCLUDED.tier,
        status = EXCLUDED.status,
        paddle_subscription_id = EXCLUDED.paddle_subscription_id,
        paddle_customer_id = EXCLUDED.paddle_customer_id,
+       -- A payload without items must not blank a price we already know.
+       paddle_price_id = COALESCE(EXCLUDED.paddle_price_id, entitlements.paddle_price_id),
        current_period_end = EXCLUDED.current_period_end,
        updated_at = EXCLUDED.updated_at
      WHERE EXCLUDED.updated_at > entitlements.updated_at`,
@@ -141,6 +230,7 @@ async function applySubscriptionEvent(client, eventType, subscription, occurredA
       subscription.customer_id || subscription.customerId || null,
       currentPeriodEnd,
       occurredAt,
+      priceId,
     ]
   );
 
@@ -149,7 +239,7 @@ async function applySubscriptionEvent(client, eventType, subscription, occurredA
 
 async function paddleWebhook(req, res, next) {
   try {
-    assertPaddleSandbox();
+    assertPaddleEnvironmentConfigured();
 
     const webhookSecret = process.env.PADDLE_WEBHOOK_SECRET;
     const signatureHeader = req.headers['paddle-signature'];
@@ -211,6 +301,7 @@ async function paddleWebhook(req, res, next) {
 
 module.exports = {
   checkoutConfig,
+  getSubscription,
   paddleWebhook,
   applySubscriptionEvent,
 };

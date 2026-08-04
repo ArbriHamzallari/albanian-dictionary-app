@@ -143,17 +143,29 @@ test('applySubscriptionEvent: unattributable event changes nothing and does not 
 
 test('applySubscriptionEvent: is price-agnostic — a plan switch keeps premium (PRICE-2)', async () => {
   // Dual pricing (annual/monthly) is one product with two prices. Switching plans
-  // changes the subscription's price id, never the entitlement logic: the applier
-  // keys off status + user, so a monthly subscription grants premium exactly like
-  // annual, and the price id never reaches the entitlements row.
+  // changes the subscription's price id, never the ACCESS decision: the applier keys
+  // off status + user, so a monthly subscription grants premium exactly like annual.
+  //
+  // PAY-3 amended what this test can assert. It used to require that the price id
+  // "never touches entitlements" — true then, because nothing needed it. The Premium
+  // page now tells subscribers which plan they are on, which is underivable without
+  // recording the price, so entitlements.paddle_price_id stores it. The PRICE-2
+  // guarantee is unchanged and still asserted below: price is RECORDED, never CONSULTED
+  // for entitlement. entitlementIsPremium reads tier/status/period only — see the
+  // status-based cases at the top of this file.
   const monthly = subscription('active', future);
   monthly.items = [{ price: { id: 'pri_monthly_5eur' } }];
   const client = stubClient();
   const outcome = await applySubscriptionEvent(client, 'subscription.updated', monthly, OCCURRED_AT);
-  assert.deepEqual(outcome, { applied: true, status: 'active' });
+  assert.deepEqual(outcome, { applied: true, status: 'active' }, 'outcome must not depend on price');
   const insert = entitlementInsert(client);
   assert.ok(insert, 'writes the entitlement regardless of price');
-  assert.ok(!JSON.stringify(insert.values).includes('pri_monthly_5eur'), 'price id never touches entitlements');
+  // Recorded for display...
+  assert.ok(insert.values.includes('pri_monthly_5eur'), 'price id is recorded for plan display');
+  // ...but tier is still hardcoded premium and status still comes from the event, so
+  // nothing about the price influenced access.
+  assert.equal(insert.values[1], 'active');
+  assert.match(insert.text, /VALUES \(\$1::uuid, 'premium'/, 'tier is not derived from price');
 });
 
 test('applySubscriptionEvent: deleted user is acknowledged and never written (SEC-DELETE)', async () => {
