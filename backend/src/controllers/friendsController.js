@@ -2,12 +2,21 @@ const pool = require('../utils/db');
 
 async function getUserSafetyProfile(userUuid) {
   const result = await pool.query(
-    `SELECT uuid, username, avatar_filename, is_minor, profile_private
+    `SELECT uuid, username, avatar_filename, is_minor, profile_private,
+            parental_consent_required, parental_consent_given
      FROM users
      WHERE uuid = $1::uuid AND role = 'user'`,
     [userUuid]
   );
   return result.rows[0] || null;
+}
+
+// SAFE-2: an account that owes parental consent is restricted — it may not enter the
+// social graph in either direction until the parent approves. Consent can also be
+// withdrawn after the fact (POST /auth/withdraw-consent), so an account can re-enter
+// this state while it already has friends and pending requests.
+function awaitsParentalConsent(user) {
+  return Boolean(user.parental_consent_required && !user.parental_consent_given);
 }
 
 async function usersHaveBlock(firstUserUuid, secondUserUuid) {
@@ -35,9 +44,18 @@ const sendRequest = async (req, res, next) => {
     if (!requester) {
       return res.status(404).json({ message: 'Përdoruesi nuk u gjet.' });
     }
+    // Judged on the requester's own state only, so it leaks nothing about anyone else
+    // and can run before the recipient is even looked up.
+    if (awaitsParentalConsent(requester)) {
+      return res.status(403).json({
+        message: 'Llogaria është në pritje të pëlqimit të prindit.',
+        code: 'PARENTAL_CONSENT_PENDING',
+      });
+    }
 
     const recipientResult = await pool.query(
-      `SELECT uuid, username, avatar_filename, is_minor, profile_private
+      `SELECT uuid, username, avatar_filename, is_minor, profile_private,
+              parental_consent_required, parental_consent_given
        FROM users
        WHERE username_normalized = $1 AND role = 'user'`,
       [recipientUsername.trim().toLowerCase()]
@@ -56,7 +74,23 @@ const sendRequest = async (req, res, next) => {
       return res.status(403).json({ message: 'Miqësitë midis të rriturve dhe fëmijëve nuk lejohen.' });
     }
 
-    if (recipient.profile_private) {
+    // A restricted recipient is indistinguishable from a missing one — same status and
+    // body as the lookup miss above, so this never confirms the account exists.
+    if (awaitsParentalConsent(recipient)) {
+      return res.status(404).json({ message: 'Përdoruesi nuk u gjet.' });
+    }
+
+    // DECISION-1(b) / FRIENDS-1: minors may friend each other by exact username. Their
+    // profiles stay private everywhere else (browse, public profile, search) — this is
+    // the single exact-username way in, and it reveals nothing a username guess did not
+    // already reveal, because the response shapes here are unchanged. Free-text DMs stay
+    // impossible for them regardless: chatController.validateMessageBody only returns ok
+    // for `text` when involvesMinor === false, and involvesMinor is true if EITHER party
+    // is a minor, so a minor pair is preset/emoji-only.
+    // Both flags are checked explicitly rather than leaning on the is_minor equality
+    // guard above, so reordering these guards later cannot silently widen this.
+    const bothMinors = requester.is_minor && recipient.is_minor;
+    if (recipient.profile_private && !bothMinors) {
       return res.status(404).json({ message: 'Përdoruesi nuk u gjet.' });
     }
 
@@ -117,6 +151,20 @@ const acceptRequest = async (req, res, next) => {
 
     if (!requestId || typeof requestId !== 'string') {
       return res.status(400).json({ message: 'Kërkesa mungon.' });
+    }
+
+    // Consent can be withdrawn after requests already exist, so the restricted state has
+    // to be re-checked here and not just at send time: accepting is what actually opens
+    // the chat path, and it is an action by the restricted account, hence 403 like send.
+    const accepter = await getUserSafetyProfile(userUuid);
+    if (!accepter) {
+      return res.status(404).json({ message: 'Përdoruesi nuk u gjet.' });
+    }
+    if (awaitsParentalConsent(accepter)) {
+      return res.status(403).json({
+        message: 'Llogaria është në pritje të pëlqimit të prindit.',
+        code: 'PARENTAL_CONSENT_PENDING',
+      });
     }
 
     const pendingResult = await pool.query(
