@@ -35,7 +35,7 @@ const PREMIUM_CODES = ['PREMIUM_REQUIRED', 'DAILY_QUIZ_LIMIT_REACHED'];
 // presentation is delegated to a per-type renderer (GAME-0: Translate only).
 // `origin` scopes a logged-in session to one origin world; guests always play the
 // local anglisht-style quiz built from popular words (guest play is unchanged).
-const GameEngine = ({ origin = null }) => {
+const GameEngine = ({ origin = null, types = null }) => {
   const { isLoggedIn, getGuestProgress, saveGuestProgress, loadUser, enqueueAchievements } = useAuth();
   const navigate = useNavigate();
 
@@ -87,9 +87,14 @@ const GameEngine = ({ origin = null }) => {
 
       if (isLoggedIn) {
         // The origin scopes the world; omitting it lets the backend default to the
-        // free anglisht world. No `types` → the server composes a ramped mixed session
-        // (GAME-5). Questions arrive without answers (server-authoritative).
-        const res = await api.post('/progress/quiz/start', origin ? { origin } : {});
+        // free anglisht world. `types` (UI-4 hub: one game type) → the server builds a
+        // session of only those types; omitting it composes a ramped mixed session
+        // (GAME-5). Both are existing params of /quiz/start — no contract change.
+        // Questions arrive without answers (server-authoritative).
+        const payload = {};
+        if (origin) payload.origin = origin;
+        if (types && types.length) payload.types = types;
+        const res = await api.post('/progress/quiz/start', payload);
         setSessionId(res.data.sessionId);
         setQuestions(res.data.questions || []);
         setOriginName(res.data.originName || null);
@@ -138,7 +143,7 @@ const GameEngine = ({ origin = null }) => {
       setError(err?.response?.data?.message || t('quiz.error.loadFailed'));
       setStatus('error');
     }
-  }, [isLoggedIn, origin]);
+  }, [isLoggedIn, origin, types]);
 
   useEffect(() => {
     buildQuestions();

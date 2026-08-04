@@ -8,7 +8,7 @@ const MobileNav = () => {
 
   const tabs = [
     { to: '/rruga', icon: Route, label: t('TODO_SQ_nav_rruga') },
-    { to: '/kuizi', icon: Gamepad2, label: t('TODO_SQ_nav_luaj') },
+    { to: '/luaj', icon: Gamepad2, label: t('TODO_SQ_nav_luaj') },
     { to: '/renditja', icon: Trophy, label: t('TODO_SQ_nav_renditja') },
     { to: isLoggedIn ? '/profili' : '/hyr', icon: User, label: isLoggedIn ? t('TODO_SQ_nav_profili') : t('common.login') },
   ];
