@@ -167,6 +167,145 @@ async function getSubscription(req, res, next) {
   }
 }
 
+// PAY-4 — customer portal sessions.
+//
+// PAY-3 established why management links cannot be stored: Paddle omits management_urls
+// from every subscription webhook and documents the links as temporary. The supported
+// path is to mint a session on demand — POST /customers/{id}/portal-sessions — which
+// returns short-lived authenticated deep links. Paddle: "Sessions are temporary and
+// shouldn't be cached. Create a new customer portal session each time." So this is
+// called per click, and the URLs are returned to the caller and never persisted.
+//
+// The API key is a SERVER-side secret, distinct from PADDLE_CLIENT_TOKEN (which is safe
+// to publish and only opens checkouts). It is read here, sent only in the outbound
+// Authorization header, and never included in a response or a log line.
+const PADDLE_API_BASE = {
+  sandbox: 'https://sandbox-api.paddle.com',
+  production: 'https://api.paddle.com',
+};
+
+// Same fixed-timeout, no-retry policy as utils/mailer.js: Node's fetch has no default
+// timeout, and this runs inside a user-facing request.
+const PADDLE_REQUEST_TIMEOUT_MS = 10_000;
+
+function paddleApiBaseUrl() {
+  // assertPaddleEnvironmentConfigured has already rejected anything unknown, so this
+  // lookup cannot fall through to undefined.
+  return PADDLE_API_BASE[assertPaddleEnvironmentConfigured()];
+}
+
+// Pulls the two deep links for OUR subscription out of the session response. Paddle
+// returns urls.general.overview always, and urls.subscriptions[] only for the ids we
+// asked about — an id it cannot match (already fully canceled, wrong account) simply
+// yields no entry, so the deep links are legitimately absent rather than an error.
+function portalUrlsFromSession(payload, subscriptionId) {
+  const urls = payload?.data?.urls || {};
+  const list = Array.isArray(urls.subscriptions) ? urls.subscriptions : [];
+  const match = subscriptionId
+    ? list.find((entry) => entry?.id === subscriptionId)
+    : list[0];
+
+  return {
+    overview: urls.general?.overview || null,
+    cancel: match?.cancel_subscription || null,
+    updatePaymentMethod: match?.update_subscription_payment_method || null,
+  };
+}
+
+async function createPortalSession(req, res, next) {
+  try {
+    const apiKey = process.env.PADDLE_API_KEY;
+    // Missing secret is a deploy error, but it must not take the whole app down at boot
+    // — same posture as checkoutConfig's 503 when Paddle is unconfigured.
+    if (!apiKey) {
+      return res.status(503).json({
+        message: 'Menaxhimi i abonimit nuk është i konfiguruar.',
+        code: 'BILLING_NOT_CONFIGURED',
+      });
+    }
+
+    const result = await pool.query(
+      `SELECT paddle_customer_id, paddle_subscription_id
+       FROM entitlements
+       WHERE user_id = $1::uuid`,
+      [req.user.uuid]
+    );
+    const customerId = result.rows[0]?.paddle_customer_id || null;
+    const subscriptionId = result.rows[0]?.paddle_subscription_id || null;
+
+    // Never subscribed (or complimentary/admin access, which has no Paddle customer):
+    // there is nothing to manage. A clear 4xx, not a crash and not an empty 200.
+    if (!customerId) {
+      return res.status(409).json({
+        message: 'Nuk ka abonim aktiv për të menaxhuar.',
+        code: 'NO_PADDLE_CUSTOMER',
+      });
+    }
+
+    const url = `${paddleApiBaseUrl()}/customers/${encodeURIComponent(customerId)}/portal-sessions`;
+
+    let response;
+    try {
+      response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        // Deep links are only returned for the subscription ids we ask about; without
+        // this the response carries the overview link alone.
+        body: JSON.stringify(subscriptionId ? { subscription_ids: [subscriptionId] } : {}),
+        signal: AbortSignal.timeout(PADDLE_REQUEST_TIMEOUT_MS),
+      });
+    } catch (err) {
+      // Transport failure (DNS/TLS/timeout). Log with context — never the key — and
+      // answer with a retryable status rather than a 500.
+      console.error('[paddle_portal_session] request failed', {
+        userUuid: req.user.uuid,
+        err: err?.message || err,
+      });
+      return res.status(502).json({
+        message: 'Nuk u lidhëm dot me Paddle. Provoni përsëri.',
+        code: 'PADDLE_UNREACHABLE',
+      });
+    }
+
+    const payload = await response.json().catch(() => null);
+
+    if (!response.ok) {
+      // Paddle's own error body may name the customer/subscription; log the status and
+      // Paddle's error code for diagnosis, but return nothing of it to the client.
+      console.error('[paddle_portal_session] non-2xx from Paddle', {
+        userUuid: req.user.uuid,
+        status: response.status,
+        paddleCode: payload?.error?.code || null,
+      });
+      return res.status(502).json({
+        message: 'Nuk u lidhëm dot me Paddle. Provoni përsëri.',
+        code: 'PADDLE_ERROR',
+      });
+    }
+
+    const urls = portalUrlsFromSession(payload, subscriptionId);
+
+    if (!urls.overview && !urls.cancel && !urls.updatePaymentMethod) {
+      console.error('[paddle_portal_session] session had no usable urls', {
+        userUuid: req.user.uuid,
+      });
+      return res.status(502).json({
+        message: 'Nuk u lidhëm dot me Paddle. Provoni përsëri.',
+        code: 'PADDLE_ERROR',
+      });
+    }
+
+    // Only the links. Not the key, not Paddle's raw payload (which carries customer
+    // ids and session metadata the client has no need for).
+    return res.json({ urls });
+  } catch (err) {
+    return next(err);
+  }
+}
+
 // Applies a subscription.* event to the entitlements table by syncing Paddle's
 // subscription.status (the source of truth); entitlements middleware maps that
 // status -> access. Returns an outcome and NEVER throws for events we simply can't
@@ -302,6 +441,7 @@ async function paddleWebhook(req, res, next) {
 module.exports = {
   checkoutConfig,
   getSubscription,
+  createPortalSession,
   paddleWebhook,
   applySubscriptionEvent,
 };

@@ -62,6 +62,7 @@ fly secrets set `
   PADDLE_CLIENT_TOKEN="test_..." `
   PADDLE_PRICE_ID_ANNUAL="pri_..." `
   PADDLE_PRICE_ID_MONTHLY="pri_..." `
+  PADDLE_API_KEY="pdl_sdbx_apikey_..." `
   PADDLE_WEBHOOK_SECRET="your_webhook_secret"
 ```
 
@@ -292,6 +293,7 @@ node scripts/smoke-test.js https://albanian-dictionary-app.fly.dev
 | `PADDLE_CLIENT_TOKEN` | Yes | Paddle client-side token for checkout |
 | `PADDLE_PRICE_ID_ANNUAL` | Yes | Paddle price ID for the €25/year Premium plan (the hero). Falls back to legacy `PADDLE_PREMIUM_PRICE_ID` if set, so an un-renamed secret keeps working. |
 | `PADDLE_PRICE_ID_MONTHLY` | Recommended | Paddle price ID for the €5/month Premium plan (the anchor). If unset, the pricing page shows annual-only. |
+| `PADDLE_API_KEY` | Yes (for subscription management) | **Secret** server-side API key from Paddle → Developer tools → Authentication. This is **not** `PADDLE_CLIENT_TOKEN`: the client token is publishable and only opens checkouts, whereas the API key has broad account access and must never reach the frontend or a log. Used by `POST /api/billing/portal-session` to mint the short-lived Paddle-hosted "cancel" / "update payment method" links (PAY-4). Must match `PADDLE_ENVIRONMENT` — a `pdl_sdbx_…` key for sandbox, `pdl_live_…` for production. If unset, that endpoint returns 503 and the manage buttons show a calm error; the rest of the app is unaffected. |
 | `PADDLE_WEBHOOK_SECRET` | Yes | Verifies Paddle webhook signatures |
 
 Do **not** echo real values in logs, commits, or docs.

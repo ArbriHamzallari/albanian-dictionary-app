@@ -18,15 +18,76 @@ const PLANS = [
   { id: 'monthly', nameKey: 'premium.plans.monthlyName', priceKey: 'premium.plans.monthlyPrice', subKey: null, badgeKey: null },
 ];
 
+// PAY-4: the two Paddle-hosted management actions. The session is minted ON CLICK, never
+// on page load — Paddle documents these links as temporary and says not to cache them,
+// so a link fetched at render would be stale by the time anyone pressed it. The URL is
+// used immediately and kept nowhere: no state, no storage, no DB.
+const ManageActions = () => {
+  // Which action is in flight ('cancel' | 'payment' | null), so only that button shows a
+  // spinner and both stay disabled while a session is being created.
+  const [pending, setPending] = useState(null);
+  const [failed, setFailed] = useState(false);
+
+  const openPortal = async (action) => {
+    setPending(action);
+    setFailed(false);
+    try {
+      const res = await api.post('/billing/portal-session');
+      const urls = res.data?.urls || {};
+      // Prefer the deep link; the portal overview is a valid fallback when Paddle
+      // returns no per-subscription entry (e.g. an already-canceled subscription).
+      const target = action === 'cancel'
+        ? (urls.cancel || urls.overview)
+        : (urls.updatePaymentMethod || urls.overview);
+
+      if (!target) throw new Error('portal session returned no usable url');
+
+      // Full navigation: these are Paddle-hosted pages, not part of this SPA.
+      window.location.assign(target);
+    } catch (err) {
+      // Calm, actionable message — never the raw error. Logged so a real outage is
+      // diagnosable rather than looking like a dead button.
+      console.error('Premium: portal session failed:', err?.response?.status ?? err);
+      setFailed(true);
+      setPending(null);
+    }
+  };
+
+  return (
+    <div className="mt-5">
+      <div className="flex flex-wrap items-center justify-center gap-3">
+        <button
+          type="button"
+          onClick={() => openPortal('payment')}
+          disabled={pending !== null}
+          className="btn-secondary text-sm disabled:opacity-60"
+        >
+          {pending === 'payment' ? t('TODO_SQ_premium_manage_opening') : t('TODO_SQ_premium_update_payment')}
+        </button>
+        <button
+          type="button"
+          onClick={() => openPortal('cancel')}
+          disabled={pending !== null}
+          className="text-sm font-bold text-muted underline hover:text-ink disabled:opacity-60 dark:text-dark-muted dark:hover:text-dark-text"
+        >
+          {pending === 'cancel' ? t('TODO_SQ_premium_manage_opening') : t('TODO_SQ_premium_cancel_subscription')}
+        </button>
+      </div>
+
+      {failed && (
+        <p role="alert" className="mt-3 text-sm font-semibold text-accent-coral">
+          {t('TODO_SQ_premium_manage_error')}
+        </p>
+      )}
+    </div>
+  );
+};
+
 // PAY-3: what an active subscriber sees in place of the old bare "Active" badge —
 // which plan they are on, when it renews, and a calm warning while Paddle retries a
 // failed payment. Everything here is rendered only when the server actually supplied
 // it: an unknown plan or a missing period end omits its line rather than inventing one.
-//
-// Not here yet: "Update payment method" / "Cancel subscription". Those are Paddle-hosted
-// links that Paddle deliberately omits from webhooks and treats as temporary, so they
-// require a server-side Paddle API call — a scope decision flagged in the PR, not a
-// silent addition.
+// PAY-4 adds the manage actions below it.
 const SubscriptionPanel = ({ subscription }) => {
   const pastDue = subscription?.status === 'past_due';
   const planName = subscription?.plan
@@ -75,6 +136,11 @@ const SubscriptionPanel = ({ subscription }) => {
           </p>
         </div>
       )}
+
+      {/* Only a real Paddle subscription can be managed. Admins and complimentary users
+          also reach this panel via isPremium but have no Paddle customer, and would only
+          get a 409 — so they see the badge without dead buttons. */}
+      {subscription?.tier === 'premium' && <ManageActions />}
     </div>
   );
 };
