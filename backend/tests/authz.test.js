@@ -120,6 +120,10 @@ const ACCESS = {
   // PAY-3: reads only the caller's OWN entitlement (WHERE user_id = req.user.uuid),
   // so authentication is the whole boundary — there is no id to tamper with.
   'GET /api/billing/subscription': 'auth',
+  // PAY-4: mints a Paddle portal session for the caller's OWN entitlement — the customer
+  // id comes from req.user.uuid, never from the request body, so there is nothing to
+  // tamper with and authentication is the whole boundary.
+  'POST /api/billing/portal-session': 'auth',
   'POST /api/friends/request': 'auth',
   'POST /api/friends/accept': 'auth',
   'POST /api/friends/decline': 'auth',
