@@ -16,6 +16,10 @@ const Leaderboard = () => {
   const [leaderboard, setLeaderboard] = useState([]);
   const [viewer, setViewer] = useState({ tier: 'free', canParticipate: false });
   const [segment, setSegment] = useState('adults');
+  // LEADERBOARD-2: the kids segment is deliberately disabled server-side, which is a
+  // real answer (200 + unavailable), not a failure — render a calm state, not the
+  // generic "no one here yet" empty state.
+  const [unavailable, setUnavailable] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -24,6 +28,7 @@ const Leaderboard = () => {
         setLeaderboard(res.data.leaderboard || []);
         setViewer(res.data.viewer || { tier: 'free', canParticipate: false });
         setSegment(res.data.segment || 'adults');
+        setUnavailable(Boolean(res.data.unavailable));
       })
       .catch(() => {})
       .finally(() => setLoading(false));
@@ -51,14 +56,21 @@ const Leaderboard = () => {
         <p className="text-xs text-ink-soft font-semibold mt-1">
           {t('leaderboard.segmentInfo', { segment: segment === 'kids' ? t('leaderboard.segmentKids') : t('leaderboard.segmentAdults') })}
         </p>
-        {!viewer.canParticipate && (
+        {!viewer.canParticipate && !unavailable && (
           <p className="text-sm text-ink-soft font-semibold mt-3">
             {t('leaderboard.freeNote')}
           </p>
         )}
       </div>
 
-      {leaderboard.length === 0 ? (
+      {unavailable ? (
+        <Card padding="lg" className="text-center">
+          <div className="flex justify-center"><Parrot state="idle" size={130} /></div>
+          <p className="mt-3 text-ink-soft font-semibold">
+            {t('TODO_SQ_leaderboard_kids_unavailable')}
+          </p>
+        </Card>
+      ) : leaderboard.length === 0 ? (
         <Card padding="lg" className="text-center">
           <div className="flex justify-center"><Parrot state="idle" size={130} /></div>
           <p className="mt-3 text-ink-soft font-semibold">{t('leaderboard.empty')}</p>

@@ -1109,6 +1109,7 @@
   "TODO_SQ_hub_match_name": "[SQ] Match the words",
   "TODO_SQ_hub_choose_world": "[SQ] Choose a world",
   "TODO_SQ_hub_start": "[SQ] Play",
+  "TODO_SQ_leaderboard_kids_unavailable": "[SQ] The leaderboard for younger players isn't open yet. Keep playing — your XP and streak are still counting.",
   "TODO_SQ_daily_challenge_empty": "Sfida e ditës do të jetë gati së shpejti.",
   "TODO_SQ_wordOfDay_empty": "Fjala e ditës do të shfaqet së shpejti.",
   "TODO_SQ_faq_title": "Pyetjet e Shpeshta",
