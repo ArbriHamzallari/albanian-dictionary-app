@@ -574,7 +574,8 @@
         "dailyLessons": "Deri në 5 mësime/ditë",
         "streak": "Seria, sfida dhe fjala e ditës",
         "leaderboard": "Renditja + Liga Bronx",
-        "leaderboardV2": "Shikon renditjen"
+        "leaderboardV2": "Shikon renditjen",
+        "TODO_SQ_leaderboardV3": "TODO_SQ — English intent: \"Free users appear on the real leaderboard, not just Premium.\" COPY-3: LEADERBOARD-3 (rankSql.js RANKED_USERS_CTE) made ranking a genuine free-tier feature — any signed-up user with xp is ranked, not just Premium. Do not mention Premium; this is a plain free-tier claim."
       },
       "premium": {
         "unlimited": "Mësime pa kufi",
@@ -584,13 +585,6 @@
         "friends": "Miqtë, biseda, sfidat, Liga e Artë dhe familja",
         "friendsV2": "Miqtë dhe bisedat"
       }
-    },
-    "features": {
-      "search": "Kërkime pa kufi",
-      "quizzes": "Kuize pa kufi",
-      "leagues": "Pjesëmarrje në renditje dhe liga",
-      "social": "Miq dhe veçori sociale",
-      "progress": "Arritje dhe progres i plotë"
     }
   },
   "publicProfile": {

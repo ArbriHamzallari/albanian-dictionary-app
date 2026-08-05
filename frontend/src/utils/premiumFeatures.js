@@ -63,18 +63,21 @@ export const PREMIUM_FEATURE_KEYS = [
 //   streak         — streaks, quests and word-of-the-day carry no premium gate;
 //                    routes/quests.js is `authenticate` only, so "sfida" belongs
 //                    here in the free column and not in the premium one.
-//
-// LEADERBOARD-3 dropped the leaderboard line from this column entirely. Both keys it
-// could point at are now retired: `leaderboard` ("Renditja + Liga Bronx", retired by
-// COPY-2) and `leaderboardV2` ("Shikon renditjen" — "views the leaderboard"), which
-// COPY-2 wrote to say free users read the board without placing on it. That stopped
-// being true when rankSql.js lost its entitlements join: ranking is no longer tied to
-// plan, so there is no free/premium leaderboard distinction left for a comparison
-// table to draw. Both keys stay in sq.json as the copy gate's reference; do not point
-// this list back at either.
+//   TODO_SQ_leaderboardV3 — rankSql.js RANKED_USERS_CTE (LEADERBOARD-3) lost its
+//                    entitlements join: any signed-up, non-admin, non-opted-out user
+//                    with a user_stats row is ranked. This is a genuine free-tier
+//                    feature now, not a premium one. `leaderboard` ("Renditja + Liga
+//                    Bronx") and `leaderboardV2` ("Shikon renditjen" — read-only) are
+//                    both retired; COPY-3 supersedes LEADERBOARD-3's decision to drop
+//                    the line entirely, now that there is an accurate claim to make.
+//                    Both old keys stay in sq.json as the copy gate's reference; do
+//                    not point this list back at either. Key is TODO_SQ_-prefixed
+//                    (root CLAUDE.md placeholder convention) pending real Albanian
+//                    copy from ChatGPT/Arbri — see sq.json for the English intent.
 export const FREE_FEATURE_KEYS = [
   'dictionary',
   'history',
   'dailyLessons',
   'streak',
+  'TODO_SQ_leaderboardV3',
 ];
