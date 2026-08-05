@@ -17,9 +17,9 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           # Matches ci.yml (both jobs). Neither package.json declares an `engines`
           # field, so nothing pinned this to 20 — it was simply written before ci.yml
