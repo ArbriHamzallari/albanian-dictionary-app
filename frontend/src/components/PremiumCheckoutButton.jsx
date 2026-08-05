@@ -7,6 +7,14 @@ import { useAuth } from '../context/AuthContext.jsx';
 import Button from './ui/Button.jsx';
 import { t } from '../i18n/index.js';
 
+// PRICE-3: the idle label names the plan being bought, so the button confirms the
+// PlanSelector choice instead of reading the same for both. Unknown/unconfigured
+// plans fall back to the generic label rather than rendering a raw key.
+const CTA_KEYS = {
+  annual: 'premiumButton.ctaAnnual',
+  monthly: 'premiumButton.ctaMonthly',
+};
+
 const PremiumCheckoutButton = ({ fullWidth = false, size = 'lg', plan = 'annual' }) => {
   const { isLoggedIn } = useAuth();
   const navigate = useNavigate();
@@ -37,7 +45,7 @@ const PremiumCheckoutButton = ({ fullWidth = false, size = 'lg', plan = 'annual'
   return (
     <div className={fullWidth ? 'w-full' : 'inline-block'}>
       <Button variant="primary" size={size} fullWidth={fullWidth} loading={loading} onClick={startCheckout}>
-        {loading ? t('premiumButton.loading') : t('premiumButton.ctaGeneric')}
+        {loading ? t('premiumButton.loading') : t(CTA_KEYS[plan] || 'premiumButton.ctaGeneric')}
       </Button>
       {error && <p className="text-sm font-semibold text-accent-coral mt-2">{error}</p>}
     </div>

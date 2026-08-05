@@ -671,6 +671,8 @@
   "premiumButton": {
     "cta": "Bëhu Premium · 25 EUR/vit",
     "ctaGeneric": "Fillo Premium",
+    "ctaAnnual": "TODO_SQ_premium_button_cta_annual",
+    "ctaMonthly": "TODO_SQ_premium_button_cta_monthly",
     "loading": "Duke hapur…",
     "error": "Pagesa Premium nuk u hap. Provoni përsëri."
   },

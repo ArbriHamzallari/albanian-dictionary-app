@@ -8,15 +8,8 @@ import Heading from '../components/ui/Heading.jsx';
 import Seo from '../components/Seo.jsx';
 import api from '../utils/api.js';
 import { useAuth, useHasUnlimitedAccess } from '../context/AuthContext.jsx';
+import { FREE_FEATURE_KEYS, PREMIUM_FEATURE_KEYS, PREMIUM_PLANS } from '../utils/premiumFeatures.js';
 import { t } from '../i18n/index.js';
-
-// PRICE-2 dual pricing: annual is the hero (pre-selected, savings badge), monthly
-// is the anchor. Prices are shown from copy; the chosen plan's Paddle price id is
-// resolved at checkout from /billing/checkout-config.
-const PLANS = [
-  { id: 'annual', nameKey: 'premium.plans.annualName', priceKey: 'premium.plans.annualPrice', subKey: 'premium.plans.annualPerMonth', badgeKey: 'premium.plans.savingsBadge' },
-  { id: 'monthly', nameKey: 'premium.plans.monthlyName', priceKey: 'premium.plans.monthlyPrice', subKey: null, badgeKey: null },
-];
 
 // PAY-4: the two Paddle-hosted management actions. The session is minted ON CLICK, never
 // on page load — Paddle documents these links as temporary and says not to cache them,
@@ -147,7 +140,7 @@ const SubscriptionPanel = ({ subscription }) => {
 
 const PlanSelector = ({ selected, onSelect }) => (
   <div className="mb-6 grid grid-cols-2 gap-3" role="radiogroup" aria-label={t('premium.plans.selectAria')}>
-    {PLANS.map((p) => {
+    {PREMIUM_PLANS.map((p) => {
       const active = selected === p.id;
       return (
         <button
@@ -180,10 +173,9 @@ const PlanSelector = ({ selected, onSelect }) => (
 // logged-out. What's free, what's premium, the price, cancel-anytime, and the refund/
 // terms links are all on this one page — no separate /cmimet.
 // Comparison rows follow the Free/Premium split in albanian-dictionary-app/CLAUDE.md §10
-// (free-premium.md is the intended spec but is not yet in the repo). Strings are
-// TODO_SQ placeholders authored by ChatGPT + Arbri (Prompt O / COPY-3).
-const FREE_KEYS = ['dictionary', 'history', 'dailyLessons', 'streak', 'leaderboard'];
-const PREMIUM_KEYS = ['unlimited', 'allContent', 'mistakes', 'freeze', 'friends'];
+// (free-premium.md is the intended spec but is not yet in the repo). The key lists moved
+// to utils/premiumFeatures.js (PRICE-3) so the landing plan-preview dialog shows exactly
+// the same features; each key is annotated there with the gate that enforces it.
 
 const Premium = () => {
   const reduceMotion = useReducedMotion();
@@ -262,7 +254,7 @@ const Premium = () => {
               {t('premium.compare.freeTitle')}
             </h3>
             <ul className="flex flex-col gap-3">
-              {FREE_KEYS.map((key) => (
+              {FREE_FEATURE_KEYS.map((key) => (
                 <li key={key} className="flex items-start gap-2 font-semibold text-heading dark:text-dark-text">
                   <Check className="mt-0.5 h-5 w-5 flex-shrink-0 text-brand-green" aria-hidden="true" />
                   <span>{t(`premium.compare.free.${key}`)}</span>
@@ -277,7 +269,7 @@ const Premium = () => {
               {t('premium.compare.premiumTitle')}
             </h3>
             <ul className="flex flex-col gap-3">
-              {PREMIUM_KEYS.map((key) => (
+              {PREMIUM_FEATURE_KEYS.map((key) => (
                 <li key={key} className="flex items-start gap-2 font-semibold text-heading dark:text-dark-text">
                   <Check className="mt-0.5 h-5 w-5 flex-shrink-0 text-accent-yellow" aria-hidden="true" />
                   <span>{t(`premium.compare.premium.${key}`)}</span>
