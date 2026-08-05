@@ -27,7 +27,7 @@ export const PREMIUM_PLANS = [
     badgeKey: null,
   },
 ];
-//
+
 // The feature lists below are i18n key suffixes only — the copy itself lives in
 // sq.json under premium.compare.*. Each entry is annotated with the backend gate
 // that makes it true, so the list stays auditable instead of aspirational. Do not
@@ -40,28 +40,38 @@ export const PREMIUM_PLANS = [
 //   mistakes   — routes/lessons.js GET /practice-mistakes is behind requirePremium.
 //   freeze     — cronController.js grants 2 streak freezes per calendar month, and
 //                only to entitlements with tier='premium' and an active period.
-//   friends    — routes/friends.js and routes/chat.js both apply requirePremium to
-//                the entire router.
+//   friendsV2  — routes/friends.js and routes/chat.js both apply requirePremium to
+//                the entire router. COPY-2 retired the previous `friends` key: its
+//                copy advertised a family feature that exists nowhere in the code,
+//                and listed "sfidat" as premium when routes/quests.js carries only
+//                `authenticate` — quests are free. The old key stays in sq.json as
+//                the copy gate's reference; do not point this list back at it.
 export const PREMIUM_FEATURE_KEYS = [
   'unlimited',
   'allContent',
   'mistakes',
   'freeze',
-  'friends',
+  'friendsV2',
 ];
 
 // The free tier's own list, as shown on /premium.
-//   dictionary   — GET /words/search is public (optionalAuthenticate).
-//   history      — routes/public.js origin content is ungated.
-//   dailyLessons — the FREE_DAILY_LESSON_LIMIT = 5 cap above, stated from the free side.
-//   streak       — streaks/daily challenge/word-of-the-day carry no premium gate.
-//   leaderboard  — free users can READ the board; see rankSql.js RANKED_USERS_CTE,
-//                  which ranks premium entitlements only, so they are never listed
-//                  on it. Flagged for the copy gate (PRICE-3 PR).
+//   dictionary     — GET /words/search is public (optionalAuthenticate), but see the
+//                    open item in the COPY-2 PR: it is still capped at
+//                    FREE_DAILY_SEARCH_LIMIT = 5/day, which this copy does not say.
+//   history        — routes/public.js origin content is ungated.
+//   dailyLessons   — the FREE_DAILY_LESSON_LIMIT = 5 cap above, from the free side.
+//   streak         — streaks, quests and word-of-the-day carry no premium gate;
+//                    routes/quests.js is `authenticate` only, so "sfida" belongs
+//                    here in the free column and not in the premium one.
+//   leaderboardV2  — free users can READ the board but are never ranked on it:
+//                    rankSql.js RANKED_USERS_CTE joins entitlements and requires
+//                    tier='premium'. COPY-2 retired the previous `leaderboard` key,
+//                    whose copy implied free users place on it. The old key stays in
+//                    sq.json as the copy gate's reference.
 export const FREE_FEATURE_KEYS = [
   'dictionary',
   'history',
   'dailyLessons',
   'streak',
-  'leaderboard',
+  'leaderboardV2',
 ];

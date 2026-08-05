@@ -573,14 +573,16 @@
         "history": "Historia e origjinave",
         "dailyLessons": "Deri në 5 mësime/ditë",
         "streak": "Seria, sfida dhe fjala e ditës",
-        "leaderboard": "Renditja + Liga Bronx"
+        "leaderboard": "Renditja + Liga Bronx",
+        "leaderboardV2": "TODO_SQ_premium_compare_free_leaderboard_v2"
       },
       "premium": {
         "unlimited": "Mësime pa kufi",
         "allContent": "Të gjitha njësitë",
         "mistakes": "Përsërit gabimet",
         "freeze": "Mburoja e serisë (2/muaj)",
-        "friends": "Miqtë, biseda, sfidat, Liga e Artë dhe familja"
+        "friends": "Miqtë, biseda, sfidat, Liga e Artë dhe familja",
+        "friendsV2": "TODO_SQ_premium_compare_premium_v2"
       }
     },
     "features": {
