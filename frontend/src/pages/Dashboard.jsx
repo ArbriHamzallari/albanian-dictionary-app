@@ -304,7 +304,9 @@ const Dashboard = () => {
             {t('dashboard.premiumUpsell.title')}
           </h3>
           <p className="text-sm font-semibold text-muted dark:text-dark-muted mb-4">
-            {t('dashboard.premiumUpsell.desc')}
+            {/* LEADERBOARD-3 retired dashboard.premiumUpsell.desc: it sold "pjesëmarrje
+                në renditje" as a Premium benefit, which no plan gates any more. */}
+            {t('TODO_SQ_dashboard_premium_upsell_desc_v2')}
           </p>
           <PremiumCheckoutButton />
         </motion.div>

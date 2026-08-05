@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { motion, useReducedMotion } from 'framer-motion';
 import { Trophy, Flame, Star } from 'lucide-react';
 import Avatar from '../components/Avatar.jsx';
@@ -52,13 +53,19 @@ const Leaderboard = () => {
       <div className="text-center mb-8">
         <Trophy className="w-12 h-12 mx-auto mb-3 text-accent-yellow" aria-hidden="true" />
         <Heading level={1}>{t('leaderboard.title')}</Heading>
-        <p className="text-ink-soft font-semibold mt-1">{t('leaderboard.subtitle')}</p>
+        <p className="text-ink-soft font-semibold mt-1">{t('TODO_SQ_leaderboard_subtitle_v2')}</p>
         <p className="text-xs text-ink-soft font-semibold mt-1">
           {t('leaderboard.segmentInfo', { segment: segment === 'kids' ? t('leaderboard.segmentKids') : t('leaderboard.segmentAdults') })}
         </p>
+        {/* LEADERBOARD-3: `canParticipate` now means "has an account", not "is premium",
+            so this is the signed-out case only — a prompt to register, never to pay.
+            A logged-in free user already qualifies and gets no note at all. */}
         {!viewer.canParticipate && !unavailable && (
           <p className="text-sm text-ink-soft font-semibold mt-3">
-            {t('leaderboard.freeNote')}
+            {t('TODO_SQ_leaderboard_anon_register')}{' '}
+            <Link to="/regjistrohu" className="text-brand-green hover:text-brand-green-dark underline">
+              {t('TODO_SQ_leaderboard_anon_register_cta')}
+            </Link>
           </p>
         )}
       </div>

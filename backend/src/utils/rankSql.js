@@ -2,8 +2,20 @@
  * Shared SQL for ranking users.
  * Used by both GET /api/auth/me (single-user rank) and GET /api/leaderboard (top N).
  *
- * The CTE `ranked_users` ranks premium real users (role='user') by xp DESC, streak DESC.
+ * The CTE `ranked_users` ranks real users (role='user') by xp DESC, streak DESC.
  * Public leaderboards are segmented and exclude opted-out profiles.
+ *
+ * LEADERBOARD-3 — ranking is NOT a premium perk. The entitlements join and its
+ * tier/status/current_period_end conditions were removed here: anyone signed up who
+ * plays is ranked. The three filters that remain are unrelated to monetization and
+ * must stay: role='user' excludes admins from the public board, leaderboard_opt_out
+ * honors the user's own choice, and the segment filter keeps kids and adults on
+ * separate boards (both child-safety invariants in root CLAUDE.md).
+ *
+ * The JOIN on user_stats is not an exclusion in practice: every signup path inserts a
+ * stats row in the same transaction as the user row (authController register, the
+ * guest-merge register, and the Google OAuth first-login branch), and migration 013
+ * backfilled the pre-existing accounts. A user with no stats row has nothing to rank.
  */
 
 const RANKED_USERS_CTE = `
@@ -34,11 +46,7 @@ const RANKED_USERS_CTE = `
       RANK() OVER (PARTITION BY u.leaderboard_segment ORDER BY s.xp DESC, s.streak DESC)
     FROM users u
     JOIN user_stats s ON s.user_id = u.uuid
-    JOIN entitlements e ON e.user_id = u.uuid
     WHERE u.role = 'user'
-      AND e.tier = 'premium'
-      AND e.status IN ('active', 'trialing')
-      AND e.current_period_end > now()
       AND u.leaderboard_opt_out = false
       AND u.leaderboard_segment IN ('kids', 'adults')
   )
