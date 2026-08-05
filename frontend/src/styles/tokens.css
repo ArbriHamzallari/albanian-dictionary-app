@@ -34,4 +34,10 @@
      between dark-bg (#1A1A1A) and dark-card (#2D2D2D). (m4-rebrand.md §2) */
   --surface-cream: #222222;
   --surface-mint:  #222222;
+
+  /* UX-6: hero had no dark value at all (fell through to the light gradient,
+     unreadable against near-white --ink text). Mirrors the light gradient's
+     shape — green-tinted top fading to the page's base tone — using dark-bg
+     (#1A1A1A) as the base so the hero reads as the same section, just dark. */
+  --surface-hero: linear-gradient(180deg, #1A2E24 0%, #1A1A1A 100%);
 }

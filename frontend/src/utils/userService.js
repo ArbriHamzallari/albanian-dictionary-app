@@ -43,7 +43,6 @@ function computeLevelFromXp(xp) {
 export function getTheme() {
   const saved = localStorage.getItem(THEME_KEY);
   if (saved) return saved;
-  if (window.matchMedia('(prefers-color-scheme: dark)').matches) return 'dark';
   return 'light';
 }
 

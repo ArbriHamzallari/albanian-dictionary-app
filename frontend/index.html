@@ -5,16 +5,14 @@
     <script>
       // Set the theme class before first paint to avoid a flash of the wrong
       // theme (FOUC). Must mirror getTheme() in src/utils/userService.js:
-      // a stored choice wins, else system preference, else light.
+      // a stored choice wins, else light. Never influenced by OS preference.
       (function () {
         try {
           var saved = localStorage.getItem('fjalingo_theme');
-          var dark = saved
-            ? saved === 'dark'
-            : window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var dark = saved === 'dark';
           if (dark) document.documentElement.classList.add('dark');
         } catch (e) {
-          // localStorage/matchMedia unavailable (privacy mode) → default light.
+          // localStorage unavailable (privacy mode) → default light.
         }
       })();
     </script>
