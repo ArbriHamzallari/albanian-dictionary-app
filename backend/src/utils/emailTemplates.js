@@ -34,12 +34,11 @@ function parentalConsentEmail({ consentUrl } = {}) {
   if (!consentUrl) throw new Error('parentalConsentEmail: consentUrl is required');
   const safeUrl = escapeHtml(consentUrl);
   return {
-    subject: 'TODO_SQ_email_parental_consent_subject',
-    // TODO_SQ_email_parental_consent_body — Albanian copy pending; structure only.
+    subject: 'Fëmija juaj dëshiron t\'i bashkohet Fjalingos',
     html:
-      `<p>TODO_SQ_email_parental_consent_body</p>` +
-      `<p><a href="${safeUrl}">TODO_SQ_email_parental_consent_cta</a></p>`,
-    text: `TODO_SQ_email_parental_consent_body\n\n${consentUrl}`,
+      `<p>Fëmija juaj ka kërkuar të krijojë një llogari në Fjalingo. Për ta aktivizuar, na nevojitet miratimi juaj. Fjalingo i ndihmon shqiptarët të rikthejnë në përdorim fjalët shqipe përmes lojës, fjalë pas fjale. Nëse jeni dakord, klikoni butonin më poshtë për të miratuar llogarinë.</p>` +
+      `<p><a href="${safeUrl}">Mirato llogarinë</a></p>`,
+    text: `Fëmija juaj ka kërkuar të krijojë një llogari në Fjalingo. Për ta aktivizuar, na nevojitet miratimi juaj. Fjalingo i ndihmon shqiptarët të rikthejnë në përdorim fjalët shqipe përmes lojës, fjalë pas fjale. Nëse jeni dakord, klikoni lidhjen më poshtë për të miratuar llogarinë.\n\n${consentUrl}`,
   };
 }
 

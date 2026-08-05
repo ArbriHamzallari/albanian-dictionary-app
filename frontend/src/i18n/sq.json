@@ -575,7 +575,7 @@
         "streak": "Seria, sfida dhe fjala e ditës",
         "leaderboard": "Renditja + Liga Bronx",
         "leaderboardV2": "Shikon renditjen",
-        "TODO_SQ_leaderboardV3": "TODO_SQ — English intent: \"Free users appear on the real leaderboard, not just Premium.\" COPY-3: LEADERBOARD-3 (rankSql.js RANKED_USERS_CTE) made ranking a genuine free-tier feature — any signed-up user with xp is ranked, not just Premium. Do not mention Premium; this is a plain free-tier claim."
+        "TODO_SQ_leaderboardV3": "Shfaqesh në renditje"
       },
       "premium": {
         "unlimited": "Mësime pa kufi",
@@ -1108,10 +1108,10 @@
   "TODO_SQ_hub_choose_world": "Zgjidh një botë",
   "TODO_SQ_hub_start": "Luaj",
   "TODO_SQ_leaderboard_kids_unavailable": "Renditja nuk është e disponueshme për këtë grupmoshë. Vazhdo të luash — XP-ja dhe seria jote vazhdojnë të numërohen.",
-  "TODO_SQ_leaderboard_subtitle_v2": "TODO_SQ — English intent: \"The top 10 players\". LEADERBOARD-3 retired leaderboard.subtitle (\"Top 10 lojtarët Premium\"): ranking is no longer a Premium perk, so the word Premium must not appear. No replacement sentence about plans — just name what the list is.",
-  "TODO_SQ_leaderboard_anon_register": "TODO_SQ — English intent: \"Register to appear on the leaderboard\" — shown only to signed-out viewers, who can read the board but are not on it. LEADERBOARD-3 retired leaderboard.freeNote (\"Plani falas mund ta shohë renditjen, por pjesëmarrja kërkon Premium.\"): this is a prompt to sign up, never to pay. Do not mention Premium, price or plans.",
-  "TODO_SQ_leaderboard_anon_register_cta": "TODO_SQ — English intent: \"Register\" — the link label next to TODO_SQ_leaderboard_anon_register, pointing at /regjistrohu.",
-  "TODO_SQ_dashboard_premium_upsell_desc_v2": "TODO_SQ — English intent: \"Premium includes unlimited searches and quizzes, all units, mistake practice, streak shields and friends.\" LEADERBOARD-3 retired dashboard.premiumUpsell.desc, whose old text claimed \"pjesëmarrje në renditje\" (leaderboard participation) as a Premium benefit — that is now false for every user. Claim only what a backend gate enforces (see frontend/src/utils/premiumFeatures.js).",
+  "TODO_SQ_leaderboard_subtitle_v2": "10 lojtarët më të mirë",
+  "TODO_SQ_leaderboard_anon_register": "Regjistrohu që të shfaqesh në renditje",
+  "TODO_SQ_leaderboard_anon_register_cta": "Regjistrohu",
+  "TODO_SQ_dashboard_premium_upsell_desc_v2": "Premium përfshin kërkime dhe lojëra të pakufizuara, të gjitha njësitë, ushtrime me gabimet, mbrojtëse për serinë dhe miqtë.",
   "TODO_SQ_premium_manage_plan_label": "Plani juaj:",
   "TODO_SQ_premium_manage_renews_label": "Rinovohet më:",
   "TODO_SQ_premium_manage_period_ended_label": "Periudha përfundoi më:",
