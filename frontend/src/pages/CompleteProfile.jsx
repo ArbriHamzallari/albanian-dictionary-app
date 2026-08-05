@@ -47,10 +47,8 @@ const CompleteProfile = () => {
         countryCode: countryCode.toUpperCase(),
         parentEmail: consentRequired ? parentEmail : undefined,
       });
-      if (data.pendingParentalConsent) {
-        navigate('/pending-consent');
-        return;
-      }
+      // SAFE-3: consent-pending is no longer a blocking state — the account enters the
+      // app and only Miqtë/Bisedat wait for the parent.
       navigate('/dashboard');
     } catch (err) {
       if (err.response?.status === 403) {

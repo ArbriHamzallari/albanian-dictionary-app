@@ -1,5 +1,5 @@
 import { useEffect, useState, lazy, Suspense } from 'react';
-import { Route, Routes, useLocation, useNavigate, Link } from 'react-router-dom';
+import { Route, Routes, useLocation, Link } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import Header from './components/Header.jsx';
 import Footer from './components/Footer.jsx';
@@ -37,6 +37,8 @@ const Achievements = lazy(() => import('./pages/Achievements.jsx'));
 const Register = lazy(() => import('./pages/Register.jsx'));
 const CompleteProfile = lazy(() => import('./pages/CompleteProfile.jsx'));
 const PendingConsent = lazy(() => import('./pages/PendingConsent.jsx'));
+// SAFE-3: rendered in place of Miqtë/Bisedat while a parent has not approved yet.
+const ConsentPendingNotice = lazy(() => import('./components/ConsentPendingNotice.jsx'));
 const ConsentLanding = lazy(() => import('./pages/ConsentLanding.jsx'));
 const Profile = lazy(() => import('./pages/Profile.jsx'));
 const Leaderboard = lazy(() => import('./pages/Leaderboard.jsx'));
@@ -99,30 +101,53 @@ const HomeRoute = () => {
   );
 };
 
-const App = () => {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const { isLoggedIn, loading: authLoading, user } = useAuth();
+// SAFE-3: parental consent gates the two features that create real cross-user contact —
+// friends and messages — and nothing else. It used to hold the account on
+// /pending-consent for EVERY authenticated route, which locked a minor out of games,
+// lessons, the dictionary, the roadmap and their own profile while a parent's email sat
+// unread. Those carry no contact risk and are now available immediately.
+//
+// The gate renders in place rather than redirecting: the URL stays /miqte or /bisedat,
+// so the nav item still highlights and the back button behaves, the feature is simply
+// replaced by the waiting notice. Nav items stay visible and clickable on purpose — a
+// hidden item reads as "broken", an explained one reads as "not yet".
+//
+// This is UX, not the security boundary. The server gates these independently:
+// chatController rejects a consent-pending sender and reader (403
+// PARENTAL_CONSENT_PENDING), and friendsController's awaitsParentalConsent blocks
+// sending, receiving and accepting requests.
+//
+// `age != null` is preserved from SAFE-2c: a brand-new Google/legacy account has
+// consent_required = true by default but has not passed the age gate yet, so it is not
+// "awaiting a parent" — it belongs on /ploteso-profilin. Withdraw-consent (FRIENDS-1)
+// needs no special handling: it flips parental_consent_given back to false on the same
+// profile flags read here, so the gate re-engages on the next auth refresh by itself.
+const ConsentGated = ({ children }) => {
+  const { loading: authLoading, user } = useAuth();
 
-  // SAFE-2c: a logged-in account still awaiting parental consent is held on the pending
-  // screen — it cannot enter the app on any route. The parent's own /consent/:token page
-  // stays reachable (the parent may be signed in as no one, or as the child on a shared
-  // device). Server routes are gated independently; this is UX, not the security boundary.
-  // age != null gates this: a brand-new Google/legacy account has consent_required=true
-  // by default but has NOT passed the age gate yet — it belongs on /ploteso-profilin, not
-  // the pending screen. Only an account that has set its age and still owes consent waits.
+  // Until auth resolves we cannot know whether to gate; showing the real feature first
+  // would flash it to a minor who should not see it.
+  if (authLoading) {
+    return (
+      <div className="mx-auto max-w-2xl px-6 py-16">
+        <LoadingSpinner />
+      </div>
+    );
+  }
+
   const pendingConsent = Boolean(
     user?.profile?.age != null &&
     user?.profile?.parental_consent_required &&
     !user?.profile?.parental_consent_given,
   );
-  useEffect(() => {
-    if (authLoading || !pendingConsent) return;
-    const path = location.pathname;
-    if (path !== '/pending-consent' && !path.startsWith('/consent/')) {
-      navigate('/pending-consent', { replace: true });
-    }
-  }, [authLoading, pendingConsent, location.pathname, navigate]);
+
+  return pendingConsent ? <ConsentPendingNotice /> : children;
+};
+
+const App = () => {
+  const location = useLocation();
+  const { isLoggedIn, loading: authLoading } = useAuth();
+
   // Only a guest at "/" gets the chrome-less marketing splash. Every logged-in user
   // gets the app home (Dashboard), which needs the header/nav (UI-0).
   const isSplash = location.pathname === '/' && !isLoggedIn;
@@ -195,9 +220,10 @@ const App = () => {
               <Route path="/profili/:uuid" element={<PublicProfile />} />
               <Route path="/renditja" element={<Leaderboard />} />
               <Route path="/liga" element={<LeaguePage />} />
-              <Route path="/miqte" element={<FriendsPage />} />
-              <Route path="/bisedat" element={<ChatPage />} />
-              <Route path="/bisedat/:username" element={<ChatPage />} />
+              {/* The only two features that wait on a parent — see ConsentGated. */}
+              <Route path="/miqte" element={<ConsentGated><FriendsPage /></ConsentGated>} />
+              <Route path="/bisedat" element={<ConsentGated><ChatPage /></ConsentGated>} />
+              <Route path="/bisedat/:username" element={<ConsentGated><ChatPage /></ConsentGated>} />
               <Route path="/premium" element={<Premium />} />
               <Route path="/kushtet" element={<Terms />} />
               <Route path="/privatesia" element={<Privacy />} />

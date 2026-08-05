@@ -154,11 +154,9 @@ const Onboarding = () => {
         parentEmail: showConsent ? parentEmail : undefined,
       });
 
-      // Consent-pending: hold on the pending screen instead of dropping into Lesson 1.
-      if (data.pendingParentalConsent) {
-        navigate('/pending-consent');
-        return;
-      }
+      // SAFE-3: a consent-pending guest-upgrade continues into Lesson 1 like any other
+      // signup. Lessons carry no cross-user contact, so there is nothing here to gate —
+      // only Miqtë/Bisedat wait for the parent, and they say so in place.
 
       // Persist the chosen avatar (register defaults to default.png).
       if (avatar) {
