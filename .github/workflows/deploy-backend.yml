@@ -35,7 +35,7 @@ jobs:
       # Check out the exact commit CI validated (not just the branch tip), so the image
       # we build and the paths we diff are the ones that were tested. Full history is
       # needed to diff a merge commit against its first parent.
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           ref: ${{ github.event.workflow_run.head_sha }}
           fetch-depth: 0
