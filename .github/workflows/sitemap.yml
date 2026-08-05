@@ -2,7 +2,9 @@ name: Generate sitemap
 
 # Regenerates frontend/public/sitemap.xml from the words table and commits it.
 # The commit triggers Vercel's deploy, so the published sitemap is always fresh.
-# Requires a DATABASE_URL repo secret (read access to the words table).
+# Requires a DATABASE_URL repo secret (read access to the words table). No separate CA
+# secret is needed — Supabase's root CA is public and checked into backend/certs/
+# (see the "Generate sitemap" step for why that's required at all).
 
 on:
   schedule:
@@ -46,10 +48,26 @@ jobs:
           fi
           echo "DATABASE_URL is present."
 
+      # SITEMAP-3: Supabase's Postgres cert is signed by Supabase's own self-signed root
+      # (subject == issuer, "Supabase Root 2021 CA"), which is not in Node's default
+      # trust store — buildSslConfig() in db.js sets rejectUnauthorized: true, so without
+      # an explicit CA the handshake fails with "self-signed certificate in certificate
+      # chain". This is not a repo-vs-CI blind spot with a missing GitHub secret: the CA
+      # is PUBLIC (a root cert has no private key) and is already checked into the repo
+      # at backend/certs/prod-ca-2021.crt — the same file the Dockerfile bakes into the
+      # Fly image via `COPY backend/ ./`. No new secret is needed; this step just points
+      # PGSSLROOTCERT at the copy the runner already checked out.
+      #
+      # (`fly secrets list -a albanian-dictionary-app` confirms PGSSLROOTCERT is set on
+      # Fly, so production points at a file with this same content — but that was
+      # confirmed as a name only, never its value. What actually proves this is the
+      # right CA: connecting to the real production DATABASE_URL with rejectUnauthorized
+      # true and ONLY this checked-in file as the CA succeeds end to end.)
       - name: Generate sitemap
         working-directory: backend
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          PGSSLROOTCERT: ${{ github.workspace }}/backend/certs/prod-ca-2021.crt
           # Optional: generate-sitemap.js already defaults to https://fjalingo.com,
           # so an unset SITE_URL secret is harmless and not worth failing on.
           SITE_URL: ${{ secrets.SITE_URL }}
