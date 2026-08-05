@@ -33,6 +33,14 @@ async function getRequestedSegment(req) {
 // are untouched.
 const KIDS_SEGMENT_DISABLED_CODE = 'SEGMENT_TEMPORARILY_UNAVAILABLE';
 
+// LEADERBOARD-3 — `canParticipate` used to mean "is premium". With the premium
+// condition gone from RANKED_USERS_CTE, the only distinction left is having an
+// account: a logged-in user is ranked as soon as they earn XP, an anonymous viewer
+// can read the board but has to register to appear on it. `tier` stays in the
+// response (the page still renders a premium badge from it); it just no longer
+// decides participation.
+const canParticipate = (req) => Boolean(req.user?.uuid);
+
 const getLeaderboard = async (req, res, next) => {
   try {
     const segment = await getRequestedSegment(req);
@@ -48,7 +56,7 @@ const getLeaderboard = async (req, res, next) => {
         code: KIDS_SEGMENT_DISABLED_CODE,
         viewer: {
           tier: req.entitlement?.tier || 'free',
-          canParticipate: Boolean(req.entitlement?.isPremium),
+          canParticipate: canParticipate(req),
         },
       });
     }
@@ -69,7 +77,7 @@ const getLeaderboard = async (req, res, next) => {
       segment,
       viewer: {
         tier: req.entitlement?.tier || 'free',
-        canParticipate: Boolean(req.entitlement?.isPremium),
+        canParticipate: canParticipate(req),
       },
     });
   } catch (err) {

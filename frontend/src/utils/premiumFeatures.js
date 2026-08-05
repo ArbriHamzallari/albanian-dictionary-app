@@ -63,15 +63,18 @@ export const PREMIUM_FEATURE_KEYS = [
 //   streak         — streaks, quests and word-of-the-day carry no premium gate;
 //                    routes/quests.js is `authenticate` only, so "sfida" belongs
 //                    here in the free column and not in the premium one.
-//   leaderboardV2  — free users can READ the board but are never ranked on it:
-//                    rankSql.js RANKED_USERS_CTE joins entitlements and requires
-//                    tier='premium'. COPY-2 retired the previous `leaderboard` key,
-//                    whose copy implied free users place on it. The old key stays in
-//                    sq.json as the copy gate's reference.
+//
+// LEADERBOARD-3 dropped the leaderboard line from this column entirely. Both keys it
+// could point at are now retired: `leaderboard` ("Renditja + Liga Bronx", retired by
+// COPY-2) and `leaderboardV2` ("Shikon renditjen" — "views the leaderboard"), which
+// COPY-2 wrote to say free users read the board without placing on it. That stopped
+// being true when rankSql.js lost its entitlements join: ranking is no longer tied to
+// plan, so there is no free/premium leaderboard distinction left for a comparison
+// table to draw. Both keys stay in sq.json as the copy gate's reference; do not point
+// this list back at either.
 export const FREE_FEATURE_KEYS = [
   'dictionary',
   'history',
   'dailyLessons',
   'streak',
-  'leaderboardV2',
 ];
