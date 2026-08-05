@@ -72,11 +72,9 @@ const Register = () => {
         countryCode: countryCode.toUpperCase(),
         parentEmail: consentRequired ? parentEmail : undefined,
       });
-      // Consent-pending accounts go to the "check your parent's email" screen, not the app.
-      if (data.pendingParentalConsent) {
-        navigate('/pending-consent');
-        return;
-      }
+      // SAFE-3: a consent-pending account lands in the app like anyone else. Only Miqtë
+      // and Bisedat wait for the parent, and they explain themselves in place; there is
+      // nothing to hold this signup on a blocking screen for.
       resumeAfterAuth(data.profile?.role);
     } catch (err) {
       if (err.response?.status === 409) {
