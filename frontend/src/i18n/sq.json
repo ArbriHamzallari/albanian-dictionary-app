@@ -574,7 +574,7 @@
         "dailyLessons": "Deri në 5 mësime/ditë",
         "streak": "Seria, sfida dhe fjala e ditës",
         "leaderboard": "Renditja + Liga Bronx",
-        "leaderboardV2": "TODO_SQ_premium_compare_free_leaderboard_v2"
+        "leaderboardV2": "Shikon renditjen"
       },
       "premium": {
         "unlimited": "Mësime pa kufi",
@@ -582,7 +582,7 @@
         "mistakes": "Përsërit gabimet",
         "freeze": "Mburoja e serisë (2/muaj)",
         "friends": "Miqtë, biseda, sfidat, Liga e Artë dhe familja",
-        "friendsV2": "TODO_SQ_premium_compare_premium_v2"
+        "friendsV2": "Miqtë dhe bisedat"
       }
     },
     "features": {
@@ -673,8 +673,8 @@
   "premiumButton": {
     "cta": "Bëhu Premium · 25 EUR/vit",
     "ctaGeneric": "Fillo Premium",
-    "ctaAnnual": "TODO_SQ_premium_button_cta_annual",
-    "ctaMonthly": "TODO_SQ_premium_button_cta_monthly",
+    "ctaAnnual": "Vazhdo me planin vjetor",
+    "ctaMonthly": "Vazhdo me planin mujor",
     "loading": "Duke hapur…",
     "error": "Pagesa Premium nuk u hap. Provoni përsëri."
   },
@@ -1044,10 +1044,10 @@
       "countryLabel": "Shteti",
       "minorPrivacyNote": "Profilet e fëmijëve janë private si parazgjedhje dhe renditja publike shfaq vetëm emër publik dhe avatar.",
       "consentLabel": "Kam pëlqimin e prindit ose kujdestarit për të krijuar këtë llogari.",
-      "ageTooYoung": "TODO_SQ_register_age_too_young",
-      "parentEmailLabel": "TODO_SQ_register_parent_email_label",
-      "parentEmailPlaceholder": "TODO_SQ_register_parent_email_placeholder",
-      "parentEmailNote": "TODO_SQ_register_parent_email_note",
+      "ageTooYoung": "Për të krijuar një llogari duhet të jesh të paktën 13 vjeç. Kjo është një kërkesë ligjore.",
+      "parentEmailLabel": "Emaili i prindit ose kujdestarit",
+      "parentEmailPlaceholder": "prind@shembull.com",
+      "parentEmailNote": "Do t'i dërgojmë një mesazh në këtë adresë për të miratuar krijimin e llogarisë.",
       "submit": "Regjistrohu",
       "submitLoading": "Duke u regjistruar...",
       "hasAccount": "Ke tashmë llogari?",
@@ -1059,28 +1059,28 @@
     }
   },
   "pendingConsent": {
-    "title": "TODO_SQ_pending_consent_title",
-    "subtitle": "TODO_SQ_pending_consent_subtitle",
-    "sentTo": "TODO_SQ_pending_consent_sent_to",
-    "whatNext": "TODO_SQ_pending_consent_what_next",
-    "resendButton": "TODO_SQ_pending_consent_resend_button",
-    "resendLoading": "TODO_SQ_pending_consent_resend_loading",
-    "resendSuccess": "TODO_SQ_pending_consent_resend_success",
-    "resendRateLimited": "TODO_SQ_pending_consent_resend_rate_limited",
-    "logout": "TODO_SQ_pending_consent_logout"
+    "title": "Edhe pak!",
+    "subtitle": "Na duhet miratimi i një prindi ose kujdestari që llogaria jote të aktivizohet.",
+    "sentTo": "E dërguam te {email}",
+    "whatNext": "Sapo prindi ose kujdestari ta miratojë, llogaria jote do të aktivizohet plotësisht.",
+    "resendButton": "Ridërgo emailin",
+    "resendLoading": "Duke dërguar…",
+    "resendSuccess": "Emaili u dërgua përsëri.",
+    "resendRateLimited": "Prit edhe pak dhe provo përsëri.",
+    "logout": "Dil"
   },
   "consentLanding": {
-    "title": "TODO_SQ_consent_landing_title",
-    "subtitle": "TODO_SQ_consent_landing_subtitle",
-    "explainer": "TODO_SQ_consent_landing_explainer",
-    "approve": "TODO_SQ_consent_landing_approve",
-    "decline": "TODO_SQ_consent_landing_decline",
-    "working": "TODO_SQ_consent_landing_working",
-    "approvedTitle": "TODO_SQ_consent_landing_approved_title",
-    "approvedBody": "TODO_SQ_consent_landing_approved_body",
-    "withdrawnTitle": "TODO_SQ_consent_landing_withdrawn_title",
-    "withdrawnBody": "TODO_SQ_consent_landing_withdrawn_body",
-    "errorInvalid": "TODO_SQ_consent_landing_error_invalid"
+    "title": "Fëmija juaj dëshiron t'i bashkohet Fjalingos",
+    "subtitle": "Miratimi juaj nevojitet për të aktivizuar llogarinë.",
+    "explainer": "Fjalingo është një aplikacion që i ndihmon shqiptarët të rikthejnë në përdorim fjalët shqipe përmes lojës, fjalë pas fjale. Nëse e miratoni, fëmija juaj do të ketë qasje të plotë në llogarinë e tij. Nëse vendosni të mos e miratoni tani, nuk ka problem. Mund ta ndryshoni këtë vendim më vonë.",
+    "approve": "Po, e miratoj",
+    "decline": "Jo tani",
+    "working": "Duke e miratuar…",
+    "approvedTitle": "Gjithçka u krye!",
+    "approvedBody": "Llogaria e fëmijës suaj tani është plotësisht aktive dhe gati për t'u përdorur.",
+    "withdrawnTitle": "Vendimi u ruajt",
+    "withdrawnBody": "Nuk e miratuat llogarinë për momentin. Nëse dëshironi, mund ta bëni këtë më vonë.",
+    "errorInvalid": "Kjo lidhje nuk është më e vlefshme ose është përdorur tashmë. Nëse nevojitet, fëmija juaj mund të kërkojë një lidhje të re."
   },
   "completeProfile": {
     "title": "Plotëso profilin",
@@ -1229,6 +1229,10 @@
   "TODO_SQ_landing_premium_title_accent": "Fjalingo-n",
   "TODO_SQ_landing_premium_subline": "Një plan i vetëm zhbllokon të gjitha botët sipas prejardhjes së fjalëve dhe ushtrime shtesë. Mund ta anulosh kur të duash.",
   "TODO_SQ_landing_premium_free_note": "Bota e anglicizmave mbetet falas përgjithmonë.",
+  "TODO_SQ_landing_premium_tile_hint": "Shih çfarë përfshihet",
+  "TODO_SQ_landing_premium_preview_title": "Plani {plan}",
+  "TODO_SQ_landing_premium_preview_intro": "Gjithçka që zhbllokon Premium.",
+  "TODO_SQ_landing_premium_preview_cta": "Shih Premium",
   "TODO_SQ_safety_age_gate_title": "Mosha dhe pëlqimi gjatë regjistrimit",
   "TODO_SQ_safety_age_gate": "Gjatë regjistrimit kërkojmë moshën dhe shtetin. Për përdoruesit më të vegjël nevojitet pëlqimi i prindit ose kujdestarit. Profilet e të miturve janë private si parazgjedhje.",
   "TODO_SQ_landing_safety_leaderboard_title": "Renditje të sigurta",
