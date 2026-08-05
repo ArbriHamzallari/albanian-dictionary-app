@@ -19,16 +19,39 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          # Matches ci.yml (both jobs). Neither package.json declares an `engines`
+          # field, so nothing pinned this to 20 — it was simply written before ci.yml
+          # standardised on 22, and testing on one version while shipping another is
+          # how version-specific breakage gets found in production instead of CI.
+          node-version: '22'
 
       - name: Install backend deps
         working-directory: backend
         run: npm install
 
+      # An unset repo secret expands to an EMPTY STRING, not an error — so without this
+      # check the job dies inside node with a raw stack trace from
+      # backend/src/utils/db.js, which reads as "the script is broken" rather than "a
+      # secret is missing". This workflow failed silently every day from its first run
+      # for exactly that reason. Name the real problem instead.
+      # NOTE: DATABASE_URL here is a GitHub Actions repo secret — a different store from
+      # Fly's secrets. Having it on Fly does not provide it here.
+      - name: Check required secrets
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          if [ -z "${DATABASE_URL}" ]; then
+            echo "::error::DATABASE_URL repo secret is not set (Settings → Secrets and variables → Actions). This is separate from Fly's secrets. The sitemap job needs read access to the words table."
+            exit 1
+          fi
+          echo "DATABASE_URL is present."
+
       - name: Generate sitemap
         working-directory: backend
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          # Optional: generate-sitemap.js already defaults to https://fjalingo.com,
+          # so an unset SITE_URL secret is harmless and not worth failing on.
           SITE_URL: ${{ secrets.SITE_URL }}
         run: npm run generate-sitemap
 
